@@ -86,6 +86,23 @@ Google Sign-In implementation using Supabase Auth and Expo.
 
 ---
 
+### AI Framework
+
+#### [Mastra AI Integration](./mastra-ai-integration.md)
+TypeScript agent framework for orchestrating AI features with workflows, memory, and tool-equipped agents.
+
+**When to use**: Replacing Edge Function AI calls with structured workflows, adding persistent user memory, building a conversational habit coach.
+
+**Key Topics**:
+- Agents (failure analyst, iteration coach, habit coach)
+- Workflows (multi-step failure analysis, weekly iteration)
+- Memory (working memory, semantic recall)
+- Supabase tools integration
+- Deployment (Vercel, standalone)
+- Migration from Edge Functions
+
+---
+
 ### Analytics & Monitoring
 
 #### [Analytics Integration](./analytics-integration.md)
@@ -134,8 +151,9 @@ Building and deploying iOS/Android apps using Expo Application Services.
 2. [Push Notifications](./push-notifications.md) - Add habit reminders
 
 ### Phase 4-5: Growth & Iteration
-1. [Analytics Integration](./analytics-integration.md) - Track metrics
-2. [EAS Build & Deployment](./eas-build-deployment.md) - Deploy to stores
+1. [Mastra AI Integration](./mastra-ai-integration.md) - Structured AI workflows
+2. [Analytics Integration](./analytics-integration.md) - Track metrics
+3. [EAS Build & Deployment](./eas-build-deployment.md) - Deploy to stores
 
 ## Integration Dependencies
 
@@ -144,6 +162,8 @@ graph TD
     A[Expo Setup] --> B[Supabase]
     B --> C[Google OAuth]
     B --> D[OpenAI Edge Functions]
+    B --> H[Mastra AI]
+    D -.->|migrates to| H
     A --> E[Push Notifications]
     A --> F[Analytics]
     A --> G[EAS Build]
@@ -173,6 +193,10 @@ GOOGLE_EXPO_CLIENT_ID=xxxxx.apps.googleusercontent.com
 EXPO_PUBLIC_POSTHOG_API_KEY=phc_...
 # OR
 EXPO_PUBLIC_MIXPANEL_TOKEN=xxxxx
+
+# Mastra AI Server
+EXPO_PUBLIC_MASTRA_URL=http://localhost:4111
+SUPABASE_DB_CONNECTION_STRING=postgresql://postgres:password@db.xxxxx.supabase.co:5432/postgres
 
 # App Config
 EXPO_PUBLIC_ENVIRONMENT=development|staging|production
@@ -310,7 +334,7 @@ When adding new integrations:
 
 ---
 
-**Last Updated**: 2026-02-09
+**Last Updated**: 2026-02-11
 
 **Maintained by**: HabitDx Development Team
 
