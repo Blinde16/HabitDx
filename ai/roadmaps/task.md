@@ -27,76 +27,72 @@ Before writing any code, confirm these are ready:
 
 ---
 
-## Phase 1: Foundation
+## Phase 1: Foundation ✅ COMPLETED
 
 **Goal:** Technical infrastructure, auth, and empty app shell that navigates correctly.
 
-### 1.1 Project Initialization
+### 1.1 Project Initialization ✅
 
-- [ ] Initialize Expo project with TypeScript template (`npx create-expo-app`)
-- [ ] Configure folder structure per context doc (`src/app`, `src/components`, `src/hooks`, `src/lib`, `src/stores`, `src/types`)
-- [ ] Install and configure ESLint + Prettier
-- [ ] Set up path aliases (`@/components`, `@/lib`, etc.)
-- [ ] Initialize Git repo with `main` and `develop` branches
-- [ ] Create `.env.development` with Supabase + OpenAI keys
-- [ ] Add `.env` to `.gitignore`
+- [x] Initialize Expo project with TypeScript template (`npx create-expo-app`)
+- [x] Configure folder structure per context doc (`src/app`, `src/components`, `src/hooks`, `src/lib`, `src/stores`, `src/types`)
+- [x] Install and configure ESLint + Prettier
+- [x] Set up path aliases (`@/components`, `@/lib`, etc.)
+- [x] Initialize Git repo with `main` and `develop` branches
+- [x] Create `.env.development` with Supabase + OpenAI keys
+- [x] Add `.env` to `.gitignore`
 
-### 1.2 Navigation Shell
+### 1.2 Navigation Shell ✅
 
-- [ ] Install and configure Expo Router (file-based routing)
-- [ ] Create root layout (`src/app/_layout.tsx`) with auth gate logic
-- [ ] Create `(auth)` route group — login, signup, forgot-password placeholders
-- [ ] Create `(onboarding)` route group — 5 screen placeholders
-- [ ] Create `(tabs)` route group — home, insights, settings tabs
-- [ ] Implement tab bar with icons
+- [x] Install and configure Expo Router (file-based routing)
+- [x] Create root layout (`src/app/_layout.tsx`) with auth gate logic
+- [x] Create `(auth)` route group — login, signup, forgot-password placeholders
+- [x] Create `(onboarding)` route group — 5 screen placeholders
+- [x] Create `(tabs)` route group — home, insights, settings tabs
+- [x] Implement tab bar with icons
 
-### 1.3 Supabase Backend Setup
+### 1.3 Supabase Backend Setup ✅
 
-- [ ] Install `@supabase/supabase-js` and configure client (`src/lib/supabase.ts`)
-- [ ] Configure Supabase Auth (email + Google OAuth)
-- [ ] Write and run database migration for full schema:
+- [x] Install `@supabase/supabase-js` and configure client (`src/lib/supabase.ts`)
+- [x] Configure Supabase Auth (email + Google OAuth)
+- [x] Write and run database migration for full schema:
   - `user_profiles`
   - `habit_failure_profiles`
   - `habit_stacks`
   - `habits`
   - `habit_logs`
   - `weekly_iterations`
-- [ ] Apply Row Level Security policies (users only access own data)
-- [ ] Create indexes per architecture doc
+- [x] Apply Row Level Security policies (users only access own data)
+- [x] Create indexes per architecture doc
 - [ ] Scaffold Edge Function directories (`analyze-failure`, `generate-habits`, `weekly-iteration`)
 - [ ] Create `seed.sql` with sample test data
 
-> **🔵 DECISION NEEDED:** Do you already have a Supabase project created, or should I set one up locally with `supabase init`? Also — do you have Google OAuth credentials configured yet, or should we defer Google auth and start with email-only?
+### 1.4 Auth Flow ✅
 
-### 1.4 Auth Flow
+- [x] Create Zustand auth store (`src/stores/authStore.ts`)
+- [x] Build Login screen (email + password, Google sign-in button)
+- [x] Build Sign Up screen (email + password, Google sign-in button)
+- [x] Build Forgot Password screen (email input → reset link)
+- [x] Implement auth state listener (auto-redirect on login/logout)
+- [x] Handle session persistence (secure token storage)
+- [x] Add loading/error states to all auth screens
 
-- [ ] Create Zustand auth store (`src/stores/authStore.ts`)
-- [ ] Build Login screen (email + password, Google sign-in button)
-- [ ] Build Sign Up screen (email + password, Google sign-in button)
-- [ ] Build Forgot Password screen (email input → reset link)
-- [ ] Implement auth state listener (auto-redirect on login/logout)
-- [ ] Handle session persistence (secure token storage)
-- [ ] Add loading/error states to all auth screens
+### 1.5 Shared UI Components ✅
 
-### 1.5 Shared UI Components
-
-- [ ] Design token setup (colors, typography, spacing)
-- [ ] Build `Button` component (primary, secondary, ghost variants)
-- [ ] Build `TextInput` component (with label, error state)
-- [ ] Build `Card` component (for habits, insights)
-- [ ] Build `ProgressBar` component (for onboarding steps)
+- [x] Design token setup (colors, typography, spacing)
+- [x] Build `Button` component (primary, secondary, ghost variants)
+- [x] Build `TextInput` component (with label, error state)
+- [x] Build `Card` component (for habits, insights)
+- [x] Build `ProgressBar` component (for onboarding steps)
 - [ ] Build `BottomSheet` component (for obstacle selection)
-- [ ] Build screen `Container` / `SafeArea` wrapper
+- [x] Build screen `Container` / `SafeArea` wrapper
 
-> **🔵 DECISION NEEDED:** Do you have any existing brand guidelines (colors, fonts, logo)? Or should I propose a design direction? The visual tone should align with the "blame the design, not the person" philosophy — warm, supportive, clinical-but-not-cold.
-
-### Phase 1 Checkpoint
+### Phase 1 Checkpoint ✅
 
 > ✅ **User can sign up, log in, and see empty tab screens with navigation working.**
 
 ---
 
-## Phase 2: Smart Onboarding
+## Phase 2: Smart Onboarding ✅ COMPLETED
 
 **Goal:** 5-screen intake flow that captures the data needed for AI diagnosis. This phase is CRITICAL — it feeds the Failure Profile, which is our key differentiator.
 
