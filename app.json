@@ -23,9 +23,7 @@
     "extra": {
       "router": {
         "appRoot": "./src/app"
-      },
-      "EXPO_PUBLIC_SUPABASE_URL": "",
-      "EXPO_PUBLIC_SUPABASE_ANON_KEY": ""
+      }
     }
   }
 }
