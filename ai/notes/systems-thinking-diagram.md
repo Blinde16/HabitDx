@@ -1,4 +1,5 @@
 # HabitDx Systems Thinking Diagram
+
 ## Based on "Thinking in Systems" by Donella Meadows
 
 ---
@@ -11,10 +12,10 @@ graph LR
     B -->|Builds| C[Self-Knowledge]
     C -->|Increases| D[Trust in System]
     D -->|Reinforces| A
-    
+
     E[Shame/Frustration] -.->|Decreases| A
     B -.->|Low consistency feeds| E
-    
+
     style A fill:#e1f5ff,stroke:#0066cc,stroke-width:3px
     style B fill:#e1f5ff,stroke:#0066cc,stroke-width:3px
     style C fill:#e1f5ff,stroke:#0066cc,stroke-width:3px
@@ -39,7 +40,7 @@ graph TB
     J --> K{Accept Change?}
     K -->|Yes| D
     K -->|No| E
-    
+
     style C fill:#e8f5e9,stroke:#4caf50,stroke-width:3px
     style D fill:#fff4e6,stroke:#ff9800,stroke-width:2px
     style J fill:#fff4e6,stroke:#ff9800,stroke-width:2px
@@ -55,7 +56,7 @@ graph TB
         T3 --> T4[Break Streak]
         T4 --> T5[Shame & Abandonment]
     end
-    
+
     subgraph HabitDx System
         H1[User] --> H2[Smart Intake]
         H2 --> H3[Failure Diagnosis]
@@ -65,7 +66,7 @@ graph TB
         H6 --> H7[Personalized Adjustment]
         H7 --> H4
     end
-    
+
     style T5 fill:#ffebee,stroke:#f44336,stroke-width:3px
     style H3 fill:#e8f5e9,stroke:#4caf50,stroke-width:3px
     style H7 fill:#e8f5e9,stroke:#4caf50,stroke-width:3px
@@ -80,12 +81,12 @@ graph TB
     C --> D[Higher Trust in System]
     D --> E[More Engagement]
     E --> A
-    
+
     F[Small Wins] --> G[Growing Self-Knowledge]
     G --> H[Identity Shift: I am someone who...]
     H --> I[More Motivation]
     I --> F
-    
+
     style A fill:#e1f5ff,stroke:#0066cc,stroke-width:2px
     style C fill:#e8f5e9,stroke:#4caf50,stroke-width:2px
     style D fill:#e1f5ff,stroke:#0066cc,stroke-width:2px
@@ -99,16 +100,16 @@ graph TB
     A[Habit Consistency] --> B[Life Changes: Job/Kids/Health]
     B -.->|Disrupts| C[Broken Routine]
     C -.->|Decreases| A
-    
+
     D[Low Consistency] --> E[Shame & Frustration]
     E --> F[App Avoidance]
     F --> G[App Abandonment]
     G --> H[Zero Consistency]
-    
+
     I[Weekly AI Adjustments] -.->|Mitigates| C
     J[No Streak Resets] -.->|Prevents| E
     K[Blame Design Not Person] -.->|Prevents| E
-    
+
     style E fill:#ffebee,stroke:#f44336,stroke-width:3px
     style G fill:#ffebee,stroke:#f44336,stroke-width:3px
     style I fill:#e8f5e9,stroke:#4caf50,stroke-width:2px
@@ -124,31 +125,31 @@ graph TB
     Intake --> Profile[Failure Profile]
     Profile -->|Increases| Stock1[Self-Knowledge Stock]
     Profile -->|Decreases| Stock5[Shame Stock]
-    
+
     Profile --> Habits[Personalized Habits]
     Habits -->|Increases| Stock4[Trust Stock]
-    
+
     Habits --> Daily[Daily Check-in]
     Daily -->|Success| Stock2[Consistency Stock]
     Daily -->|Failure| ObstacleDB[(Obstacle Data)]
-    
+
     Stock2 -->|Increases| Stock1
     Stock2 -->|Increases| Stock3[Motivation Stock]
-    
+
     ObstacleDB --> Weekly[Weekly Analysis]
     Stock2 --> Weekly
     Weekly --> Adjustment[ONE Adjustment]
     Adjustment -->|Increases| Stock1
     Adjustment --> Habits
-    
+
     Life[Life Changes] -.->|Decreases| Stock2
     Stock2 -.->|Low| Stock5
     Stock5 -.->|Decreases| Stock3
-    
+
     Stock1 -->|Increases| Stock4
     Stock4 -->|Increases| Stock3
     Stock3 -->|Increases| Daily
-    
+
     style Stock1 fill:#e1f5ff,stroke:#0066cc,stroke-width:3px
     style Stock2 fill:#e1f5ff,stroke:#0066cc,stroke-width:3px
     style Stock3 fill:#e1f5ff,stroke:#0066cc,stroke-width:3px
@@ -164,17 +165,18 @@ graph TB
 
 ### STOCKS (What Accumulates)
 
-| Stock | Initial State | Goal State | How It Changes |
-|-------|--------------|------------|----------------|
-| **🔋 User Motivation** | Low (from repeated failures) | High, sustained | ↑ Success experiences, insights<br/>↓ Failures, shame, generic advice |
-| **✅ Habit Consistency** | Very low (92% fail rate) | >70% completion rate | ↑ Proper habit design, reminders<br/>↓ Life disruptions, poor timing |
-| **🧠 Self-Knowledge** | Minimal ("I don't know why I fail") | Deep understanding of patterns | ↑ Failure Profile, weekly insights<br/>↓ Generic tracking (no diagnosis) |
-| **🤝 Trust in System** | Low (tried 3+ apps already) | High (feels personalized) | ↑ Relevant insights, "it gets me"<br/>↓ Generic advice, ignored context |
-| **😞 Shame/Frustration** | High (years of failure) | Minimal | ↑ Broken streaks, willpower blame<br/>↓ System thinking, understanding |
+| Stock                    | Initial State                       | Goal State                     | How It Changes                                                           |
+| ------------------------ | ----------------------------------- | ------------------------------ | ------------------------------------------------------------------------ |
+| **🔋 User Motivation**   | Low (from repeated failures)        | High, sustained                | ↑ Success experiences, insights<br/>↓ Failures, shame, generic advice    |
+| **✅ Habit Consistency** | Very low (92% fail rate)            | >70% completion rate           | ↑ Proper habit design, reminders<br/>↓ Life disruptions, poor timing     |
+| **🧠 Self-Knowledge**    | Minimal ("I don't know why I fail") | Deep understanding of patterns | ↑ Failure Profile, weekly insights<br/>↓ Generic tracking (no diagnosis) |
+| **🤝 Trust in System**   | Low (tried 3+ apps already)         | High (feels personalized)      | ↑ Relevant insights, "it gets me"<br/>↓ Generic advice, ignored context  |
+| **😞 Shame/Frustration** | High (years of failure)             | Minimal                        | ↑ Broken streaks, willpower blame<br/>↓ System thinking, understanding   |
 
 ### FLOWS (What Changes Stocks)
 
 #### Inflows (Increase Stocks)
+
 - **Smart Intake** → Self-Knowledge: Captures failure patterns
 - **Failure Profile** → App Trust: "This app gets me!"
 - **Successful Check-in** → User Motivation: Dopamine hit
@@ -182,6 +184,7 @@ graph TB
 - **Accepted Adjustment** → Habit Consistency: Better design
 
 #### Outflows (Decrease Stocks)
+
 - **Generic Advice** → App Trust: Feels like every other app
 - **Broken Streaks** → User Motivation: Shame spiral begins
 - **Life Changes** → Habit Consistency: Old system breaks
@@ -194,7 +197,7 @@ graph TB
 ### 🔄 Reinforcing Loop 1: "Insight Flywheel" (Virtuous Cycle)
 
 ```
-More Check-ins → Better Data → Better Insights → Higher Trust → 
+More Check-ins → Better Data → Better Insights → Higher Trust →
 More Engagement → More Check-ins (↑↑↑)
 ```
 
@@ -211,7 +214,7 @@ Small Wins → Growing Self-Knowledge → Identity Formation →
 More Motivation → Small Wins (↑↑↑)
 ```
 
-**Why it works:** Understanding *why* you failed shifts from "I'm weak" to "My evening energy crashes." System thinking replaces self-blame.
+**Why it works:** Understanding _why_ you failed shifts from "I'm weak" to "My evening energy crashes." System thinking replaces self-blame.
 
 **System Leverage:** Failure Profile is the key intervention point.
 
@@ -241,7 +244,8 @@ Zero Consistency (↓↓↓)
 
 **Traditional App Problem:** Streak counters + no diagnosis = shame when broken.
 
-**HabitDx Solution:** 
+**HabitDx Solution:**
+
 - "Don't miss twice" philosophy
 - No judgment, only data
 - Blame the design, not the person
@@ -250,12 +254,12 @@ Zero Consistency (↓↓↓)
 
 ## Delays in the System
 
-| Delay | Duration | Impact | Mitigation Strategy |
-|-------|----------|--------|---------------------|
-| **Onboarding → First Insight** | 7 days | User may churn before seeing value | Show Failure Profile immediately |
-| **Adjustment → Behavior Change** | 3-7 days | User needs time to test changes | Set expectations in UI |
-| **Pattern Recognition** | 2-4 weeks | Not enough data for deep insights | Combine AI analysis with research-backed defaults |
-| **Habit Formation** | 21-66 days | Delayed gratification | Weekly micro-wins to maintain motivation |
+| Delay                            | Duration   | Impact                             | Mitigation Strategy                               |
+| -------------------------------- | ---------- | ---------------------------------- | ------------------------------------------------- |
+| **Onboarding → First Insight**   | 7 days     | User may churn before seeing value | Show Failure Profile immediately                  |
+| **Adjustment → Behavior Change** | 3-7 days   | User needs time to test changes    | Set expectations in UI                            |
+| **Pattern Recognition**          | 2-4 weeks  | Not enough data for deep insights  | Combine AI analysis with research-backed defaults |
+| **Habit Formation**              | 21-66 days | Delayed gratification              | Weekly micro-wins to maintain motivation          |
 
 **System Insight:** The 7-day delay to first insight is CRITICAL. Users need value before then.
 
@@ -283,6 +287,7 @@ Zero Consistency (↓↓↓)
 ```
 
 **System Differentiation:**
+
 1. **Input:** Not just "what" but "why" habits failed
 2. **Processing:** AI diagnosis, not generic templates
 3. **Output:** Personalized adjustments, not motivational quotes
@@ -297,11 +302,13 @@ Based on systems thinking principles, here are features that would strengthen th
 ### 🔴 CRITICAL GAPS (High Leverage Points)
 
 #### 1. **Proactive Constraint Update Prompts**
+
 **System Problem:** Life Entropy balancing loop breaks habits, but user doesn't update system.
 
 **Current State:** User must manually remember to update constraints.
 
-**Better Design:** 
+**Better Design:**
+
 - AI detects pattern disruption: "Your Tuesday habits have failed 3 weeks straight. Did something change?"
 - Prompt user to update constraints
 - Auto-regenerate habits if major change detected
@@ -311,11 +318,13 @@ Based on systems thinking principles, here are features that would strengthen th
 ---
 
 #### 2. **Pre-Failure Pattern Detection**
+
 **System Problem:** Weekly insights are REACTIVE (after failure), not PREDICTIVE.
 
 **Current State:** Analyze what went wrong last week.
 
 **Better Design:**
+
 - Track real-time patterns during the week
 - If user misses habit 2 days in a row: "Heads up: You're at risk of missing [habit] again. Want to adjust now instead of waiting for Sunday?"
 - Offer micro-adjustment before the week is over
@@ -325,11 +334,13 @@ Based on systems thinking principles, here are features that would strengthen th
 ---
 
 #### 3. **Social Accountability Opt-in**
+
 **System Problem:** Motivation stock depletes in isolation. No external reinforcement.
 
 **Current State:** Fully solo experience.
 
 **Better Design:**
+
 - Optional: Connect with ONE accountability partner
 - They don't see your habits, just: "Blake checked in today ✓"
 - You get same ping about them
@@ -342,9 +353,11 @@ Based on systems thinking principles, here are features that would strengthen th
 ### 🟡 IMPORTANT ENHANCEMENTS (Medium Leverage)
 
 #### 4. **Habit Confidence Score**
+
 **System Problem:** User doesn't know which habits are "working" vs "need adjustment" between weekly insights.
 
 **Better Design:**
+
 - Real-time confidence score per habit (0-100%)
 - Based on: completion rate, obstacle patterns, time-of-day consistency
 - Visual indicator: 🟢 Strong (>80%), 🟡 Shaky (50-80%), 🔴 Struggling (<50%)
@@ -355,11 +368,13 @@ Based on systems thinking principles, here are features that would strengthen th
 ---
 
 #### 5. **Insight History with Impact Tracking**
+
 **System Problem:** User can't see if past adjustments actually worked (no closed loop).
 
 **Current State (P1):** View past insights.
 
 **Better Design:**
+
 - Show adjustment timeline
 - Before/after completion rates
 - "When we moved your habit to after coffee (Week 3), your completion rate went from 40% → 75%"
@@ -369,11 +384,13 @@ Based on systems thinking principles, here are features that would strengthen th
 ---
 
 #### 6. **Energy/Context Check-in**
+
 **System Problem:** We track habit completion but not the CONTEXT (energy, stress, sleep).
 
 **Current State:** Optional obstacle note only on failure.
 
 **Better Design:**
+
 - Daily micro-check-in: "How's your energy today? 😴😐⚡"
 - AI correlates energy with habit success
 - Weekly insight: "You complete habits 2x more on high-energy days. Let's design a low-energy version."
@@ -385,9 +402,11 @@ Based on systems thinking principles, here are features that would strengthen th
 ### 🟢 NICE-TO-HAVE (Lower Leverage but Valuable)
 
 #### 7. **Habit Pause/Resume Flow**
+
 **System Problem:** When life crisis hits (sick, travel, major event), rigid system breaks.
 
 **Better Design:**
+
 - "Pause habits for X days" option
 - No shame, no broken streak
 - Graceful degradation instead of complete failure
@@ -398,9 +417,11 @@ Based on systems thinking principles, here are features that would strengthen th
 ---
 
 #### 8. **Celebration Reminders**
+
 **System Problem:** Users do tiny habits but forget to celebrate (lose dopamine reinforcement).
 
 **Better Design:**
+
 - When user marks complete, app shows their chosen celebration
 - "Don't forget to [celebration text]!"
 - Optional: Confetti animation
@@ -410,9 +431,11 @@ Based on systems thinking principles, here are features that would strengthen th
 ---
 
 #### 9. **Failure Pattern Library**
+
 **System Problem:** Each user's Failure Profile is isolated. No network effects.
 
 **Better Design (PRIVACY-SAFE):**
+
 - Anonymized failure pattern database
 - "47% of evening-energy users struggle with morning habits"
 - "Users who anchor to coffee have 23% higher success"
@@ -426,7 +449,7 @@ Based on systems thinking principles, here are features that would strengthen th
 
 According to Donella Meadows, the most powerful places to intervene in a system are:
 
-1. **⭐ PARADIGM (Highest Leverage):** 
+1. **⭐ PARADIGM (Highest Leverage):**
    - Current: "Blame willpower" → "Blame design"
    - HabitDx already addresses this! Failure Profile reframes the mental model.
 
@@ -455,19 +478,23 @@ According to Donella Meadows, the most powerful places to intervene in a system 
 Based on systems leverage and current MVP gaps:
 
 ### Phase 1 (MVP Complete)
+
 ✅ Already defined in PRD
 
 ### Phase 2 (v1.1) - HIGH LEVERAGE ADDITIONS
+
 1. **Proactive Constraint Update Prompts** (Critical Gap #1)
 2. **Habit Confidence Score** (Real-time feedback)
 3. **Insight History with Impact Tracking** (Closes the loop)
 
 ### Phase 3 (v1.2) - RETENTION BOOSTERS
+
 4. **Pre-Failure Pattern Detection** (Critical Gap #2)
 5. **Energy/Context Check-in** (Better data)
 6. **Habit Pause/Resume Flow** (Graceful degradation)
 
 ### Phase 4 (v2.0) - NETWORK EFFECTS
+
 7. **Social Accountability Opt-in** (Critical Gap #3)
 8. **Failure Pattern Library** (Collective intelligence)
 9. **Celebration Reminders** (Dopamine reinforcement)
@@ -478,13 +505,13 @@ Based on systems leverage and current MVP gaps:
 
 To monitor system health beyond product metrics:
 
-| System Stock | Health Indicator | Target |
-|--------------|------------------|--------|
-| Self-Knowledge | % users who can articulate their failure pattern | >80% |
-| App Trust | % who say "app gets me" in surveys | >70% |
-| User Motivation | Week-over-week retention | >85% |
-| Habit Consistency | Avg completion rate | >65% |
-| Shame Level | % who cite "shame" as reason for leaving | <10% |
+| System Stock      | Health Indicator                                 | Target |
+| ----------------- | ------------------------------------------------ | ------ |
+| Self-Knowledge    | % users who can articulate their failure pattern | >80%   |
+| App Trust         | % who say "app gets me" in surveys               | >70%   |
+| User Motivation   | Week-over-week retention                         | >85%   |
+| Habit Consistency | Avg completion rate                              | >65%   |
+| Shame Level       | % who cite "shame" as reason for leaving         | <10%   |
 
 ---
 
@@ -499,6 +526,7 @@ HabitDx succeeds where others fail because it treats habit formation as a **comp
 5. **Short feedback loops** (7 days, not months)
 
 The missing features identified above would strengthen:
+
 - **Resilience** (proactive updates, pause/resume)
 - **Responsiveness** (pre-failure detection, confidence scores)
 - **Reinforcement** (social accountability, celebrations)

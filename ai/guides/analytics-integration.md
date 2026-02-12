@@ -8,16 +8,17 @@ Analytics are critical for validating HabitDx's core value proposition and under
 
 ### Comparison
 
-| Provider | Pros | Cons | Cost (100 users) |
-|----------|------|------|------------------|
-| **Mixpanel** | Event-based, user profiles, funnels | Complex pricing | $0 (free tier) |
-| **Amplitude** | Behavioral analytics, retention curves | Learning curve | $0 (free tier) |
-| **PostHog** | Open-source, self-hostable, session replay | Newer, less mature | $0 (free tier) |
-| **Segment** | Multi-destination, clean API | Overkill for MVP | $0 (free tier) |
+| Provider      | Pros                                       | Cons               | Cost (100 users) |
+| ------------- | ------------------------------------------ | ------------------ | ---------------- |
+| **Mixpanel**  | Event-based, user profiles, funnels        | Complex pricing    | $0 (free tier)   |
+| **Amplitude** | Behavioral analytics, retention curves     | Learning curve     | $0 (free tier)   |
+| **PostHog**   | Open-source, self-hostable, session replay | Newer, less mature | $0 (free tier)   |
+| **Segment**   | Multi-destination, clean API               | Overkill for MVP   | $0 (free tier)   |
 
 ### Recommendation: PostHog
 
 For HabitDx MVP, **PostHog** is recommended because:
+
 - Free tier is generous (1M events/month)
 - Session replay helps understand UX issues
 - Feature flags for A/B testing
@@ -41,16 +42,13 @@ import PostHog from 'posthog-react-native';
 let posthog: PostHog | null = null;
 
 export async function initializeAnalytics() {
-  posthog = await PostHog.initAsync(
-    process.env.EXPO_PUBLIC_POSTHOG_API_KEY!,
-    {
-      host: 'https://app.posthog.com', // or self-hosted URL
-      captureApplicationLifecycleEvents: true,
-      captureDeepLinks: true,
-      enableSessionReplay: true, // Optional: record user sessions
-    }
-  );
-  
+  posthog = await PostHog.initAsync(process.env.EXPO_PUBLIC_POSTHOG_API_KEY!, {
+    host: 'https://app.posthog.com', // or self-hosted URL
+    captureApplicationLifecycleEvents: true,
+    captureDeepLinks: true,
+    enableSessionReplay: true, // Optional: record user sessions
+  });
+
   return posthog;
 }
 
@@ -72,7 +70,7 @@ export default function RootLayout() {
   useEffect(() => {
     initializeAnalytics();
   }, []);
-  
+
   // ... rest of layout
 }
 ```
@@ -90,18 +88,18 @@ export type AnalyticsEvent =
   | 'onboarding_completed'
   | 'failure_profile_viewed'
   | 'habit_stack_viewed'
-  
+
   // Daily Usage
   | 'app_opened'
   | 'habit_checked_in'
   | 'habit_marked_incomplete'
   | 'obstacle_logged'
-  
+
   // Weekly Iteration
   | 'weekly_insight_viewed'
   | 'adjustment_accepted'
   | 'adjustment_declined'
-  
+
   // Settings
   | 'notification_enabled'
   | 'notification_disabled'
@@ -113,16 +111,16 @@ export interface EventProperties {
   user_id?: string;
   energy_pattern?: 'morning' | 'afternoon' | 'evening';
   life_constraints?: string[];
-  
+
   // Habit properties
   habit_id?: string;
   habit_name?: string;
   habit_age_days?: number;
-  
+
   // Session properties
   session_duration?: number;
   screen_name?: string;
-  
+
   // Outcome properties
   completion_rate_7d?: number;
   active_habits_count?: number;
@@ -133,10 +131,7 @@ export interface EventProperties {
 
 ```typescript
 // src/lib/analytics.ts (continued)
-export function trackEvent(
-  event: AnalyticsEvent,
-  properties?: EventProperties
-) {
+export function trackEvent(event: AnalyticsEvent, properties?: EventProperties) {
   try {
     const posthog = getPostHog();
     posthog.capture(event, properties);
@@ -231,10 +226,10 @@ export function trackWeeklyInsight(
   action: 'viewed' | 'accepted' | 'declined'
 ) {
   trackEvent(
-    action === 'viewed' 
-      ? 'weekly_insight_viewed' 
-      : action === 'accepted' 
-        ? 'adjustment_accepted' 
+    action === 'viewed'
+      ? 'weekly_insight_viewed'
+      : action === 'accepted'
+        ? 'adjustment_accepted'
         : 'adjustment_declined',
     {
       iteration_id: iterationId,
@@ -247,27 +242,25 @@ export function trackWeeklyInsight(
 // Calculate and track user metrics
 export async function trackUserMetrics(userId: string) {
   const supabase = getSupabase();
-  
+
   // Fetch last 7 days of logs
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-  
+
   const { data: logs } = await supabase
     .from('habit_logs')
     .select('*')
     .eq('user_id', userId)
     .gte('check_in_date', sevenDaysAgo.toISOString());
-  
-  const completionRate = logs
-    ? (logs.filter(l => l.completed).length / logs.length) * 100
-    : 0;
-  
+
+  const completionRate = logs ? (logs.filter((l) => l.completed).length / logs.length) * 100 : 0;
+
   const { data: habits } = await supabase
     .from('habits')
     .select('id')
     .eq('user_id', userId)
     .eq('is_active', true);
-  
+
   // Set user properties
   const posthog = getPostHog();
   posthog.setPersonProperties({
@@ -289,14 +282,11 @@ import { trackScreen } from '@/lib/analytics';
 
 export function useScreenTracking() {
   const pathname = usePathname();
-  
+
   useEffect(() => {
     // Convert pathname to readable screen name
-    const screenName = pathname
-      .split('/')
-      .filter(Boolean)
-      .join('_') || 'home';
-    
+    const screenName = pathname.split('/').filter(Boolean).join('_') || 'home';
+
     trackScreen(screenName);
   }, [pathname]);
 }
@@ -306,7 +296,7 @@ export function useScreenTracking() {
 // Use in _layout.tsx
 export default function RootLayout() {
   useScreenTracking();
-  
+
   return (
     // ... layout
   );
@@ -323,18 +313,18 @@ export function useAnalytics() {
   const trackOnboarding = (step: number) => {
     trackEvent('onboarding_step_completed', { step });
   };
-  
+
   const trackHabitAction = (
     habitId: string,
     action: 'checked_in' | 'marked_incomplete',
     obstacle?: string
   ) => {
-    trackEvent(
-      action === 'checked_in' ? 'habit_checked_in' : 'habit_marked_incomplete',
-      { habit_id: habitId, obstacle }
-    );
+    trackEvent(action === 'checked_in' ? 'habit_checked_in' : 'habit_marked_incomplete', {
+      habit_id: habitId,
+      obstacle,
+    });
   };
-  
+
   return {
     trackOnboarding,
     trackHabitAction,
@@ -352,12 +342,12 @@ import { useAnalytics } from '@/hooks/useAnalytics';
 
 export function HabitCard({ habit, onCheckIn }) {
   const analytics = useAnalytics();
-  
+
   const handleCheckIn = () => {
     onCheckIn();
     analytics.trackHabitAction(habit.id, 'checked_in');
   };
-  
+
   return (
     <Pressable onPress={handleCheckIn}>
       {/* ... */}
@@ -448,7 +438,7 @@ import { getFeatureFlag } from '@/lib/analytics';
 
 export default function OnboardingIntro() {
   const [variant, setVariant] = useState<'control' | 'conversational'>('control');
-  
+
   useEffect(() => {
     async function loadVariant() {
       const useConversational = await getFeatureFlag('conversational-onboarding');
@@ -456,8 +446,8 @@ export default function OnboardingIntro() {
     }
     loadVariant();
   }, []);
-  
-  return variant === 'conversational' 
+
+  return variant === 'conversational'
     ? <ConversationalOnboarding />
     : <StandardOnboarding />;
 }
@@ -513,7 +503,7 @@ export async function deleteUserData(userId: string) {
   // PostHog GDPR delete request
   const posthog = getPostHog();
   await posthog.reset();
-  
+
   // Also delete from your database
   await supabase.rpc('delete_user_data', { user_id: userId });
 }
@@ -528,11 +518,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export function AnalyticsConsent() {
   const [visible, setVisible] = useState(false);
-  
+
   useEffect(() => {
     checkConsent();
   }, []);
-  
+
   async function checkConsent() {
     const consent = await AsyncStorage.getItem('analytics_consent');
     if (!consent) {
@@ -541,21 +531,21 @@ export function AnalyticsConsent() {
       consent === 'granted' ? optInAnalytics() : optOutAnalytics();
     }
   }
-  
+
   async function handleAccept() {
     await AsyncStorage.setItem('analytics_consent', 'granted');
     optInAnalytics();
     setVisible(false);
   }
-  
+
   async function handleDecline() {
     await AsyncStorage.setItem('analytics_consent', 'declined');
     optOutAnalytics();
     setVisible(false);
   }
-  
+
   if (!visible) return null;
-  
+
   return (
     <View>
       <Text>We use analytics to improve your experience.</Text>
@@ -575,15 +565,15 @@ export function AnalyticsConsent() {
 class AnalyticsQueue {
   private queue: Array<{ event: string; properties: any }> = [];
   private batchSize = 10;
-  
+
   add(event: string, properties: any) {
     this.queue.push({ event, properties });
-    
+
     if (this.queue.length >= this.batchSize) {
       this.flush();
     }
   }
-  
+
   flush() {
     const posthog = getPostHog();
     this.queue.forEach(({ event, properties }) => {
@@ -617,7 +607,7 @@ export function trackEvent(event: AnalyticsEvent, properties?: EventProperties) 
   if (IS_DEV) {
     console.log('[Analytics]', event, properties);
   }
-  
+
   try {
     const posthog = getPostHog();
     posthog.capture(event, properties);
@@ -651,7 +641,8 @@ export function trackEvent(event: AnalyticsEvent, properties?: EventProperties) 
 ```typescript
 // Sample 10% of screen views
 export function trackScreen(screenName: string) {
-  if (Math.random() < 0.1) { // 10% sample
+  if (Math.random() < 0.1) {
+    // 10% sample
     const posthog = getPostHog();
     posthog.screen(screenName);
   }

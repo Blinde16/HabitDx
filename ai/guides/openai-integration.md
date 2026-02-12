@@ -3,6 +3,7 @@
 ## Overview
 
 HabitDx uses GPT-4o-mini via the OpenAI API to power three critical AI functions:
+
 1. **Failure Profile Analysis** - Diagnose why habits fail
 2. **Habit Stack Generation** - Create personalized habits
 3. **Weekly Iteration Analysis** - Suggest one weekly adjustment
@@ -10,6 +11,7 @@ HabitDx uses GPT-4o-mini via the OpenAI API to power three critical AI functions
 ## Setup
 
 ### Prerequisites
+
 - OpenAI API key with GPT-4o-mini access
 - Supabase Edge Functions environment configured
 
@@ -40,9 +42,9 @@ export const openai = new OpenAI({
 // Cost tracking helper
 export function calculateCost(usage: { prompt_tokens: number; completion_tokens: number }) {
   // GPT-4o-mini pricing (as of 2024)
-  const COST_PER_1K_INPUT = 0.00015;  // $0.15 per 1M tokens
-  const COST_PER_1K_OUTPUT = 0.0006;  // $0.60 per 1M tokens
-  
+  const COST_PER_1K_INPUT = 0.00015; // $0.15 per 1M tokens
+  const COST_PER_1K_OUTPUT = 0.0006; // $0.60 per 1M tokens
+
   return (
     (usage.prompt_tokens / 1000) * COST_PER_1K_INPUT +
     (usage.completion_tokens / 1000) * COST_PER_1K_OUTPUT
@@ -53,6 +55,7 @@ export function calculateCost(usage: { prompt_tokens: number; completion_tokens:
 ## Function 1: Failure Profile Analysis
 
 ### Purpose
+
 Analyze user's onboarding data to identify habit failure patterns, root causes, and personality insights.
 
 ### Edge Function: `analyze-failure`
@@ -65,10 +68,12 @@ import { openai } from '../_shared/openai.ts';
 import { z } from 'zod';
 
 const FailureProfileSchema = z.object({
-  failure_patterns: z.array(z.object({
-    name: z.string(),
-    description: z.string(),
-  })),
+  failure_patterns: z.array(
+    z.object({
+      name: z.string(),
+      description: z.string(),
+    })
+  ),
   root_causes: z.array(z.string()),
   personality_insights: z.array(z.string()),
   recommendations: z.array(z.string()),
@@ -77,21 +82,21 @@ const FailureProfileSchema = z.object({
 serve(async (req) => {
   try {
     const { userId } = await req.json();
-    
+
     // Fetch user profile from database
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     );
-    
+
     const { data: profile, error } = await supabase
       .from('user_profiles')
       .select('*')
       .eq('user_id', userId)
       .single();
-    
+
     if (error) throw error;
-    
+
     // Build prompt
     const systemPrompt = `You are an expert habit coach analyzing why someone's past habits failed.
 Your goal is to identify 2-3 specific failure patterns that explain their struggles, not generic advice.
@@ -118,7 +123,7 @@ Analyze their failure patterns and provide insights.`;
       model: 'gpt-4o-mini',
       messages: [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt }
+        { role: 'user', content: userPrompt },
       ],
       response_format: { type: 'json_object' },
       temperature: 0.7,
@@ -127,7 +132,7 @@ Analyze their failure patterns and provide insights.`;
 
     const result = JSON.parse(completion.choices[0].message.content!);
     const validated = FailureProfileSchema.parse(result);
-    
+
     // Store in database
     const { data: failureProfile, error: insertError } = await supabase
       .from('habit_failure_profiles')
@@ -141,29 +146,29 @@ Analyze their failure patterns and provide insights.`;
       })
       .select()
       .single();
-    
+
     if (insertError) throw insertError;
-    
+
     return new Response(JSON.stringify(failureProfile), {
       headers: { 'Content-Type': 'application/json' },
     });
-    
   } catch (error) {
     console.error('Failure analysis error:', error);
-    
+
     // Fallback response for API failures
     const fallback = {
       failure_patterns: [
         {
-          name: "Mismatched Timing",
-          description: "Your habits weren't aligned with your natural energy and schedule patterns."
-        }
+          name: 'Mismatched Timing',
+          description:
+            "Your habits weren't aligned with your natural energy and schedule patterns.",
+        },
       ],
-      root_causes: ["Timing conflicts", "Overambitious starts"],
-      personality_insights: ["You care about growth but struggle with consistency"],
-      recommendations: ["Start tiny", "Anchor to existing routines"]
+      root_causes: ['Timing conflicts', 'Overambitious starts'],
+      personality_insights: ['You care about growth but struggle with consistency'],
+      recommendations: ['Start tiny', 'Anchor to existing routines'],
     };
-    
+
     return new Response(JSON.stringify({ error: error.message, fallback }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
@@ -182,6 +187,7 @@ Analyze their failure patterns and provide insights.`;
 ## Function 2: Habit Stack Generation
 
 ### Purpose
+
 Generate 1-3 personalized habits based on failure profile, constraints, and identity goal.
 
 ### Edge Function: `generate-habits`
@@ -194,36 +200,38 @@ import { openai } from '../_shared/openai.ts';
 import { z } from 'zod';
 
 const HabitStackSchema = z.object({
-  habits: z.array(z.object({
-    name: z.string(),
-    tiny_version: z.string(),
-    anchor: z.string(),
-    celebration: z.string(),
-    rationale: z.string(),
-    reminder_time: z.string().optional(),
-  })),
+  habits: z.array(
+    z.object({
+      name: z.string(),
+      tiny_version: z.string(),
+      anchor: z.string(),
+      celebration: z.string(),
+      rationale: z.string(),
+      reminder_time: z.string().optional(),
+    })
+  ),
 });
 
 serve(async (req) => {
   try {
     const { userId } = await req.json();
-    
+
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     );
-    
+
     // Fetch profile and failure analysis
     const [profileRes, failureRes] = await Promise.all([
       supabase.from('user_profiles').select('*').eq('user_id', userId).single(),
       supabase.from('habit_failure_profiles').select('*').eq('user_id', userId).single(),
     ]);
-    
+
     if (profileRes.error || failureRes.error) throw new Error('User data not found');
-    
+
     const profile = profileRes.data;
     const failureProfile = failureRes.data;
-    
+
     const systemPrompt = `You are an expert habit designer creating a personalized habit stack.
 Design 1-3 habits that:
 1. Start TINY (2 minutes or less)
@@ -260,7 +268,7 @@ Design 1-3 tiny habits that work around these constraints and failure patterns.`
       model: 'gpt-4o-mini',
       messages: [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt }
+        { role: 'user', content: userPrompt },
       ],
       response_format: { type: 'json_object' },
       temperature: 0.8,
@@ -269,7 +277,7 @@ Design 1-3 tiny habits that work around these constraints and failure patterns.`
 
     const result = JSON.parse(completion.choices[0].message.content!);
     const validated = HabitStackSchema.parse(result);
-    
+
     // Create habit stack
     const { data: habitStack, error: stackError } = await supabase
       .from('habit_stacks')
@@ -279,11 +287,11 @@ Design 1-3 tiny habits that work around these constraints and failure patterns.`
       })
       .select()
       .single();
-    
+
     if (stackError) throw stackError;
-    
+
     // Insert individual habits
-    const habitsToInsert = validated.habits.map(habit => ({
+    const habitsToInsert = validated.habits.map((habit) => ({
       user_id: userId,
       habit_stack_id: habitStack.id,
       name: habit.name,
@@ -294,18 +302,17 @@ Design 1-3 tiny habits that work around these constraints and failure patterns.`
       reminder_time: habit.reminder_time || profile.wake_time,
       is_active: true,
     }));
-    
+
     const { data: habits, error: habitsError } = await supabase
       .from('habits')
       .insert(habitsToInsert)
       .select();
-    
+
     if (habitsError) throw habitsError;
-    
+
     return new Response(JSON.stringify({ habitStack, habits }), {
       headers: { 'Content-Type': 'application/json' },
     });
-    
   } catch (error) {
     console.error('Habit generation error:', error);
     return new Response(JSON.stringify({ error: error.message }), {
@@ -319,6 +326,7 @@ Design 1-3 tiny habits that work around these constraints and failure patterns.`
 ## Function 3: Weekly Iteration Analysis
 
 ### Purpose
+
 Analyze the past week's check-in data and suggest ONE specific adjustment.
 
 ### Edge Function: `weekly-iteration`
@@ -344,19 +352,20 @@ const IterationSchema = z.object({
 serve(async (req) => {
   try {
     const { userId } = await req.json();
-    
+
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     );
-    
+
     // Fetch last 7 days of habit logs
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    
+
     const { data: logs, error: logsError } = await supabase
       .from('habit_logs')
-      .select(`
+      .select(
+        `
         *,
         habits (
           id,
@@ -365,20 +374,21 @@ serve(async (req) => {
           anchor,
           reminder_time
         )
-      `)
+      `
+      )
       .eq('user_id', userId)
       .gte('check_in_date', sevenDaysAgo.toISOString())
       .order('check_in_date', { ascending: true });
-    
+
     if (logsError) throw logsError;
-    
+
     // Fetch failure profile for context
     const { data: failureProfile } = await supabase
       .from('habit_failure_profiles')
       .select('*')
       .eq('user_id', userId)
       .single();
-    
+
     // Calculate stats per habit
     const habitStats = logs.reduce((acc, log) => {
       const habitId = log.habit_id;
@@ -400,7 +410,7 @@ serve(async (req) => {
       }
       return acc;
     }, {});
-    
+
     const systemPrompt = `You are analyzing a week of habit check-in data to suggest ONE specific adjustment.
 Your goal: identify the most impactful change to improve next week's success rate.
 
@@ -435,7 +445,7 @@ Analyze this data and suggest ONE specific adjustment for next week.`;
       model: 'gpt-4o-mini',
       messages: [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt }
+        { role: 'user', content: userPrompt },
       ],
       response_format: { type: 'json_object' },
       temperature: 0.7,
@@ -444,7 +454,7 @@ Analyze this data and suggest ONE specific adjustment for next week.`;
 
     const result = JSON.parse(completion.choices[0].message.content!);
     const validated = IterationSchema.parse(result);
-    
+
     // Store iteration
     const { data: iteration, error: iterError } = await supabase
       .from('weekly_iterations')
@@ -461,13 +471,12 @@ Analyze this data and suggest ONE specific adjustment for next week.`;
       })
       .select()
       .single();
-    
+
     if (iterError) throw iterError;
-    
+
     return new Response(JSON.stringify(iteration), {
       headers: { 'Content-Type': 'application/json' },
     });
-    
   } catch (error) {
     console.error('Weekly iteration error:', error);
     return new Response(JSON.stringify({ error: error.message }), {
@@ -482,12 +491,12 @@ Analyze this data and suggest ONE specific adjustment for next week.`;
 
 ### Expected Costs (GPT-4o-mini)
 
-| Function | Input Tokens | Output Tokens | Cost per Call | Monthly (100 users) |
-|----------|--------------|---------------|---------------|---------------------|
-| Failure Analysis | ~800 | ~600 | ~$0.0005 | $0.05 |
-| Habit Generation | ~1000 | ~800 | ~$0.0007 | $0.07 |
-| Weekly Iteration | ~1200 | ~500 | ~$0.0005 | $5.00 (weekly x 100) |
-| **Total** | | | | **~$5.12/month** |
+| Function         | Input Tokens | Output Tokens | Cost per Call | Monthly (100 users)  |
+| ---------------- | ------------ | ------------- | ------------- | -------------------- |
+| Failure Analysis | ~800         | ~600          | ~$0.0005      | $0.05                |
+| Habit Generation | ~1000        | ~800          | ~$0.0007      | $0.07                |
+| Weekly Iteration | ~1200        | ~500          | ~$0.0005      | $5.00 (weekly x 100) |
+| **Total**        |              |               |               | **~$5.12/month**     |
 
 ### Cost Reduction Strategies
 
@@ -504,7 +513,7 @@ async function callOpenAIWithRetry(fn: () => Promise<any>, maxRetries = 1) {
       return await fn();
     } catch (error) {
       if (i === maxRetries) throw error;
-      await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, i)));
+      await new Promise((resolve) => setTimeout(resolve, 1000 * Math.pow(2, i)));
     }
   }
 }
@@ -556,11 +565,14 @@ curl -X POST http://localhost:54321/functions/v1/analyze-failure \
 // supabase/functions/_shared/mock-openai.ts
 export const mockFailureAnalysis = {
   failure_patterns: [
-    { name: "Evening Energy Crash", description: "You tend to schedule habits for evening when your energy is lowest." }
+    {
+      name: 'Evening Energy Crash',
+      description: 'You tend to schedule habits for evening when your energy is lowest.',
+    },
   ],
-  root_causes: ["Timing mismatch with energy patterns"],
+  root_causes: ['Timing mismatch with energy patterns'],
   personality_insights: ["You're ambitious but need better scheduling"],
-  recommendations: ["Move habits to morning", "Start with 2-minute versions"]
+  recommendations: ['Move habits to morning', 'Start with 2-minute versions'],
 };
 
 // Use in development

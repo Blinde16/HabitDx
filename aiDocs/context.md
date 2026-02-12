@@ -2,23 +2,24 @@
 
 ## Overview
 
-**HabitDx** is an AI-powered habit diagnosis app for knowledge workers who've tried and failed at building habits. Unlike generic tracking apps that simply log whether you completed a task, HabitDx analyzes *why* your habits fail and delivers personalized weekly adjustments based on your specific patterns.
+**HabitDx** is an AI-powered habit diagnosis app for knowledge workers who've tried and failed at building habits. Unlike generic tracking apps that simply log whether you completed a task, HabitDx analyzes _why_ your habits fail and delivers personalized weekly adjustments based on your specific patterns.
 
 The app solves the core frustration voiced by our target users: "I know what to do, why can't I just do it?" Instead of blaming willpower, HabitDx treats habit failure as a design problem. Through a 5-minute smart intake, the AI generates your personal "Habit Failure Profile"—identifying patterns like "evening energy crashes" or "weekend routine disruption"—then designs habits that work around your constraints. Each week, the app analyzes your check-in data and delivers one specific adjustment, turning self-blame into system fixes.
 
 ## Tech Stack
 
-| Component | Technology | Rationale |
-|-----------|------------|-----------|
-| Frontend | Expo + React Native | Cross-platform, fast iteration |
-| Backend | Supabase | Auth + DB + Functions in one |
-| AI | GPT-4o-mini via OpenAI API | Cheapest viable option |
-| State Management | Zustand | Simple, lightweight |
-| Navigation | Expo Router | File-based, less boilerplate |
+| Component        | Technology                 | Rationale                      |
+| ---------------- | -------------------------- | ------------------------------ |
+| Frontend         | Expo + React Native        | Cross-platform, fast iteration |
+| Backend          | Supabase                   | Auth + DB + Functions in one   |
+| AI               | GPT-4o-mini via OpenAI API | Cheapest viable option         |
+| State Management | Zustand                    | Simple, lightweight            |
+| Navigation       | Expo Router                | File-based, less boilerplate   |
 
 ## Project Structure
 
 ### Frontend Architecture
+
 ```
 src/
 ├── app/                    # Expo Router screens
@@ -37,6 +38,7 @@ src/
 ```
 
 ### Backend Architecture
+
 ```
 supabase/
 ├── migrations/            # Database schema changes

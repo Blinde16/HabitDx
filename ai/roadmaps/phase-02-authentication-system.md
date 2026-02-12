@@ -32,6 +32,7 @@ Implement user authentication using Supabase Auth with email/password and Google
 ## Technical Tasks
 
 ### 1. Configure Supabase Auth
+
 - [ ] Enable Email authentication in Supabase dashboard
 - [ ] Configure Email templates (welcome, password reset)
 - [ ] Set up Google OAuth provider
@@ -43,6 +44,7 @@ Implement user authentication using Supabase Auth with email/password and Google
 - [ ] Test auth configuration with Supabase dashboard
 
 ### 2. Create Auth Store (Zustand)
+
 ```typescript
 // stores/authStore.ts
 interface AuthStore {
@@ -59,6 +61,7 @@ interface AuthStore {
 ```
 
 Tasks:
+
 - [ ] Create Zustand store for auth state
 - [ ] Implement sign up method
 - [ ] Implement sign in method
@@ -70,6 +73,7 @@ Tasks:
 ### 3. Build Auth Screens
 
 #### Login Screen (`app/(auth)/login.tsx`)
+
 - [ ] Email input field
 - [ ] Password input field with visibility toggle
 - [ ] "Sign In" button
@@ -80,6 +84,7 @@ Tasks:
 - [ ] Form validation
 
 #### Sign Up Screen (`app/(auth)/signup.tsx`)
+
 - [ ] Name input field
 - [ ] Email input field
 - [ ] Password input field with strength indicator
@@ -91,18 +96,21 @@ Tasks:
 - [ ] Form validation and error handling
 
 #### Forgot Password Screen (`app/(auth)/forgot-password.tsx`)
+
 - [ ] Email input field
 - [ ] "Send Reset Link" button
 - [ ] Success message confirmation
 - [ ] "Back to Login" link
 
 #### Reset Password Screen (`app/(auth)/reset-password.tsx`)
+
 - [ ] New password input
 - [ ] Confirm new password input
 - [ ] "Update Password" button
 - [ ] Handle deep link from email
 
 ### 4. Implement Auth Flow Logic
+
 - [ ] Create auth route group `(auth)`
 - [ ] Set up Expo Router auth layout
 - [ ] Implement session persistence with AsyncStorage
@@ -112,6 +120,7 @@ Tasks:
 - [ ] Implement auto sign-in after verification
 
 ### 5. Create Protected Route Wrapper
+
 ```typescript
 // components/ProtectedRoute.tsx
 // Wraps authenticated screens
@@ -125,6 +134,7 @@ Tasks:
 - [ ] Wrap main app routes with ProtectedRoute
 
 ### 6. Build Reusable Auth Components
+
 - [ ] `AuthInput` - Styled text input for forms
 - [ ] `AuthButton` - Primary action button
 - [ ] `SocialButton` - Google OAuth button
@@ -133,6 +143,7 @@ Tasks:
 - [ ] `LoadingSpinner` - Loading indicator
 
 ### 7. Set Up Deep Linking
+
 - [ ] Configure app.json for deep links
 - [ ] Set up URL schemes for iOS/Android
 - [ ] Test email verification links
@@ -140,6 +151,7 @@ Tasks:
 - [ ] Handle deep link routing in app
 
 ### 8. Error Handling
+
 - [ ] Map Supabase error codes to user-friendly messages
 - [ ] Handle network errors gracefully
 - [ ] Display validation errors inline
@@ -147,6 +159,7 @@ Tasks:
 - [ ] Log errors for debugging
 
 ### 9. Session Management
+
 - [ ] Store session token securely
 - [ ] Refresh token before expiry
 - [ ] Handle session expired state
@@ -156,6 +169,7 @@ Tasks:
 ## UI/UX Requirements
 
 ### Design Specs
+
 - Clean, minimal auth screens
 - Large, easy-to-tap buttons (44pt minimum)
 - Clear error messages below inputs
@@ -163,6 +177,7 @@ Tasks:
 - Smooth transitions between auth screens
 
 ### Accessibility
+
 - [ ] Proper labels for screen readers
 - [ ] Keyboard navigation support
 - [ ] Sufficient color contrast (WCAG AA)
@@ -196,12 +211,14 @@ Tasks:
 ## Testing Checklist
 
 ### Unit Tests
+
 - [ ] Auth store actions (sign up, sign in, sign out)
 - [ ] Form validation logic
 - [ ] Error message mapping
 - [ ] Session persistence utilities
 
 ### Integration Tests
+
 - [ ] Complete sign up flow
 - [ ] Complete sign in flow
 - [ ] Google OAuth flow (manual)
@@ -210,6 +227,7 @@ Tasks:
 - [ ] Session refresh logic
 
 ### Manual Testing
+
 - [ ] Sign up with email on iOS
 - [ ] Sign up with email on Android
 - [ ] Sign in with existing account
@@ -223,6 +241,7 @@ Tasks:
 - [ ] Protected routes redirect when not logged in
 
 ### Edge Cases
+
 - [ ] Sign up with existing email
 - [ ] Sign in with wrong password
 - [ ] Sign in with unverified email
@@ -233,16 +252,17 @@ Tasks:
 
 ## Risks & Mitigations
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|--------|------------|
-| Google OAuth setup complexity | Medium | High | Follow Supabase docs carefully, test early |
-| Deep link issues on Android | Medium | Medium | Test on multiple Android versions |
-| Session management bugs | Medium | High | Implement comprehensive error handling |
-| Email deliverability issues | Low | Medium | Use SendGrid/custom SMTP if needed |
+| Risk                          | Likelihood | Impact | Mitigation                                 |
+| ----------------------------- | ---------- | ------ | ------------------------------------------ |
+| Google OAuth setup complexity | Medium     | High   | Follow Supabase docs carefully, test early |
+| Deep link issues on Android   | Medium     | Medium | Test on multiple Android versions          |
+| Session management bugs       | Medium     | High   | Implement comprehensive error handling     |
+| Email deliverability issues   | Low        | Medium | Use SendGrid/custom SMTP if needed         |
 
 ## Dependencies for Next Phase
 
 Phase 3 (Database Schema) requires:
+
 - ✅ Working authentication system
 - ✅ User can sign in and persist session
 - ✅ User ID available for foreign keys

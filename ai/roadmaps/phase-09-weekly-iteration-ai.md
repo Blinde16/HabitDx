@@ -31,18 +31,21 @@ Build the AI-powered weekly analysis system that reviews a user's habit check-in
 ## Weekly Iteration Flow
 
 ### 1. Data Collection (Automatic)
+
 - Track 7 days of check-in data
 - Calculate completion rates per habit
 - Collect obstacles logged
 - Note check-in times vs scheduled times
 
 ### 2. AI Analysis (Automatic)
+
 - Analyze patterns (what's working, what's not)
 - Identify root causes of failures
 - Generate ONE specific adjustment
 - Provide rationale for suggestion
 
 ### 3. User Review (Manual)
+
 - Display weekly insight
 - Show data summary (completion rates, patterns)
 - Present adjustment suggestion
@@ -50,6 +53,7 @@ Build the AI-powered weekly analysis system that reviews a user's habit check-in
 - Optionally add feedback
 
 ### 4. Implementation (Mixed)
+
 - If accepted: Update habit details automatically
 - Track implementation
 - Monitor improvement in next week
@@ -64,7 +68,7 @@ interface WeeklyIteration {
   week_start_date: string; // Monday
   week_end_date: string; // Sunday
   created_at: string;
-  
+
   // AI Analysis
   patterns_detected: string[]; // 2-3 observations
   success_rate: {
@@ -76,11 +80,11 @@ interface WeeklyIteration {
   };
   adjustment_suggestion: string; // The ONE thing to change
   adjustment_rationale: string; // Why this adjustment
-  
+
   // User interaction
   user_response: 'accepted' | 'declined' | 'pending';
   responded_at: string | null;
-  
+
   // Implementation
   implemented: boolean;
   implementation_notes: string | null;
@@ -88,6 +92,7 @@ interface WeeklyIteration {
 ```
 
 ### Example Weekly Insight
+
 ```
 📊 Your Week in Review
 Week of Feb 2-8, 2026
@@ -106,9 +111,9 @@ THIS WEEK'S ADJUSTMENT:
 Move "Minimum Movement" to 8:00 AM (right after Morning Pages)
 
 WHY THIS WORKS:
-Your data shows you're most consistent in the morning (86% success rate). 
-By stacking Movement with your winning habit (Morning Pages), you'll catch 
-it when your willpower is highest. Evening exercise has failed 4 days in a 
+Your data shows you're most consistent in the morning (86% success rate).
+By stacking Movement with your winning habit (Morning Pages), you'll catch
+it when your willpower is highest. Evening exercise has failed 4 days in a
 row—it's not a motivation issue, it's a timing issue.
 
 [Accept Adjustment] [Decline]
@@ -117,6 +122,7 @@ row—it's not a motivation issue, it's a timing issue.
 ## Technical Tasks
 
 ### 1. Create Weekly Iteration Edge Function
+
 ```typescript
 // supabase/functions/weekly-iteration/index.ts
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
@@ -137,6 +143,7 @@ serve(async (req) => {
 ```
 
 Tasks:
+
 - [ ] Create `supabase/functions/weekly-iteration/` directory
 - [ ] Initialize Deno function
 - [ ] Fetch user's active habit stack
@@ -152,14 +159,15 @@ Tasks:
 - [ ] Deploy and test
 
 ### 2. Implement Data Analysis Functions
+
 ```typescript
 // lib/analytics.ts
 export const calculateWeeklyStats = (logs: HabitLog[], habits: Habit[]) => {
   const stats: Record<string, any> = {};
 
-  habits.forEach(habit => {
-    const habitLogs = logs.filter(log => log.habit_id === habit.id);
-    const completed = habitLogs.filter(log => log.completed).length;
+  habits.forEach((habit) => {
+    const habitLogs = logs.filter((log) => log.habit_id === habit.id);
+    const completed = habitLogs.filter((log) => log.completed).length;
     const total = habitLogs.length;
 
     stats[habit.id] = {
@@ -168,8 +176,8 @@ export const calculateWeeklyStats = (logs: HabitLog[], habits: Habit[]) => {
       total,
       percentage: total > 0 ? Math.round((completed / total) * 100) : 0,
       obstacles: habitLogs
-        .filter(log => !log.completed && log.obstacle)
-        .map(log => log.obstacle),
+        .filter((log) => !log.completed && log.obstacle)
+        .map((log) => log.obstacle),
     };
   });
 
@@ -190,6 +198,7 @@ export const detectPatterns = (stats: any) => {
 ```
 
 Tasks:
+
 - [ ] Create calculateWeeklyStats function
 - [ ] Calculate per-habit completion rates
 - [ ] Extract obstacles from logs
@@ -201,6 +210,7 @@ Tasks:
 - [ ] Detect time-of-day patterns
 
 ### 3. Design Weekly Iteration Prompt
+
 ```typescript
 const constructIterationPrompt = (
   stats: WeeklyStats,
@@ -214,15 +224,17 @@ USER'S FAILURE PROFILE:
 ${JSON.stringify(profile, null, 2)}
 
 THIS WEEK'S DATA:
-${habits.map(h => {
-  const stat = stats[h.id];
-  return `
+${habits
+  .map((h) => {
+    const stat = stats[h.id];
+    return `
   ${h.title}:
   - Scheduled: ${h.frequency_type} at ${h.reminder_time}
   - Completion: ${stat.completed}/${stat.total} days (${stat.percentage}%)
   - Obstacles: ${stat.obstacles.join('; ') || 'none logged'}
   `;
-}).join('\n')}
+  })
+  .join('\n')}
 
 TASK:
 1. Identify 2-3 patterns from the data
@@ -253,6 +265,7 @@ Return ONLY valid JSON:
 ```
 
 Tasks:
+
 - [ ] Write initial prompt template
 - [ ] Include failure profile context
 - [ ] Include weekly stats and obstacles
@@ -263,11 +276,13 @@ Tasks:
 - [ ] Optimize for token usage
 
 ### 4. Create Weekly Insights Screen
+
 ```
 app/(tabs)/insights.tsx
 ```
 
 UI Components:
+
 - [ ] Header: "Your Weekly Insights"
 - [ ] Current week section:
   - Week date range
@@ -286,6 +301,7 @@ UI Components:
 - [ ] Empty state (first week)
 
 Tasks:
+
 - [ ] Create insights screen layout
 - [ ] Fetch latest weekly_iteration
 - [ ] Display success rates per habit
@@ -297,6 +313,7 @@ Tasks:
 - [ ] Show empty state for new users
 
 ### 5. Build Insight Card Component
+
 ```typescript
 // components/InsightCard.tsx
 interface InsightCardProps {
@@ -312,6 +329,7 @@ export const InsightCard = ({ insight, habits, onAccept, onDecline }: Props) => 
 ```
 
 Tasks:
+
 - [ ] Create InsightCard component
 - [ ] Display week date range
 - [ ] Show completion rates (progress bars)
@@ -323,14 +341,12 @@ Tasks:
 - [ ] Add visual indicators (icons, colors)
 
 ### 6. Implement Adjustment Application Logic
+
 ```typescript
 // lib/adjustments.ts
-export const applyAdjustment = async (
-  insight: WeeklyIteration,
-  habits: Habit[]
-) => {
-  const targetHabit = habits.find(h => h.id === insight.target_habit_id);
-  
+export const applyAdjustment = async (insight: WeeklyIteration, habits: Habit[]) => {
+  const targetHabit = habits.find((h) => h.id === insight.target_habit_id);
+
   if (!targetHabit) return;
 
   // Parse adjustment from AI suggestion
@@ -341,6 +357,7 @@ export const applyAdjustment = async (
 ```
 
 Adjustment types:
+
 - **Timing:** Change reminder_time
 - **Frequency:** Change frequency_days
 - **Scope:** Update description to smaller version
@@ -348,6 +365,7 @@ Adjustment types:
 - **Remove:** Set is_active = false temporarily
 
 Tasks:
+
 - [ ] Create applyAdjustment function
 - [ ] Parse adjustment type and details
 - [ ] Update habit record in database
@@ -357,13 +375,14 @@ Tasks:
 - [ ] Handle errors gracefully
 
 ### 7. Create Weekly Iteration Store
+
 ```typescript
 // stores/iterationStore.ts
 interface IterationStore {
   currentInsight: WeeklyIteration | null;
   pastInsights: WeeklyIteration[];
   loading: boolean;
-  
+
   fetchCurrentInsight: () => Promise<void>;
   fetchPastInsights: () => Promise<void>;
   acceptAdjustment: (insightId: string) => Promise<void>;
@@ -372,6 +391,7 @@ interface IterationStore {
 ```
 
 Tasks:
+
 - [ ] Create iteration Zustand store
 - [ ] Implement fetchCurrentInsight
 - [ ] Implement fetchPastInsights
@@ -386,6 +406,7 @@ Tasks:
 - [ ] Add loading states
 
 ### 8. Set Up Automated Weekly Cron Job
+
 Using Supabase Edge Functions + pg_cron:
 
 ```sql
@@ -408,6 +429,7 @@ SELECT cron.schedule(
 ```
 
 Alternative: Use Supabase Edge Function scheduled via cron:
+
 - [ ] Set up pg_cron in Supabase
 - [ ] Create cron job to trigger Edge Function
 - [ ] Run for all eligible users (completed onboarding + 7 days ago)
@@ -415,7 +437,9 @@ Alternative: Use Supabase Edge Function scheduled via cron:
 - [ ] Log execution results
 
 ### 9. Send Notification on Insight Ready
+
 After insight generation:
+
 - [ ] Send push notification
 - [ ] Title: "Your weekly insight is ready 📊"
 - [ ] Body: "See what we learned from your habits"
@@ -423,14 +447,15 @@ After insight generation:
 - [ ] Badge on insights tab until viewed
 
 ### 10. Track Adjustment Effectiveness
+
 ```typescript
 // Compare week before vs week after adjustment
 export const measureAdjustmentImpact = async (insight: WeeklyIteration) => {
   const weekBefore = insight.success_rate[insight.target_habit_id];
   const weekAfter = await getNextWeekSuccessRate(insight.target_habit_id);
-  
+
   const improvement = weekAfter.percentage - weekBefore.percentage;
-  
+
   return {
     improved: improvement > 0,
     delta: improvement,
@@ -439,6 +464,7 @@ export const measureAdjustmentImpact = async (insight: WeeklyIteration) => {
 ```
 
 Tasks:
+
 - [ ] Create measureAdjustmentImpact function
 - [ ] Compare success rate before adjustment
 - [ ] Compare success rate week after
@@ -471,6 +497,7 @@ Tasks:
 ## Testing Checklist
 
 ### Data Analysis Tests
+
 - [ ] Calculate weekly stats correctly
 - [ ] Handle missing days (user didn't check in)
 - [ ] Extract obstacles correctly
@@ -478,6 +505,7 @@ Tasks:
 - [ ] Compare weekday vs weekend stats
 
 ### AI Quality Tests
+
 - [ ] Generate insight for test user data
 - [ ] Verify patterns reference actual data
 - [ ] Check adjustment is specific (not generic)
@@ -488,6 +516,7 @@ Tasks:
   - Struggling user (<50%)
 
 ### Edge Function Tests
+
 - [ ] Function runs successfully
 - [ ] Fetches correct week of data
 - [ ] Calls OpenAI API
@@ -496,6 +525,7 @@ Tasks:
 - [ ] Handles errors gracefully
 
 ### UI Tests
+
 - [ ] Insights screen displays insight
 - [ ] Success rates show correctly
 - [ ] Patterns render as list
@@ -505,6 +535,7 @@ Tasks:
 - [ ] Past insights load and display
 
 ### Adjustment Application Tests
+
 - [ ] Timing adjustment updates reminder_time
 - [ ] Frequency adjustment updates frequency_days
 - [ ] Scope adjustment updates description
@@ -512,6 +543,7 @@ Tasks:
 - [ ] Habit displays with new details
 
 ### Automation Tests
+
 - [ ] Cron job triggers on schedule
 - [ ] Runs for all eligible users
 - [ ] Doesn't run for users <7 days old
@@ -519,6 +551,7 @@ Tasks:
 - [ ] Logs execution results
 
 ### Edge Cases
+
 - [ ] User has 0% completion (all habits failed)
 - [ ] User has 100% completion (all habits perfect)
 - [ ] User completed 0 check-ins this week
@@ -529,17 +562,18 @@ Tasks:
 
 ## Risks & Mitigations
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|--------|------------|
-| AI suggestions feel generic | High | Critical | Extensive prompt engineering, validation |
-| Users don't accept adjustments | Medium | High | A/B test copy, track decline reasons |
-| Adjustment makes habit worse | Low | High | Track effectiveness, learn from data |
-| Cron job fails silently | Low | Medium | Monitoring, error alerts, retry logic |
-| OpenAI API costs spike | Low | Medium | Rate limit, batch requests, monitor usage |
+| Risk                           | Likelihood | Impact   | Mitigation                                |
+| ------------------------------ | ---------- | -------- | ----------------------------------------- |
+| AI suggestions feel generic    | High       | Critical | Extensive prompt engineering, validation  |
+| Users don't accept adjustments | Medium     | High     | A/B test copy, track decline reasons      |
+| Adjustment makes habit worse   | Low        | High     | Track effectiveness, learn from data      |
+| Cron job fails silently        | Low        | Medium   | Monitoring, error alerts, retry logic     |
+| OpenAI API costs spike         | Low        | Medium   | Rate limit, batch requests, monitor usage |
 
 ## Cost Optimization
 
 ### Token Usage
+
 - Average weekly stats: ~400 tokens
 - Context (profile): ~300 tokens
 - Prompt: ~500 tokens
@@ -548,6 +582,7 @@ Tasks:
 - Cost (gpt-4o-mini): ~$0.0003/insight
 
 ### Projected Costs (MVP)
+
 - 50 users x 4 weeks = 200 insights
 - 200 x $0.0003 = $0.06
 - Monthly: <$5
@@ -555,6 +590,7 @@ Tasks:
 ## Dependencies for Next Phase
 
 Phase 10 (Core UI/UX) requires:
+
 - ✅ All core features functional
 - ✅ Data flowing through system
 - ✅ Ready for UI polish

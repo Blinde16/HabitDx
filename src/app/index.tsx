@@ -39,4 +39,3 @@ const styles = StyleSheet.create({
     color: '#1e90ff',
   },
 });
-

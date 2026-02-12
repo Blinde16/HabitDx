@@ -32,6 +32,7 @@ Polish the user interface and experience across the entire app. This phase focus
 ## Design System Components
 
 ### 1. Color Palette
+
 ```typescript
 // theme/colors.ts
 export const colors = {
@@ -39,12 +40,12 @@ export const colors = {
   primary: '#4A90E2', // Calm blue
   primaryDark: '#357ABD',
   primaryLight: '#6FA8EF',
-  
+
   // Secondary
   secondary: '#50C878', // Success green
   secondaryDark: '#3DA563',
   secondaryLight: '#6DD491',
-  
+
   // Neutrals
   black: '#1A1A1A',
   gray900: '#2D2D2D',
@@ -57,18 +58,18 @@ export const colors = {
   gray200: '#EEEEEE',
   gray100: '#F5F5F5',
   white: '#FFFFFF',
-  
+
   // Semantic
   success: '#50C878',
   error: '#E74C3C',
   warning: '#F39C12',
   info: '#3498DB',
-  
+
   // Backgrounds
   background: '#FFFFFF',
   backgroundSecondary: '#F9FAFB',
   card: '#FFFFFF',
-  
+
   // Text
   textPrimary: '#1A1A1A',
   textSecondary: '#5D5D5D',
@@ -77,6 +78,7 @@ export const colors = {
 ```
 
 Tasks:
+
 - [ ] Define color palette
 - [ ] Ensure WCAG AA contrast ratios
 - [ ] Create theme context
@@ -84,6 +86,7 @@ Tasks:
 - [ ] Document color usage guidelines
 
 ### 2. Typography
+
 ```typescript
 // theme/typography.ts
 export const typography = {
@@ -94,7 +97,7 @@ export const typography = {
     semiBold: 'Inter-SemiBold',
     bold: 'Inter-Bold',
   },
-  
+
   // Font sizes (using scale)
   fontSize: {
     xs: 12,
@@ -106,14 +109,14 @@ export const typography = {
     '3xl': 30,
     '4xl': 36,
   },
-  
+
   // Line heights
   lineHeight: {
     tight: 1.2,
     normal: 1.5,
     relaxed: 1.75,
   },
-  
+
   // Text styles
   h1: { fontSize: 36, fontWeight: '700', lineHeight: 1.2 },
   h2: { fontSize: 30, fontWeight: '700', lineHeight: 1.2 },
@@ -126,6 +129,7 @@ export const typography = {
 ```
 
 Tasks:
+
 - [ ] Install Inter font (or chosen font family)
 - [ ] Define type scale
 - [ ] Create text components (H1, H2, Body, etc.)
@@ -133,6 +137,7 @@ Tasks:
 - [ ] Support dynamic type (accessibility)
 
 ### 3. Spacing System
+
 ```typescript
 // theme/spacing.ts
 export const spacing = {
@@ -147,11 +152,13 @@ export const spacing = {
 ```
 
 Tasks:
+
 - [ ] Define spacing scale
 - [ ] Use consistently for margins/padding
 - [ ] Create layout components (Stack, Row, etc.)
 
 ### 4. Component Library
+
 Build reusable styled components:
 
 ```typescript
@@ -180,6 +187,7 @@ Build reusable styled components:
 ```
 
 Components to create:
+
 - [ ] Button (variants: primary, secondary, ghost, danger)
 - [ ] Card (with shadow, border, padding options)
 - [ ] Input (text, email, password, textarea)
@@ -194,11 +202,13 @@ Components to create:
 ## UI Polish Tasks
 
 ### 1. Navigation Polish
+
 ```
 app/(tabs)/_layout.tsx
 ```
 
 Tab Bar:
+
 - [ ] Custom tab bar design (not default)
 - [ ] Icons for each tab (Home, Insights, Settings)
 - [ ] Active tab indicator (color + icon)
@@ -207,6 +217,7 @@ Tab Bar:
 - [ ] Haptic feedback on tab press
 
 Tasks:
+
 - [ ] Design custom tab bar
 - [ ] Add custom icons
 - [ ] Implement active state styling
@@ -215,6 +226,7 @@ Tasks:
 - [ ] Test on iOS and Android
 
 ### 2. Home Screen Polish
+
 - [ ] Add pull-to-refresh animation
 - [ ] Empty state (no habits today)
 - [ ] Loading skeleton screens
@@ -225,6 +237,7 @@ Tasks:
 - [ ] Gradient background (subtle)
 
 ### 3. Onboarding Flow Polish
+
 - [ ] Progress bar animation
 - [ ] Screen transitions (slide, fade)
 - [ ] Input focus animations
@@ -235,6 +248,7 @@ Tasks:
 - [ ] Loading state during profile generation
 
 ### 4. Habit Check-in Card Polish
+
 - [ ] Card hover/press state
 - [ ] Checkmark animation (scale + rotate)
 - [ ] Background color transition on complete
@@ -245,6 +259,7 @@ Tasks:
 - [ ] Swipe actions (edit, delete) - P1
 
 ### 5. Insights Screen Polish
+
 - [ ] Data visualization (charts for completion rates)
 - [ ] Pattern cards with icons
 - [ ] Adjustment card with highlight
@@ -255,6 +270,7 @@ Tasks:
 - [ ] Loading state for generation
 
 ### 6. Settings Screen Polish
+
 - [ ] Profile section (avatar, name, email)
 - [ ] Grouped settings sections
 - [ ] Toggle switches (iOS-style)
@@ -265,6 +281,7 @@ Tasks:
 - [ ] Delete account option (hidden)
 
 ### 7. Modal and Alert Polish
+
 - [ ] Consistent modal design
 - [ ] Smooth slide-up animation
 - [ ] Backdrop blur effect
@@ -275,6 +292,7 @@ Tasks:
 ## Micro-interactions
 
 ### 1. Button Interactions
+
 - [ ] Press animation (scale down)
 - [ ] Haptic feedback on press
 - [ ] Loading state (spinner in button)
@@ -282,6 +300,7 @@ Tasks:
 - [ ] Success state (checkmark briefly)
 
 ### 2. Input Interactions
+
 - [ ] Focus animation (border color)
 - [ ] Label animation (float up on focus)
 - [ ] Error shake animation
@@ -289,18 +308,21 @@ Tasks:
 - [ ] Clear button (X) appears when typing
 
 ### 3. Card Interactions
+
 - [ ] Shadow increases on press
 - [ ] Subtle hover effect (if applicable)
 - [ ] Expand/collapse animations
 - [ ] Swipe gestures (optional)
 
 ### 4. List Interactions
+
 - [ ] Smooth scroll
 - [ ] Pull-to-refresh animation
 - [ ] Item press feedback
 - [ ] Empty state transitions
 
 ### 5. Success Celebrations
+
 - [ ] Confetti on first check-in
 - [ ] Streak milestone animations (7, 30 days)
 - [ ] Completion percentage milestones
@@ -328,6 +350,7 @@ export const fadeIn = () => {
 ```
 
 Animations to implement:
+
 - [ ] Scale (button press)
 - [ ] Fade (screen transitions)
 - [ ] Slide (modal entry)
@@ -338,6 +361,7 @@ Animations to implement:
 ## Accessibility
 
 ### 1. Screen Reader Support
+
 - [ ] Add accessibilityLabel to all interactive elements
 - [ ] Add accessibilityHint where helpful
 - [ ] Add accessibilityRole (button, header, etc.)
@@ -346,6 +370,7 @@ Animations to implement:
 - [ ] Test with VoiceOver (iOS) and TalkBack (Android)
 
 ### 2. Visual Accessibility
+
 - [ ] Minimum contrast ratio 4.5:1 for text (WCAG AA)
 - [ ] Minimum touch target size 44x44pt
 - [ ] Support dynamic type (larger text sizes)
@@ -354,12 +379,14 @@ Animations to implement:
 - [ ] Error messages are clear and actionable
 
 ### 3. Keyboard Navigation
+
 - [ ] Tab order is logical
 - [ ] Focus indicators visible
 - [ ] Enter key submits forms
 - [ ] Escape key dismisses modals
 
 ### 4. Reduced Motion
+
 - [ ] Respect system prefers-reduced-motion setting
 - [ ] Disable decorative animations if enabled
 - [ ] Keep functional animations (loading, progress)
@@ -367,6 +394,7 @@ Animations to implement:
 ## Performance Optimization
 
 ### 1. Rendering Performance
+
 - [ ] Use React.memo for expensive components
 - [ ] Use useMemo for expensive calculations
 - [ ] Use useCallback for event handlers
@@ -375,6 +403,7 @@ Animations to implement:
 - [ ] Virtualize long lists (FlatList)
 
 ### 2. Image Optimization
+
 - [ ] Use optimized image formats (WebP)
 - [ ] Lazy load images
 - [ ] Use placeholder images
@@ -382,12 +411,14 @@ Animations to implement:
 - [ ] Cache images
 
 ### 3. Animation Performance
+
 - [ ] Use `react-native-reanimated` (runs on UI thread)
 - [ ] Avoid animating expensive properties (use transform)
 - [ ] Use `useNativeDriver: true` where possible
 - [ ] Profile animations with React DevTools
 
 ### 4. Bundle Size
+
 - [ ] Remove unused dependencies
 - [ ] Use import statements correctly (tree-shaking)
 - [ ] Analyze bundle with `npx expo-atlas`
@@ -422,6 +453,7 @@ Animations to implement:
 ## Testing Checklist
 
 ### Visual Testing
+
 - [ ] All screens match design
 - [ ] Colors consistent across app
 - [ ] Typography consistent
@@ -430,6 +462,7 @@ Animations to implement:
 - [ ] Dark mode works (if implemented)
 
 ### Interaction Testing
+
 - [ ] All buttons press smoothly
 - [ ] Animations smooth on slow devices
 - [ ] Haptic feedback works
@@ -438,6 +471,7 @@ Animations to implement:
 - [ ] Toasts appear and disappear
 
 ### Accessibility Testing
+
 - [ ] VoiceOver navigation works (iOS)
 - [ ] TalkBack navigation works (Android)
 - [ ] Contrast ratios pass WCAG AA
@@ -446,6 +480,7 @@ Animations to implement:
 - [ ] Reduced motion works
 
 ### Performance Testing
+
 - [ ] App launches <3 seconds
 - [ ] Screens load instantly
 - [ ] Animations at 60fps
@@ -454,6 +489,7 @@ Animations to implement:
 - [ ] Battery usage acceptable
 
 ### Platform Testing
+
 - [ ] iOS design guidelines followed
 - [ ] Android Material Design followed
 - [ ] Safe area insets respected (iPhone notch)
@@ -462,16 +498,17 @@ Animations to implement:
 
 ## Risks & Mitigations
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|--------|------------|
-| Animations cause performance issues | Medium | Medium | Profile early, optimize, test on old devices |
-| Design inconsistencies | Medium | Low | Create design system first, use strictly |
-| Accessibility overlooked | Medium | Medium | Test with assistive tech, follow WCAG guidelines |
-| Over-designed (too much polish) | Low | Low | Focus on core screens, iterate based on feedback |
+| Risk                                | Likelihood | Impact | Mitigation                                       |
+| ----------------------------------- | ---------- | ------ | ------------------------------------------------ |
+| Animations cause performance issues | Medium     | Medium | Profile early, optimize, test on old devices     |
+| Design inconsistencies              | Medium     | Low    | Create design system first, use strictly         |
+| Accessibility overlooked            | Medium     | Medium | Test with assistive tech, follow WCAG guidelines |
+| Over-designed (too much polish)     | Low        | Low    | Focus on core screens, iterate based on feedback |
 
 ## Dependencies for Next Phase
 
 Phase 11 (Testing & QA) requires:
+
 - ✅ All screens polished and finalized
 - ✅ UI/UX ready for comprehensive testing
 - ✅ No major design changes planned

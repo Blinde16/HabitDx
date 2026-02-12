@@ -3,6 +3,7 @@
 ## Overview
 
 Supabase serves as the complete backend for HabitDx, providing:
+
 - **Authentication** - Email + Google OAuth
 - **Database** - PostgreSQL with real-time subscriptions
 - **Edge Functions** - Serverless functions for AI processing
@@ -76,7 +77,7 @@ create extension if not exists "uuid-ossp";
 create table public.user_profiles (
   id uuid primary key default uuid_generate_v4(),
   user_id uuid references auth.users(id) on delete cascade not null unique,
-  
+
   -- Onboarding data
   past_habits jsonb, -- [{habit, duration, why_failed}]
   failure_reasons text[],
@@ -87,7 +88,7 @@ create table public.user_profiles (
   life_constraints text[],
   energy_pattern text check (energy_pattern in ('morning', 'afternoon', 'evening')),
   identity_goal text not null,
-  
+
   -- Metadata
   onboarding_completed_at timestamp with time zone,
   created_at timestamp with time zone default now(),
@@ -98,14 +99,14 @@ create table public.user_profiles (
 create table public.habit_failure_profiles (
   id uuid primary key default uuid_generate_v4(),
   user_id uuid references auth.users(id) on delete cascade not null unique,
-  
+
   failure_patterns jsonb not null, -- [{name, description}]
   root_causes text[] not null,
   personality_insights text[] not null,
   recommendations text[] not null,
-  
+
   token_usage jsonb, -- {prompt_tokens, completion_tokens, total_tokens}
-  
+
   created_at timestamp with time zone default now(),
   updated_at timestamp with time zone default now()
 );
@@ -114,10 +115,10 @@ create table public.habit_failure_profiles (
 create table public.habit_stacks (
   id uuid primary key default uuid_generate_v4(),
   user_id uuid references auth.users(id) on delete cascade not null,
-  
+
   is_active boolean default true,
   archived_at timestamp with time zone,
-  
+
   created_at timestamp with time zone default now()
 );
 
@@ -126,16 +127,16 @@ create table public.habits (
   id uuid primary key default uuid_generate_v4(),
   user_id uuid references auth.users(id) on delete cascade not null,
   habit_stack_id uuid references public.habit_stacks(id) on delete cascade not null,
-  
+
   name text not null,
   tiny_version text not null,
   anchor text not null, -- "After I [existing routine]"
   celebration text not null,
   rationale text not null, -- Why this works for you
-  
+
   reminder_time time,
   is_active boolean default true,
-  
+
   created_at timestamp with time zone default now(),
   updated_at timestamp with time zone default now()
 );
@@ -145,14 +146,14 @@ create table public.habit_logs (
   id uuid primary key default uuid_generate_v4(),
   user_id uuid references auth.users(id) on delete cascade not null,
   habit_id uuid references public.habits(id) on delete cascade not null,
-  
+
   check_in_date date not null,
   completed boolean not null,
   obstacle text, -- "No time", "Forgot", "Too tired", "Life happened", "Other"
   notes text,
-  
+
   created_at timestamp with time zone default now(),
-  
+
   unique(habit_id, check_in_date) -- One check-in per habit per day
 );
 
@@ -160,19 +161,19 @@ create table public.habit_logs (
 create table public.weekly_iterations (
   id uuid primary key default uuid_generate_v4(),
   user_id uuid references auth.users(id) on delete cascade not null,
-  
+
   week_start date not null,
   summary text not null,
   pattern_identified text not null,
-  
+
   adjustment_type text check (adjustment_type in ('timing', 'anchor', 'size', 'celebration', 'reminder')),
   adjustment_description text not null,
   adjustment_rationale text not null,
   specific_change text not null,
-  
+
   status text check (status in ('pending', 'accepted', 'declined')) default 'pending',
   responded_at timestamp with time zone,
-  
+
   created_at timestamp with time zone default now()
 );
 
@@ -340,7 +341,7 @@ export async function signUpWithEmail(email: string, password: string) {
     email,
     password,
   });
-  
+
   if (error) throw error;
   return data;
 }
@@ -350,7 +351,7 @@ export async function signInWithEmail(email: string, password: string) {
     email,
     password,
   });
-  
+
   if (error) throw error;
   return data;
 }
@@ -364,7 +365,7 @@ export async function resetPassword(email: string) {
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: 'habitdx://reset-password',
   });
-  
+
   if (error) throw error;
 }
 ```
@@ -390,7 +391,7 @@ export function useGoogleAuth() {
   React.useEffect(() => {
     if (response?.type === 'success') {
       const { id_token } = response.params;
-      
+
       supabase.auth.signInWithIdToken({
         provider: 'google',
         token: id_token,
@@ -459,7 +460,7 @@ export async function analyzeFailureProfile(userId: string) {
   const { data, error } = await supabase.functions.invoke('analyze-failure', {
     body: { userId },
   });
-  
+
   if (error) throw error;
   return data;
 }
@@ -468,7 +469,7 @@ export async function generateHabits(userId: string) {
   const { data, error } = await supabase.functions.invoke('generate-habits', {
     body: { userId },
   });
-  
+
   if (error) throw error;
   return data;
 }
@@ -485,11 +486,11 @@ import { supabase } from '@/lib/supabase';
 
 export function useHabits(userId: string) {
   const [habits, setHabits] = useState([]);
-  
+
   useEffect(() => {
     // Initial fetch
     fetchHabits();
-    
+
     // Subscribe to changes
     const subscription = supabase
       .channel('habits')
@@ -505,31 +506,29 @@ export function useHabits(userId: string) {
           if (payload.eventType === 'INSERT') {
             setHabits((prev) => [...prev, payload.new]);
           } else if (payload.eventType === 'UPDATE') {
-            setHabits((prev) =>
-              prev.map((h) => (h.id === payload.new.id ? payload.new : h))
-            );
+            setHabits((prev) => prev.map((h) => (h.id === payload.new.id ? payload.new : h)));
           } else if (payload.eventType === 'DELETE') {
             setHabits((prev) => prev.filter((h) => h.id !== payload.old.id));
           }
         }
       )
       .subscribe();
-    
+
     return () => {
       subscription.unsubscribe();
     };
   }, [userId]);
-  
+
   async function fetchHabits() {
     const { data } = await supabase
       .from('habits')
       .select('*')
       .eq('user_id', userId)
       .eq('is_active', true);
-    
+
     setHabits(data || []);
   }
-  
+
   return habits;
 }
 ```
@@ -562,7 +561,7 @@ select cron.schedule(
 // supabase/functions/weekly-iteration/index.ts
 serve(async (req) => {
   const { runForAllUsers, userId } = await req.json();
-  
+
   if (runForAllUsers) {
     // Fetch all active users with check-ins in last 7 days
     const { data: users } = await supabase
@@ -570,14 +569,14 @@ serve(async (req) => {
       .select('user_id')
       .gte('check_in_date', sevenDaysAgo)
       .limit(1000); // Process in batches
-    
-    const uniqueUsers = [...new Set(users.map(u => u.user_id))];
-    
+
+    const uniqueUsers = [...new Set(users.map((u) => u.user_id))];
+
     // Process each user
     const results = await Promise.allSettled(
-      uniqueUsers.map(userId => processUserIteration(userId))
+      uniqueUsers.map((userId) => processUserIteration(userId))
     );
-    
+
     return new Response(JSON.stringify({ processed: results.length }), {
       headers: { 'Content-Type': 'application/json' },
     });
@@ -618,16 +617,17 @@ const { data: iterations } = await supabase
   .limit(10);
 
 // Insert habit check-in (with upsert for idempotency)
-const { error } = await supabase
-  .from('habit_logs')
-  .upsert({
+const { error } = await supabase.from('habit_logs').upsert(
+  {
     user_id: userId,
     habit_id: habitId,
     check_in_date: today,
     completed: true,
-  }, {
+  },
+  {
     onConflict: 'habit_id,check_in_date',
-  });
+  }
+);
 ```
 
 ## Testing
@@ -667,6 +667,7 @@ supabase db seed
 ## Monitoring
 
 ### Dashboard Metrics
+
 - Active users
 - Daily check-in rate
 - Weekly iteration acceptance rate

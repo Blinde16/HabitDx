@@ -31,9 +31,11 @@ Build the 5-screen smart onboarding experience that captures user's past failure
 ## Onboarding Screen Flow
 
 ### Screen 1: Welcome & Value Prop
+
 **Purpose:** Hook the user, explain what makes HabitDx different
 
 UI Elements:
+
 - [ ] App logo/branding
 - [ ] Headline: "Finally understand why your habits fail"
 - [ ] 3 benefit bullets:
@@ -45,14 +47,17 @@ UI Elements:
 - [ ] Skip link (logs out, returns to login)
 
 Design notes:
+
 - Warm, encouraging tone
 - High-quality illustrations/graphics
 - Build trust and excitement
 
 ### Screen 2: Past Failures
+
 **Purpose:** Capture what habits users have tried and why they failed
 
 UI Elements:
+
 - [ ] Progress indicator (2/5)
 - [ ] Headline: "Let's start with your history"
 - [ ] Subtext: "What habits have you tried before?"
@@ -71,6 +76,7 @@ UI Elements:
 - [ ] Back button
 
 Data captured:
+
 ```typescript
 {
   past_failures: string[], // e.g., ["exercise", "meditation"]
@@ -79,20 +85,23 @@ Data captured:
 ```
 
 Validation:
+
 - [ ] At least 1 habit selected
 - [ ] Failure description 20-500 characters
 - [ ] Show helpful prompt if too short
 
 ### Screen 3: Constraints & Context
+
 **Purpose:** Understand user's schedule, energy, and life constraints
 
 UI Elements:
+
 - [ ] Progress indicator (3/5)
 - [ ] Headline: "Help us understand your life"
 - [ ] Section 1: "When do you have the most energy?"
   - Radio buttons: Morning / Afternoon / Evening / Varies
 - [ ] Section 2: "What's your daily schedule like?"
-  - Checkboxes: 
+  - Checkboxes:
     - 9-5 job
     - Shift work
     - Freelance/irregular
@@ -111,6 +120,7 @@ UI Elements:
 - [ ] Back button
 
 Data captured:
+
 ```typescript
 {
   constraints: {
@@ -122,14 +132,17 @@ Data captured:
 ```
 
 Design notes:
+
 - Keep it concise—each section = 1 question
 - Use visual icons for energy times
 - Progressive disclosure (don't overwhelm)
 
 ### Screen 4: Goals & Motivation
+
 **Purpose:** Capture what success looks like for the user
 
 UI Elements:
+
 - [ ] Progress indicator (4/5)
 - [ ] Headline: "What are you working toward?"
 - [ ] Subtext: "Select up to 3 goals"
@@ -149,6 +162,7 @@ UI Elements:
 - [ ] Back button
 
 Data captured:
+
 ```typescript
 {
   goals: string[], // Max 3
@@ -157,13 +171,16 @@ Data captured:
 ```
 
 Validation:
+
 - [ ] 1-3 goals selected
 - [ ] Motivation 20-300 characters
 
 ### Screen 5: Confirmation & Expectations
+
 **Purpose:** Set expectations for next steps, get final consent
 
 UI Elements:
+
 - [ ] Progress indicator (5/5)
 - [ ] Headline: "Perfect! Here's what happens next:"
 - [ ] Timeline preview:
@@ -181,6 +198,7 @@ UI Elements:
 - [ ] Back button
 
 Actions on submit:
+
 - [ ] Save all data to user_profiles
 - [ ] Set onboarding_completed = true
 - [ ] Request notification permissions (if enabled)
@@ -189,6 +207,7 @@ Actions on submit:
 ## Technical Tasks
 
 ### 1. Create Onboarding Store (Zustand)
+
 ```typescript
 // stores/onboardingStore.ts
 interface OnboardingStore {
@@ -201,7 +220,7 @@ interface OnboardingStore {
     motivation: string;
     notificationsEnabled: boolean;
   };
-  
+
   setScreen: (screen: number) => void;
   updateData: (key: string, value: any) => void;
   nextScreen: () => void;
@@ -213,6 +232,7 @@ interface OnboardingStore {
 ```
 
 Tasks:
+
 - [ ] Create Zustand store
 - [ ] Implement all methods
 - [ ] Add validation logic
@@ -220,6 +240,7 @@ Tasks:
 - [ ] Add error handling
 
 ### 2. Build Onboarding Screens
+
 - [ ] `app/(onboarding)/_layout.tsx` - Onboarding container
 - [ ] `app/(onboarding)/welcome.tsx` - Screen 1
 - [ ] `app/(onboarding)/past-failures.tsx` - Screen 2
@@ -228,6 +249,7 @@ Tasks:
 - [ ] `app/(onboarding)/confirmation.tsx` - Screen 5
 
 ### 3. Create Reusable Onboarding Components
+
 - [ ] `OnboardingContainer` - Consistent layout wrapper
 - [ ] `ProgressIndicator` - Visual progress bar (1/5, 2/5, etc.)
 - [ ] `OnboardingButton` - Primary CTA button
@@ -238,6 +260,7 @@ Tasks:
 - [ ] `SectionHeader` - Consistent section titles
 
 ### 4. Implement Navigation Logic
+
 - [ ] Create onboarding route group
 - [ ] Implement screen transitions (slide animation)
 - [ ] Handle back button (Android hardware button)
@@ -246,6 +269,7 @@ Tasks:
 - [ ] Resume from last screen on return
 
 ### 5. Add Form Validation
+
 - [ ] Validate at least 1 past failure selected
 - [ ] Validate failure description length (20-500 chars)
 - [ ] Validate at least 1 constraint selected
@@ -255,6 +279,7 @@ Tasks:
 - [ ] Disable "Next" until valid
 
 ### 6. Implement Data Persistence
+
 - [ ] Save onboarding data to user_profiles table
 - [ ] Use Supabase client for DB operations
 - [ ] Handle network errors gracefully
@@ -262,6 +287,7 @@ Tasks:
 - [ ] Log errors for debugging
 
 ### 7. Add Analytics Tracking
+
 - [ ] Track onboarding_started
 - [ ] Track screen_viewed (each screen)
 - [ ] Track screen_completed (each screen)
@@ -270,6 +296,7 @@ Tasks:
 - [ ] Track time_spent (per screen)
 
 ### 8. Request Notification Permissions
+
 - [ ] Check current permission status
 - [ ] Request permissions on confirmation screen
 - [ ] Handle permission granted
@@ -278,7 +305,9 @@ Tasks:
 - [ ] Explain why permissions are helpful
 
 ### 9. Create Loading/Transition Screen
+
 After confirmation, before AI analysis:
+
 - [ ] Animated loading indicator
 - [ ] Encouraging message: "Analyzing your responses..."
 - [ ] Progress messages (fake, for UX):
@@ -290,6 +319,7 @@ After confirmation, before AI analysis:
 ## UI/UX Requirements
 
 ### Design Principles
+
 - Warm, encouraging tone (not corporate)
 - High contrast for readability
 - Generous white space
@@ -298,6 +328,7 @@ After confirmation, before AI analysis:
 - Celebrate progress (confetti on completion?)
 
 ### Accessibility
+
 - [ ] VoiceOver/TalkBack support
 - [ ] Dynamic type support
 - [ ] Color contrast WCAG AA
@@ -305,6 +336,7 @@ After confirmation, before AI analysis:
 - [ ] Clear focus indicators
 
 ### Performance
+
 - [ ] Screens load instantly (<100ms)
 - [ ] Animations at 60fps
 - [ ] No janky scrolling
@@ -336,6 +368,7 @@ After confirmation, before AI analysis:
 ## Testing Checklist
 
 ### Functional Tests
+
 - [ ] Complete full onboarding flow (happy path)
 - [ ] Navigate backwards through all screens
 - [ ] Test with minimum valid inputs
@@ -346,6 +379,7 @@ After confirmation, before AI analysis:
 - [ ] Test on Android
 
 ### Validation Tests
+
 - [ ] Cannot proceed without selecting past failure
 - [ ] Cannot proceed without failure description
 - [ ] Character counters work correctly
@@ -353,6 +387,7 @@ After confirmation, before AI analysis:
 - [ ] Custom inputs save properly
 
 ### Edge Cases
+
 - [ ] Network offline during submit
 - [ ] App backgrounded mid-onboarding
 - [ ] User logs out during onboarding
@@ -361,6 +396,7 @@ After confirmation, before AI analysis:
 - [ ] Special characters in text inputs
 
 ### UX Tests
+
 - [ ] Progress indicator updates correctly
 - [ ] Animations smooth on slow devices
 - [ ] Buttons disabled appropriately
@@ -370,16 +406,17 @@ After confirmation, before AI analysis:
 
 ## Risks & Mitigations
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|--------|------------|
-| High drop-off rate | High | Critical | A/B test copy, minimize screens, show progress |
-| Users give low-quality data | Medium | High | Validation, character minimums, helpful prompts |
-| Network errors during submit | Medium | Medium | Retry logic, save locally, clear error messages |
-| Too time-consuming | Low | Medium | Optimize copy, remove friction, show time remaining |
+| Risk                         | Likelihood | Impact   | Mitigation                                          |
+| ---------------------------- | ---------- | -------- | --------------------------------------------------- |
+| High drop-off rate           | High       | Critical | A/B test copy, minimize screens, show progress      |
+| Users give low-quality data  | Medium     | High     | Validation, character minimums, helpful prompts     |
+| Network errors during submit | Medium     | Medium   | Retry logic, save locally, clear error messages     |
+| Too time-consuming           | Low        | Medium   | Optimize copy, remove friction, show time remaining |
 
 ## Dependencies for Next Phase
 
 Phase 5 (AI Failure Profile) requires:
+
 - ✅ Onboarding data in user_profiles table
 - ✅ User can complete onboarding successfully
 - ✅ Data structure matches AI prompt requirements

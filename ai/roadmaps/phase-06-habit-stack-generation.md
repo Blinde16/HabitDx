@@ -31,6 +31,7 @@ Build the AI system that generates 1-3 personalized habits based on the user's F
 ## Habit Stack Structure
 
 ### Data Model
+
 ```typescript
 interface HabitStack {
   id: string;
@@ -47,12 +48,12 @@ interface Habit {
   title: string; // e.g., "5-minute morning meditation"
   description: string; // What to do
   rationale: string; // "Why this works for you" - personalized
-  
+
   // Scheduling
   frequency_type: 'daily' | 'weekly' | 'custom';
   frequency_days: number[]; // [0,1,2,3,4] = Mon-Fri
   reminder_time: string; // "08:00:00"
-  
+
   // Status
   is_active: boolean;
   display_order: number; // 0, 1, 2
@@ -60,6 +61,7 @@ interface Habit {
 ```
 
 ### Example Generated Stack
+
 ```json
 {
   "habits": [
@@ -94,6 +96,7 @@ interface Habit {
 ## Technical Tasks
 
 ### 1. Create Habit Generation Edge Function
+
 ```typescript
 // supabase/functions/generate-habits/index.ts
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
@@ -111,6 +114,7 @@ serve(async (req) => {
 ```
 
 Tasks:
+
 - [ ] Create `supabase/functions/generate-habits/` directory
 - [ ] Initialize Deno function
 - [ ] Fetch failure profile and onboarding data
@@ -122,6 +126,7 @@ Tasks:
 - [ ] Deploy and test function
 
 ### 2. Design Habit Generation Prompt
+
 ```typescript
 const constructHabitPrompt = (profile: HabitFailureProfile, userData: OnboardingData) => {
   return `You are an expert habit designer creating personalized habits for this user.
@@ -176,6 +181,7 @@ Return ONLY valid JSON:
 ```
 
 Tasks:
+
 - [ ] Write initial prompt template
 - [ ] Define habit design principles
 - [ ] Add constraints and validation rules
@@ -186,6 +192,7 @@ Tasks:
 - [ ] Document prompt rationale
 
 ### 3. Implement Habit Validation
+
 ```typescript
 // Validate generated habits before saving
 function validateHabit(habit: any): boolean {
@@ -197,12 +204,13 @@ function validateHabit(habit: any): boolean {
     Array.isArray(habit.frequency_days) && habit.frequency_days.length > 0,
     /^\d{2}:\d{2}:\d{2}$/.test(habit.reminder_time),
   ];
-  
-  return checks.every(check => check === true);
+
+  return checks.every((check) => check === true);
 }
 ```
 
 Validation rules:
+
 - [ ] All required fields present
 - [ ] Title is 3-50 characters
 - [ ] Description is 10-200 characters
@@ -213,11 +221,13 @@ Validation rules:
 - [ ] Reject generic rationales ("This is good for you")
 
 ### 4. Build Habit Stack Display Screen
+
 ```
 app/(tabs)/habits.tsx or app/(onboarding)/habit-stack.tsx
 ```
 
 UI Components:
+
 - [ ] Screen title: "Your Personalized Habit Stack"
 - [ ] Subheading: "These habits are designed for YOU"
 - [ ] Habit cards (1-3) showing:
@@ -231,12 +241,14 @@ UI Components:
 - [ ] "Customize" option (P1 feature)
 
 Design:
+
 - [ ] Use cards for each habit
 - [ ] Visually separate rationale (most important part)
 - [ ] Show schedule clearly with icons
 - [ ] Make it feel exciting, not overwhelming
 
 ### 5. Create Habit Card Component
+
 ```typescript
 // components/HabitCard.tsx
 interface HabitCardProps {
@@ -251,6 +263,7 @@ export const HabitCard = ({ habit, showRationale = true, onPress }: HabitCardPro
 ```
 
 Tasks:
+
 - [ ] Create HabitCard component
 - [ ] Display habit title and description
 - [ ] Highlight rationale in callout box
@@ -260,6 +273,7 @@ Tasks:
 - [ ] Add loading state
 
 ### 6. Implement Habit Stack Acceptance Flow
+
 After user sees generated habits:
 
 1. **Accept Stack:**
@@ -280,13 +294,14 @@ After user sees generated habits:
    - Remove habits
 
 ### 7. Create Habit Stack Store (Zustand)
+
 ```typescript
 // stores/habitStackStore.ts
 interface HabitStackStore {
   currentStack: HabitStack | null;
   loading: boolean;
   error: string | null;
-  
+
   generateStack: () => Promise<void>;
   acceptStack: () => Promise<void>;
   regenerateStack: () => Promise<void>;
@@ -295,6 +310,7 @@ interface HabitStackStore {
 ```
 
 Tasks:
+
 - [ ] Create Zustand store
 - [ ] Implement generateStack (calls Edge Function)
 - [ ] Implement acceptStack (sets as active)
@@ -304,7 +320,9 @@ Tasks:
 - [ ] Add loading states
 
 ### 8. Build Integration with Onboarding Flow
+
 After Habit Failure Profile generated:
+
 - [ ] Automatically call habit generation function
 - [ ] Show loading screen ("Designing your habits...")
 - [ ] Display generated habit stack
@@ -312,12 +330,14 @@ After Habit Failure Profile generated:
 - [ ] On accept, complete onboarding and enter main app
 
 ### 9. Add Database Query Helpers
+
 ```typescript
 // lib/db.ts (extend)
 export const getActiveHabitStack = async (userId: string) => {
   const { data, error } = await supabase
     .from('habit_stacks')
-    .select(`
+    .select(
+      `
       *,
       habits (
         id,
@@ -330,11 +350,12 @@ export const getActiveHabitStack = async (userId: string) => {
         is_active,
         display_order
       )
-    `)
+    `
+    )
     .eq('user_id', userId)
     .eq('is_active', true)
     .single();
-  
+
   return { data, error };
 };
 
@@ -346,6 +367,7 @@ export const createHabitStack = async (stackData: any, habits: any[]) => {
 ```
 
 Tasks:
+
 - [ ] Create getActiveHabitStack query
 - [ ] Create createHabitStack mutation
 - [ ] Create archiveHabitStack mutation
@@ -353,14 +375,15 @@ Tasks:
 - [ ] Handle errors gracefully
 
 ### 10. Implement Schedule Display Logic
+
 ```typescript
 // utils/schedule.ts
 export const formatSchedule = (habit: Habit) => {
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const selectedDays = habit.frequency_days.map(d => days[d]);
-  
+  const selectedDays = habit.frequency_days.map((d) => days[d]);
+
   const time = formatTime(habit.reminder_time); // "7:00 AM"
-  
+
   if (habit.frequency_type === 'daily') {
     if (habit.frequency_days.length === 7) {
       return `Every day at ${time}`;
@@ -374,6 +397,7 @@ export const formatSchedule = (habit: Habit) => {
 ```
 
 Tasks:
+
 - [ ] Create formatSchedule utility
 - [ ] Convert 24hr to 12hr time format
 - [ ] Convert day numbers to day names
@@ -383,6 +407,7 @@ Tasks:
 ## AI Prompt Optimization
 
 ### Quality Criteria for Generated Habits
+
 - [ ] Habit duration is ≤5 minutes
 - [ ] Description is actionable (clear steps)
 - [ ] Rationale references user's specific data
@@ -391,6 +416,7 @@ Tasks:
 - [ ] Habits avoid known failure triggers
 
 ### Testing Generated Habits
+
 - [ ] Generate habits for 10 test profiles
 - [ ] Rate each habit for:
   - Specificity (1-5)
@@ -426,6 +452,7 @@ Tasks:
 ## Testing Checklist
 
 ### Edge Function Tests
+
 - [ ] Function generates 1-3 habits
 - [ ] All habits have required fields
 - [ ] Habits save to database correctly
@@ -434,6 +461,7 @@ Tasks:
 - [ ] Response time <5 seconds
 
 ### AI Quality Tests
+
 - [ ] Generate habits for 10 test profiles
 - [ ] Verify no generic habits
 - [ ] Check rationales are specific
@@ -442,6 +470,7 @@ Tasks:
 - [ ] Test with complex constraint profile
 
 ### UI Tests
+
 - [ ] Habit stack screen displays correctly
 - [ ] All 3 habits visible (if generated)
 - [ ] Rationale boxes highlighted
@@ -451,12 +480,14 @@ Tasks:
 - [ ] Loading states show
 
 ### Integration Tests
+
 - [ ] Complete flow: onboarding → profile → habits → accept
 - [ ] Habits appear on home screen after accept
 - [ ] User can check in on generated habits
 - [ ] Regenerate archives old stack
 
 ### Edge Cases
+
 - [ ] User with severe time constraints (generates 1 habit)
 - [ ] User with inconsistent schedule (weekday-only habits)
 - [ ] User with multiple failure patterns
@@ -466,17 +497,18 @@ Tasks:
 
 ## Risks & Mitigations
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|--------|------------|
-| Generated habits feel generic | High | Critical | Extensive prompt engineering, validation rules |
-| Habits too ambitious (fail again) | Medium | High | Enforce "≤5 minutes" rule, test feasibility |
-| Users reject generated stack | Medium | High | Allow regeneration, track rejection reasons |
-| Generation takes too long | Low | Medium | Optimize prompt, use streaming |
-| API costs too high | Low | Low | Cache stacks, use gpt-4o-mini |
+| Risk                              | Likelihood | Impact   | Mitigation                                     |
+| --------------------------------- | ---------- | -------- | ---------------------------------------------- |
+| Generated habits feel generic     | High       | Critical | Extensive prompt engineering, validation rules |
+| Habits too ambitious (fail again) | Medium     | High     | Enforce "≤5 minutes" rule, test feasibility    |
+| Users reject generated stack      | Medium     | High     | Allow regeneration, track rejection reasons    |
+| Generation takes too long         | Low        | Medium   | Optimize prompt, use streaming                 |
+| API costs too high                | Low        | Low      | Cache stacks, use gpt-4o-mini                  |
 
 ## Cost Optimization
 
 ### Token Usage
+
 - Average context: ~800 tokens (profile + onboarding)
 - Prompt: ~600 tokens
 - Expected output: ~500 tokens
@@ -484,6 +516,7 @@ Tasks:
 - Cost (gpt-4o-mini): ~$0.0003/stack
 
 ### Projected Costs (MVP)
+
 - 50 users x 1 stack = 50 stacks
 - Regenerations: ~10 (20% regenerate once)
 - Total: 60 generations x $0.0003 = $0.018
@@ -492,6 +525,7 @@ Tasks:
 ## Dependencies for Next Phase
 
 Phase 7 (Daily Check-in) requires:
+
 - ✅ Active habit stack in database
 - ✅ Habits with schedules defined
 - ✅ User can view their habits

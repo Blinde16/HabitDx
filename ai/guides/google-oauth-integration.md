@@ -26,7 +26,7 @@ This guide covers implementing Google Sign-In for HabitDx using Supabase Auth an
    - App name: HabitDx
    - User support email: support@habitdx.com
    - App logo: Upload 512x512 icon
-4. **Scopes**: 
+4. **Scopes**:
    - `email`
    - `profile`
    - `openid`
@@ -90,6 +90,7 @@ This guide covers implementing Google Sign-In for HabitDx using Supabase Auth an
 ### Redirect URLs
 
 Add these redirect URLs in Supabase:
+
 ```
 exp://localhost:8081
 habitdx://
@@ -242,7 +243,7 @@ export default function LoginScreen() {
   const handleGoogleSignIn = async () => {
     try {
       const result = await signInWithGoogle();
-      
+
       if (result?.needsOnboarding) {
         router.replace('/(onboarding)/welcome');
       } else {
@@ -461,14 +462,12 @@ async function handleGoogleSignIn(idToken: string) {
 
   if (!existingProfile) {
     // Create profile with Google data
-    await supabase
-      .from('user_profiles')
-      .insert({
-        user_id: data.user.id,
-        email: data.user.email,
-        full_name: data.user.user_metadata.full_name,
-        avatar_url: data.user.user_metadata.avatar_url,
-      });
+    await supabase.from('user_profiles').insert({
+      user_id: data.user.id,
+      email: data.user.email,
+      full_name: data.user.user_metadata.full_name,
+      avatar_url: data.user.user_metadata.avatar_url,
+    });
   }
 
   return {
@@ -483,6 +482,7 @@ async function handleGoogleSignIn(idToken: string) {
 ### Test Google Sign-In Flow
 
 1. **Development**:
+
    ```bash
    npx expo start
    # Scan QR with Expo Go app
@@ -502,13 +502,16 @@ async function handleGoogleSignIn(idToken: string) {
 // Add debug logging
 async function signInWithGoogle() {
   console.log('[Google Auth] Starting sign-in...');
-  
+
   try {
     const result = await promptAsync();
     console.log('[Google Auth] Response type:', result.type);
-    
+
     if (result.type === 'success') {
-      console.log('[Google Auth] ID Token:', result.authentication?.idToken?.substring(0, 20) + '...');
+      console.log(
+        '[Google Auth] ID Token:',
+        result.authentication?.idToken?.substring(0, 20) + '...'
+      );
     }
   } catch (error) {
     console.error('[Google Auth] Error:', error);
