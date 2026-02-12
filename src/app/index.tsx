@@ -1,9 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useAuthStore } from '../stores/authStore';
 import { AuthButton } from '../components/auth';
 
 export default function HomeScreen() {
+  const router = useRouter();
   const { user, signOut, loading } = useAuthStore();
 
   const handleSignOut = async () => {
@@ -36,6 +38,10 @@ export default function HomeScreen() {
       </View>
 
       <View style={styles.actions}>
+        <TouchableOpacity style={styles.profileButton} onPress={() => router.push('/profile')}>
+          <Text style={styles.profileButtonText}>View Profile</Text>
+        </TouchableOpacity>
+
         <AuthButton title="Sign Out" onPress={handleSignOut} loading={loading} variant="outline" />
       </View>
 
@@ -99,5 +105,18 @@ const styles = StyleSheet.create({
   },
   actions: {
     width: '100%',
+    gap: 12,
+  },
+  profileButton: {
+    backgroundColor: '#3b82f6',
+    height: 48,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  profileButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
