@@ -52,11 +52,7 @@ npx expo install expo-notifications expo-device expo-constants
 {
   "expo": {
     "android": {
-      "permissions": [
-        "RECEIVE_BOOT_COMPLETED",
-        "VIBRATE",
-        "SCHEDULE_EXACT_ALARM"
-      ]
+      "permissions": ["RECEIVE_BOOT_COMPLETED", "VIBRATE", "SCHEDULE_EXACT_ALARM"]
     }
   }
 }
@@ -151,7 +147,7 @@ export default function NotificationPermissionScreen() {
         onPress={handleEnableNotifications}
         loading={loading}
       />
-      
+
       <Button
         title="Skip for Now"
         onPress={handleSkip}
@@ -203,19 +199,17 @@ Notifications.setNotificationHandler({
 // Handle notification tap (deep linking)
 export function useNotificationObserver() {
   useEffect(() => {
-    const subscription = Notifications.addNotificationResponseReceivedListener(
-      (response) => {
-        const habitId = response.notification.request.content.data.habitId;
-        
-        if (habitId) {
-          // Navigate to home screen with habit highlighted
-          router.push({
-            pathname: '/(tabs)/home',
-            params: { highlightHabit: habitId },
-          });
-        }
+    const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
+      const habitId = response.notification.request.content.data.habitId;
+
+      if (habitId) {
+        // Navigate to home screen with habit highlighted
+        router.push({
+          pathname: '/(tabs)/home',
+          params: { highlightHabit: habitId },
+        });
       }
-    );
+    });
 
     return () => subscription.remove();
   }, []);
@@ -368,10 +362,7 @@ export function useScheduleHabitNotifications() {
       });
 
       // Update database with notification ID
-      await supabase
-        .from('habits')
-        .update({ notification_id: notificationId })
-        .eq('id', habit.id);
+      await supabase.from('habits').update({ notification_id: notificationId }).eq('id', habit.id);
     }
   }
 }
@@ -502,14 +493,14 @@ interface TimePickerProps {
 
 export function TimePicker({ value, onChange }: TimePickerProps) {
   const [show, setShow] = useState(false);
-  
+
   const [hours, minutes] = value.split(':').map(Number);
   const date = new Date();
   date.setHours(hours, minutes);
 
   const handleChange = (event: any, selectedDate?: Date) => {
     setShow(Platform.OS === 'ios');
-    
+
     if (selectedDate) {
       const time = `${selectedDate.getHours().toString().padStart(2, '0')}:${selectedDate.getMinutes().toString().padStart(2, '0')}`;
       onChange(time);
@@ -544,8 +535,8 @@ export function TimePicker({ value, onChange }: TimePickerProps) {
 // Send test notification immediately
 await Notifications.scheduleNotificationAsync({
   content: {
-    title: "Test Notification",
-    body: "This is a test",
+    title: 'Test Notification',
+    body: 'This is a test',
   },
   trigger: { seconds: 2 },
 });
@@ -600,13 +591,11 @@ Notifications.addNotificationResponseReceivedListener((response) => {
 // Analyze when user typically checks in and adjust reminder time
 function getOptimalReminderTime(habitLogs: HabitLog[]): string {
   const completionTimes = habitLogs
-    .filter(log => log.completed)
-    .map(log => new Date(log.created_at).getHours());
+    .filter((log) => log.completed)
+    .map((log) => new Date(log.created_at).getHours());
 
   // Calculate average completion hour
-  const avgHour = Math.round(
-    completionTimes.reduce((a, b) => a + b, 0) / completionTimes.length
-  );
+  const avgHour = Math.round(completionTimes.reduce((a, b) => a + b, 0) / completionTimes.length);
 
   // Send reminder 30 minutes before typical completion time
   return `${(avgHour - 1).toString().padStart(2, '0')}:30`;

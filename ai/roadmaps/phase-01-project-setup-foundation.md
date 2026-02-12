@@ -29,12 +29,14 @@ Establish the foundational technical infrastructure for HabitDx. This phase focu
 ## Technical Tasks
 
 ### 1. Initialize Expo Project
+
 - [ ] Run `npx create-expo-app@latest` with TypeScript template
 - [ ] Configure Expo SDK 50+
 - [ ] Set up Expo Router for file-based navigation
 - [ ] Test basic "Hello World" on both platforms
 
 ### 2. Configure Development Tools
+
 - [ ] Set up TypeScript with strict configuration
 - [ ] Configure ESLint with React Native rules
 - [ ] Set up Prettier with project formatting standards
@@ -42,6 +44,7 @@ Establish the foundational technical infrastructure for HabitDx. This phase focu
 - [ ] Configure VS Code workspace settings
 
 ### 3. Set Up Supabase Project
+
 - [ ] Create Supabase account and project
 - [ ] Install Supabase CLI locally
 - [ ] Initialize `supabase/` folder structure
@@ -49,6 +52,7 @@ Establish the foundational technical infrastructure for HabitDx. This phase focu
 - [ ] Set up environment variables template
 
 ### 4. Establish Project Structure
+
 ```
 src/
 ├── app/                    # Expo Router screens (placeholder)
@@ -68,6 +72,7 @@ supabase/
 ```
 
 ### 5. Install Core Dependencies
+
 ```json
 {
   "dependencies": {
@@ -88,6 +93,7 @@ supabase/
 ```
 
 ### 6. Configure Environment Variables
+
 - [ ] Create `.env.example` with required variables
 - [ ] Add `.env` to `.gitignore`
 - [ ] Document all environment variables:
@@ -96,6 +102,7 @@ supabase/
   - Development vs Production configs
 
 ### 7. Git Configuration
+
 - [ ] Initialize Git repository
 - [ ] Create `.gitignore` with common exclusions
 - [ ] Set up branch strategy (main → develop → feature branches)
@@ -103,6 +110,7 @@ supabase/
 - [ ] Push to remote repository
 
 ### 8. Documentation
+
 - [ ] Create comprehensive README.md
   - Prerequisites (Node 18+, Expo CLI)
   - Installation steps
@@ -147,16 +155,17 @@ supabase/
 
 ## Risks & Mitigations
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|--------|------------|
-| Expo SDK compatibility issues | Low | Medium | Use stable SDK 50, test on multiple devices |
-| Supabase local setup difficulties | Medium | Low | Provide detailed docs, Docker troubleshooting |
-| Team onboarding friction | Medium | Medium | Comprehensive README, setup script |
-| Platform-specific build errors | Low | High | Test on both iOS/Android early |
+| Risk                              | Likelihood | Impact | Mitigation                                    |
+| --------------------------------- | ---------- | ------ | --------------------------------------------- |
+| Expo SDK compatibility issues     | Low        | Medium | Use stable SDK 50, test on multiple devices   |
+| Supabase local setup difficulties | Medium     | Low    | Provide detailed docs, Docker troubleshooting |
+| Team onboarding friction          | Medium     | Medium | Comprehensive README, setup script            |
+| Platform-specific build errors    | Low        | High   | Test on both iOS/Android early                |
 
 ## Dependencies for Next Phase
 
 Phase 2 (Authentication System) requires:
+
 - ✅ Working Expo app
 - ✅ Supabase client configured
 - ✅ Basic folder structure

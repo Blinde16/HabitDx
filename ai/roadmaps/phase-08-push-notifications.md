@@ -31,13 +31,16 @@ Implement push notifications to remind users to complete their habits at schedul
 ## Notification Types
 
 ### 1. Habit Reminders
+
 **When:** At habit's scheduled reminder_time  
 **Content:**
+
 - Title: "Time for [Habit Name]"
 - Body: "[Description]" or motivational message
 - Action: Opens app to check-in screen
 
 Example:
+
 ```
 Title: Time for 5-Minute Morning Pages ✍️
 Body: Clear your mind before the day starts
@@ -45,22 +48,28 @@ Body: Clear your mind before the day starts
 ```
 
 ### 2. Evening Nudge (Optional, P1)
+
 **When:** 8 PM if no check-ins today  
 **Content:**
+
 - Title: "Don't forget your habits!"
 - Body: "You have 2 habits left today"
 - Action: Opens app to home screen
 
 ### 3. Streak Celebration (Optional, P1)
+
 **When:** After check-in completes milestone  
 **Content:**
+
 - Title: "🔥 7-day streak!"
 - Body: "You're building real consistency"
 - Action: Opens app to achievements
 
 ### 4. Weekly Insight Available (Phase 9)
+
 **When:** Every Monday (or user's weekly_iteration_day)  
 **Content:**
+
 - Title: "Your weekly insight is ready"
 - Body: "See what we learned about your habits"
 - Action: Opens app to insights screen
@@ -68,11 +77,13 @@ Body: Clear your mind before the day starts
 ## Technical Tasks
 
 ### 1. Set Up Expo Notifications
+
 ```bash
 npx expo install expo-notifications expo-device expo-constants
 ```
 
 Configure:
+
 - [ ] Install Expo Notifications SDK
 - [ ] Configure app.json for notifications
 - [ ] Set up iOS notification permissions
@@ -81,6 +92,7 @@ Configure:
 - [ ] Configure notification sounds
 
 ### 2. Configure app.json
+
 ```json
 {
   "expo": {
@@ -102,16 +114,14 @@ Configure:
     },
     "android": {
       "googleServicesFile": "./google-services.json",
-      "permissions": [
-        "RECEIVE_BOOT_COMPLETED",
-        "VIBRATE"
-      ]
+      "permissions": ["RECEIVE_BOOT_COMPLETED", "VIBRATE"]
     }
   }
 }
 ```
 
 Tasks:
+
 - [ ] Add notification plugin to app.json
 - [ ] Configure iOS background modes
 - [ ] Configure Android permissions
@@ -120,6 +130,7 @@ Tasks:
 - [ ] Test configuration builds
 
 ### 3. Request Notification Permissions
+
 ```typescript
 // hooks/useNotificationPermissions.ts
 import * as Notifications from 'expo-notifications';
@@ -152,6 +163,7 @@ export const useNotificationPermissions = () => {
 ```
 
 Tasks:
+
 - [ ] Create useNotificationPermissions hook
 - [ ] Check existing permission status
 - [ ] Request permissions if not granted
@@ -160,6 +172,7 @@ Tasks:
 - [ ] Show explanation before requesting (iOS requirement)
 
 ### 4. Schedule Habit Notifications
+
 ```typescript
 // lib/notifications.ts
 import * as Notifications from 'expo-notifications';
@@ -195,12 +208,13 @@ export const scheduleHabitNotification = async (habit: Habit) => {
 
 export const cancelHabitNotifications = async (notificationIds: string[]) => {
   await Promise.all(
-    notificationIds.map(id => Notifications.cancelScheduledNotificationAsync(id))
+    notificationIds.map((id) => Notifications.cancelScheduledNotificationAsync(id))
   );
 };
 ```
 
 Tasks:
+
 - [ ] Create scheduleHabitNotification function
 - [ ] Parse habit reminder_time to hours/minutes
 - [ ] Schedule repeating notification for each day
@@ -210,24 +224,28 @@ Tasks:
 - [ ] Test notification scheduling
 
 ### 5. Add Notification IDs to Database
+
 Migration:
+
 ```sql
 ALTER TABLE habits
 ADD COLUMN notification_ids TEXT[] DEFAULT '{}';
 ```
 
 Tasks:
+
 - [ ] Create migration to add notification_ids column
 - [ ] Update Habit TypeScript type
 - [ ] Save notification IDs when scheduling
 - [ ] Load notification IDs when canceling
 
 ### 6. Implement Notification Management Store
+
 ```typescript
 // stores/notificationStore.ts
 interface NotificationStore {
   permissionGranted: boolean;
-  
+
   checkPermissions: () => Promise<boolean>;
   requestPermissions: () => Promise<boolean>;
   scheduleAllHabitNotifications: () => Promise<void>;
@@ -237,6 +255,7 @@ interface NotificationStore {
 ```
 
 Tasks:
+
 - [ ] Create notification Zustand store
 - [ ] Implement checkPermissions
 - [ ] Implement requestPermissions
@@ -247,11 +266,13 @@ Tasks:
 - [ ] Sync with database
 
 ### 7. Build Notification Settings UI
+
 ```
 app/(tabs)/settings.tsx or app/settings/notifications.tsx
 ```
 
 UI Components:
+
 - [ ] Section: "Notification Settings"
 - [ ] Master toggle: "Enable Notifications"
   - When OFF: cancels all notifications
@@ -264,6 +285,7 @@ UI Components:
 - [ ] Permission status indicator
 
 Tasks:
+
 - [ ] Create notification settings screen
 - [ ] Implement master toggle
 - [ ] Implement per-habit toggles
@@ -272,6 +294,7 @@ Tasks:
 - [ ] Handle permission denied state (link to settings)
 
 ### 8. Handle Notification Interactions
+
 ```typescript
 // App setup (in _layout.tsx or App.tsx)
 import * as Notifications from 'expo-notifications';
@@ -287,7 +310,7 @@ Notifications.setNotificationHandler({
 
 // Listen for notification taps
 useEffect(() => {
-  const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+  const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
     const { habitId, type } = response.notification.request.content.data;
 
     if (type === 'habit_reminder') {
@@ -301,6 +324,7 @@ useEffect(() => {
 ```
 
 Tasks:
+
 - [ ] Set up notification handler
 - [ ] Listen for notification tap events
 - [ ] Implement deep linking to habit check-in
@@ -309,12 +333,13 @@ Tasks:
 - [ ] Test on iOS and Android
 
 ### 9. Implement Deep Linking
+
 ```typescript
 // app/habit/[habitId].tsx
 // Detail screen for single habit check-in
 export default function HabitDetailScreen() {
   const { habitId } = useLocalSearchParams();
-  
+
   // Load habit data
   // Show check-in UI
   // Navigate back after check-in
@@ -322,6 +347,7 @@ export default function HabitDetailScreen() {
 ```
 
 Tasks:
+
 - [ ] Create habit detail screen
 - [ ] Accept habitId parameter
 - [ ] Load habit data from ID
@@ -330,7 +356,9 @@ Tasks:
 - [ ] Navigate back to home
 
 ### 10. Add Notification Analytics
+
 Track:
+
 - [ ] Notification scheduled count
 - [ ] Notification delivered count
 - [ ] Notification tapped count
@@ -338,6 +366,7 @@ Track:
 - [ ] Notifications dismissed without action
 
 Events:
+
 ```typescript
 analytics.track('notification_scheduled', { habitId, time });
 analytics.track('notification_delivered', { habitId });
@@ -346,6 +375,7 @@ analytics.track('notification_dismissed', { habitId });
 ```
 
 ### 11. Handle Edge Cases
+
 - [ ] User changes habit schedule (reschedule notifications)
 - [ ] User disables habit (cancel notifications)
 - [ ] User archives habit (cancel notifications)
@@ -355,7 +385,9 @@ analytics.track('notification_dismissed', { habitId });
 - [ ] Multiple habits at same time (group notifications)
 
 ### 12. Test Notifications on Physical Devices
+
 iOS:
+
 - [ ] Notifications appear on lock screen
 - [ ] Notifications appear in notification center
 - [ ] Tapping notification opens app
@@ -364,6 +396,7 @@ iOS:
 - [ ] Permissions request shows correctly
 
 Android:
+
 - [ ] Notifications appear in notification shade
 - [ ] Notification icon displays correctly
 - [ ] Notification channel created
@@ -374,23 +407,27 @@ Android:
 ## UI/UX Considerations
 
 ### Notification Copy
+
 - Keep title short (<40 characters)
 - Body should be motivating, not nagging
 - Use habit name + emoji for personality
 - Vary message if possible (not always same text)
 
 Example variations:
+
 - "Time for Morning Pages ✍️"
 - "Ready for Morning Pages? ✍️"
 - "Let's do Morning Pages ✍️"
 
 ### Notification Timing
+
 - Don't send too early (respect user's schedule)
 - Don't send too late (people ignore late notifications)
 - Consider "snooze" functionality (P1)
 - Respect Do Not Disturb settings
 
 ### Permission Requesting
+
 - Explain value before requesting ("We'll remind you at the perfect time")
 - Don't request on first app launch (wait until onboarding complete)
 - Handle "Don't Ask Again" gracefully
@@ -420,6 +457,7 @@ Example variations:
 ## Testing Checklist
 
 ### Functional Tests
+
 - [ ] Request notification permissions
 - [ ] Schedule notification for habit
 - [ ] Receive notification at scheduled time
@@ -431,6 +469,7 @@ Example variations:
 - [ ] Change habit schedule, notifications update
 
 ### Platform Tests
+
 - [ ] iOS: Permissions request shows
 - [ ] iOS: Notifications appear on lock screen
 - [ ] iOS: Deep linking works
@@ -442,6 +481,7 @@ Example variations:
 - [ ] Android: Sound plays
 
 ### Edge Cases
+
 - [ ] App is closed when notification arrives
 - [ ] App is in background when notification arrives
 - [ ] App is in foreground when notification arrives
@@ -452,6 +492,7 @@ Example variations:
 - [ ] Rapidly toggling notifications on/off
 
 ### Time-based Tests
+
 - [ ] Schedule notification for 1 minute from now
 - [ ] Verify notification arrives on time
 - [ ] Schedule for each day of week
@@ -461,13 +502,13 @@ Example variations:
 
 ## Risks & Mitigations
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|--------|------------|
-| Notifications don't deliver reliably | Medium | Critical | Test extensively, monitor delivery rates |
-| Users deny permissions | High | High | Explain value clearly, allow later re-request |
-| Notifications annoy users | Medium | High | Allow easy disable, don't over-notify |
-| Deep linking breaks | Low | Medium | Test all navigation paths thoroughly |
-| Timezone issues | Low | Medium | Use UTC, convert to local time correctly |
+| Risk                                 | Likelihood | Impact   | Mitigation                                    |
+| ------------------------------------ | ---------- | -------- | --------------------------------------------- |
+| Notifications don't deliver reliably | Medium     | Critical | Test extensively, monitor delivery rates      |
+| Users deny permissions               | High       | High     | Explain value clearly, allow later re-request |
+| Notifications annoy users            | Medium     | High     | Allow easy disable, don't over-notify         |
+| Deep linking breaks                  | Low        | Medium   | Test all navigation paths thoroughly          |
+| Timezone issues                      | Low        | Medium   | Use UTC, convert to local time correctly      |
 
 ## Performance Optimization
 
@@ -479,6 +520,7 @@ Example variations:
 ## Dependencies for Next Phase
 
 Phase 9 (Weekly Iteration AI) requires:
+
 - ✅ Users checking in on habits
 - ✅ Week of data collected
 - ✅ Notifications bringing users back

@@ -7,11 +7,13 @@ This folder contains comprehensive technical guides for all major integrations i
 ### Core Infrastructure
 
 #### [Supabase Integration](./supabase-integration.md)
+
 Complete backend setup including authentication, database, Edge Functions, and real-time subscriptions.
 
 **When to use**: Setting up the backend, configuring database schema, implementing auth, deploying Edge Functions.
 
 **Key Topics**:
+
 - Database schema and migrations
 - Row Level Security (RLS) policies
 - Authentication (email + OAuth)
@@ -22,11 +24,13 @@ Complete backend setup including authentication, database, Edge Functions, and r
 ---
 
 #### [OpenAI Integration](./openai-integration.md)
+
 AI-powered features using GPT-4o-mini for failure analysis, habit generation, and weekly iterations.
 
 **When to use**: Implementing AI features, optimizing prompts, managing costs, handling AI responses.
 
 **Key Topics**:
+
 - Failure Profile analysis
 - Habit Stack generation
 - Weekly Iteration insights
@@ -39,11 +43,13 @@ AI-powered features using GPT-4o-mini for failure analysis, habit generation, an
 ### Frontend & Mobile
 
 #### [Expo & React Native Setup](./expo-react-native-setup.md)
+
 Complete mobile app setup with Expo Router, state management, and UI components.
 
 **When to use**: Initializing the project, setting up navigation, building components, configuring TypeScript.
 
 **Key Topics**:
+
 - Project initialization
 - Folder structure
 - Expo Router setup
@@ -55,11 +61,13 @@ Complete mobile app setup with Expo Router, state management, and UI components.
 ---
 
 #### [Push Notifications](./push-notifications.md)
+
 Daily habit reminders using Expo Notifications with smart scheduling and user controls.
 
 **When to use**: Setting up reminders, scheduling notifications, implementing notification settings.
 
 **Key Topics**:
+
 - Permission requests
 - Notification scheduling
 - Smart default timing
@@ -72,11 +80,13 @@ Daily habit reminders using Expo Notifications with smart scheduling and user co
 ### Authentication
 
 #### [Google OAuth Integration](./google-oauth-integration.md)
+
 Google Sign-In implementation using Supabase Auth and Expo.
 
 **When to use**: Adding social authentication, reducing signup friction, implementing OAuth flow.
 
 **Key Topics**:
+
 - Google Cloud Platform setup
 - OAuth credentials configuration
 - Supabase provider setup
@@ -89,11 +99,13 @@ Google Sign-In implementation using Supabase Auth and Expo.
 ### AI Framework
 
 #### [Mastra AI Integration](./mastra-ai-integration.md)
+
 TypeScript agent framework for orchestrating AI features with workflows, memory, and tool-equipped agents.
 
 **When to use**: Replacing Edge Function AI calls with structured workflows, adding persistent user memory, building a conversational habit coach.
 
 **Key Topics**:
+
 - Agents (failure analyst, iteration coach, habit coach)
 - Workflows (multi-step failure analysis, weekly iteration)
 - Memory (working memory, semantic recall)
@@ -106,11 +118,13 @@ TypeScript agent framework for orchestrating AI features with workflows, memory,
 ### Analytics & Monitoring
 
 #### [Analytics Integration](./analytics-integration.md)
+
 User behavior tracking and metrics using PostHog (or Mixpanel/Amplitude).
 
 **When to use**: Tracking events, measuring retention, analyzing user behavior, A/B testing.
 
 **Key Topics**:
+
 - Event tracking
 - User identification
 - Key metrics (Insight Flywheel validation)
@@ -124,11 +138,13 @@ User behavior tracking and metrics using PostHog (or Mixpanel/Amplitude).
 ### Deployment
 
 #### [EAS Build & Deployment](./eas-build-deployment.md)
+
 Building and deploying iOS/Android apps using Expo Application Services.
 
 **When to use**: Creating builds, submitting to app stores, managing versions, implementing CI/CD.
 
 **Key Topics**:
+
 - iOS and Android setup
 - Build profiles (development, preview, production)
 - App Store / Google Play submission
@@ -142,15 +158,18 @@ Building and deploying iOS/Android apps using Expo Application Services.
 ## Quick Start by Phase
 
 ### Phase 1: Foundation
+
 1. [Expo & React Native Setup](./expo-react-native-setup.md) - Initialize project
 2. [Supabase Integration](./supabase-integration.md) - Set up backend
 3. [Google OAuth Integration](./google-oauth-integration.md) - Add social auth
 
 ### Phase 2-3: Core Features
+
 1. [OpenAI Integration](./openai-integration.md) - Implement AI features
 2. [Push Notifications](./push-notifications.md) - Add habit reminders
 
 ### Phase 4-5: Growth & Iteration
+
 1. [Mastra AI Integration](./mastra-ai-integration.md) - Structured AI workflows
 2. [Analytics Integration](./analytics-integration.md) - Track metrics
 3. [EAS Build & Deployment](./eas-build-deployment.md) - Deploy to stores
@@ -206,6 +225,7 @@ EXPO_PUBLIC_APP_VERSION=1.0.0
 ## Common Integration Patterns
 
 ### API Call Pattern
+
 ```typescript
 // 1. Call from component
 const result = await apiFunction();
@@ -224,6 +244,7 @@ trackEvent('event_name', { properties });
 ```
 
 ### Authentication Flow
+
 ```typescript
 // 1. User signs in (email or Google)
 const { data } = await supabase.auth.signInWithPassword();
@@ -249,18 +270,21 @@ if (!profile?.onboarding_completed_at) {
 ## Testing Strategy
 
 ### Local Development
+
 1. Use Supabase local instance: `supabase start`
 2. Mock OpenAI responses for faster iteration
 3. Test notifications on physical device
 4. Use PostHog local mode or mock analytics
 
 ### Preview/Staging
+
 1. Deploy to preview channel: `eas build --profile preview`
 2. Test with beta users via TestFlight / Internal Track
 3. Monitor analytics for errors
 4. Test OTA updates
 
 ### Production
+
 1. Deploy via EAS: `eas build --profile production`
 2. Submit to app stores
 3. Monitor crash reports and analytics
@@ -268,17 +292,18 @@ if (!profile?.onboarding_completed_at) {
 
 ## Cost Breakdown (MVP, ~100 users)
 
-| Service | Plan | Monthly Cost |
-|---------|------|--------------|
-| Supabase | Free | $0 |
-| OpenAI (GPT-4o-mini) | Pay-as-you-go | ~$5 |
-| Expo EAS Build | Production | $29 |
-| PostHog | Free | $0 |
-| Apple Developer | Annual | $99/year ≈ $8.25/mo |
-| Google Play | One-time | $25 ≈ $2/mo |
-| **Total** | | **~$44.25/mo** |
+| Service              | Plan          | Monthly Cost        |
+| -------------------- | ------------- | ------------------- |
+| Supabase             | Free          | $0                  |
+| OpenAI (GPT-4o-mini) | Pay-as-you-go | ~$5                 |
+| Expo EAS Build       | Production    | $29                 |
+| PostHog              | Free          | $0                  |
+| Apple Developer      | Annual        | $99/year ≈ $8.25/mo |
+| Google Play          | One-time      | $25 ≈ $2/mo         |
+| **Total**            |               | **~$44.25/mo**      |
 
 ### Cost Optimization Tips
+
 - Use OTA updates instead of new builds when possible
 - Mock OpenAI in development
 - Sample high-frequency analytics events
@@ -289,26 +314,31 @@ if (!profile?.onboarding_completed_at) {
 ### Quick Debug Checklist
 
 **Can't authenticate?**
+
 - Check Supabase URL and anon key
 - Verify Google OAuth credentials
 - Check redirect URIs
 
 **AI features not working?**
+
 - Verify OpenAI API key in Supabase secrets
 - Check Edge Function logs
 - Test with fallback responses
 
 **Notifications not showing?**
+
 - Test on physical device (not simulator)
 - Check permissions granted
 - Verify notification channel (Android)
 
 **Build failed?**
+
 - Check EAS credentials
 - Verify bundle ID / package name
 - Review build logs in EAS dashboard
 
 **Analytics not tracking?**
+
 - Verify PostHog initialized
 - Check API key
 - Look for console logs in development
@@ -326,6 +356,7 @@ if (!profile?.onboarding_completed_at) {
 ## Contributing
 
 When adding new integrations:
+
 1. Create a new guide following the existing format
 2. Include setup, implementation, testing, and troubleshooting sections
 3. Add code examples with comments

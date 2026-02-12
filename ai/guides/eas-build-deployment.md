@@ -90,6 +90,7 @@ eas init
    - Accept license agreement
 
 2. **Create App ID**
+
    ```bash
    # EAS will handle this automatically, but you can do it manually:
    # 1. Go to Apple Developer Console
@@ -183,11 +184,7 @@ eas credentials
       },
       "package": "com.habitdx.app",
       "versionCode": 1,
-      "permissions": [
-        "RECEIVE_BOOT_COMPLETED",
-        "VIBRATE",
-        "SCHEDULE_EXACT_ALARM"
-      ],
+      "permissions": ["RECEIVE_BOOT_COMPLETED", "VIBRATE", "SCHEDULE_EXACT_ALARM"],
       "config": {
         "googleSignIn": {
           "apiKey": "YOUR_ANDROID_API_KEY",
@@ -428,11 +425,13 @@ eas update --branch preview --message "Test: New UI"
 ### Limitations
 
 OTA updates can update:
+
 - JavaScript code
 - Assets (images, fonts)
 - React Native components
 
 OTA updates **cannot** update:
+
 - Native code changes
 - Dependencies requiring native builds
 - App permissions
@@ -456,24 +455,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Setup Expo
         uses: expo/expo-github-action@v8
         with:
           expo-version: latest
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
-      
+
       - name: Build iOS
         run: eas build --platform ios --profile production --non-interactive
-      
+
       - name: Build Android
         run: eas build --platform android --profile production --non-interactive
 ```
@@ -497,10 +496,10 @@ jobs:
           expo-version: latest
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
-      
+
       - name: Submit iOS
         run: eas submit --platform ios --latest
-      
+
       - name: Submit Android
         run: eas submit --platform android --latest
 ```
@@ -603,11 +602,11 @@ export async function checkForUpdates() {
 
 ### EAS Build Pricing (as of 2024)
 
-| Plan | Cost | Builds/Month | Best For |
-|------|------|--------------|----------|
-| Free | $0 | 30 | Development |
-| Production | $29/mo | Unlimited | Production apps |
-| Enterprise | Custom | Unlimited | Large teams |
+| Plan       | Cost   | Builds/Month | Best For        |
+| ---------- | ------ | ------------ | --------------- |
+| Free       | $0     | 30           | Development     |
+| Production | $29/mo | Unlimited    | Production apps |
+| Enterprise | Custom | Unlimited    | Large teams     |
 
 ### Optimization Tips
 

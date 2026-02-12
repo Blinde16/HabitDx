@@ -14,14 +14,14 @@ Mastra is an open-source TypeScript agent framework that can orchestrate HabitDx
 
 ### Why Adopt Mastra
 
-| Current Approach (Edge Functions) | With Mastra |
-|-----------------------------------|-------------|
-| Single-shot OpenAI calls with static prompts | Multi-step workflows with branching logic |
-| No memory between sessions | Working memory remembers user preferences and coaching history |
-| Manual Zod validation of AI responses | Built-in schema validation at every workflow step |
-| Separate error handling per function | Unified fallback and retry patterns |
-| No observability into AI reasoning | Tracing dashboard shows every step and decision |
-| Adding new AI features means new Edge Functions | Register new agents/workflows on a central Mastra instance |
+| Current Approach (Edge Functions)               | With Mastra                                                    |
+| ----------------------------------------------- | -------------------------------------------------------------- |
+| Single-shot OpenAI calls with static prompts    | Multi-step workflows with branching logic                      |
+| No memory between sessions                      | Working memory remembers user preferences and coaching history |
+| Manual Zod validation of AI responses           | Built-in schema validation at every workflow step              |
+| Separate error handling per function            | Unified fallback and retry patterns                            |
+| No observability into AI reasoning              | Tracing dashboard shows every step and decision                |
+| Adding new AI features means new Edge Functions | Register new agents/workflows on a central Mastra instance     |
 
 ### High-Value Integration Points
 
@@ -198,10 +198,7 @@ import { createTool } from '@mastra/core/tools';
 import { createClient } from '@supabase/supabase-js';
 import { z } from 'zod';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 
 export const getUserProfile = createTool({
   id: 'get-user-profile',
@@ -245,12 +242,14 @@ export const getHabitLogs = createTool({
     days: z.number().default(7),
   }),
   outputSchema: z.object({
-    logs: z.array(z.object({
-      habitName: z.string(),
-      completedAt: z.string().nullable(),
-      obstacle: z.string().nullable(),
-      date: z.string(),
-    })),
+    logs: z.array(
+      z.object({
+        habitName: z.string(),
+        completedAt: z.string().nullable(),
+        obstacle: z.string().nullable(),
+        date: z.string(),
+      })
+    ),
   }),
   execute: async ({ inputData }) => {
     const since = new Date();
@@ -258,12 +257,14 @@ export const getHabitLogs = createTool({
 
     const { data, error } = await supabase
       .from('habit_logs')
-      .select(`
+      .select(
+        `
         completed_at,
         obstacle,
         date,
         habits(name)
-      `)
+      `
+      )
       .eq('user_id', inputData.userId)
       .gte('date', since.toISOString().split('T')[0])
       .order('date', { ascending: true });
@@ -286,10 +287,12 @@ export const storeFailureProfile = createTool({
   description: 'Stores the AI-generated failure profile in Supabase',
   inputSchema: z.object({
     userId: z.string().uuid(),
-    failurePatterns: z.array(z.object({
-      name: z.string(),
-      description: z.string(),
-    })),
+    failurePatterns: z.array(
+      z.object({
+        name: z.string(),
+        description: z.string(),
+      })
+    ),
     rootCauses: z.array(z.string()),
     personalityInsights: z.array(z.string()),
     recommendations: z.array(z.string()),
@@ -298,14 +301,17 @@ export const storeFailureProfile = createTool({
   execute: async ({ inputData }) => {
     const { data, error } = await supabase
       .from('habit_failure_profiles')
-      .upsert({
-        user_id: inputData.userId,
-        failure_patterns: inputData.failurePatterns,
-        root_causes: inputData.rootCauses,
-        personality_insights: inputData.personalityInsights,
-        recommendations: inputData.recommendations,
-        generated_at: new Date().toISOString(),
-      }, { onConflict: 'user_id' })
+      .upsert(
+        {
+          user_id: inputData.userId,
+          failure_patterns: inputData.failurePatterns,
+          root_causes: inputData.rootCauses,
+          personality_insights: inputData.personalityInsights,
+          recommendations: inputData.recommendations,
+          generated_at: new Date().toISOString(),
+        },
+        { onConflict: 'user_id' }
+      )
       .select('id')
       .single();
 
@@ -334,7 +340,7 @@ export const habitAnalyst = new Agent({
   name: 'Habit Failure Analyst',
   instructions: [
     'You are an expert habit coach specializing in diagnosing why habits fail.',
-    'Use the get-user-profile tool to fetch the user\'s onboarding data.',
+    "Use the get-user-profile tool to fetch the user's onboarding data.",
     'Analyze their past habits, constraints, energy patterns, and identity goals.',
     'Identify 2-3 specific failure patterns based on systems-level issues (timing, energy, environment).',
     'Focus on design problems, not willpower or motivation.',
@@ -343,7 +349,7 @@ export const habitAnalyst = new Agent({
     'Your output should include:',
     '- failure_patterns: Array of {name, description} identifying specific patterns',
     '- root_causes: Array of strings explaining underlying system issues',
-    '- personality_insights: Array of strings about the user\'s relationship with habits',
+    "- personality_insights: Array of strings about the user's relationship with habits",
     '- recommendations: Array of strings with actionable design-based suggestions',
   ],
   model: 'openai/gpt-4o-mini',
@@ -464,10 +470,12 @@ const analyzeWithAIStep = createStep({
     identityGoal: z.string(),
   }),
   outputSchema: z.object({
-    failurePatterns: z.array(z.object({
-      name: z.string(),
-      description: z.string(),
-    })),
+    failurePatterns: z.array(
+      z.object({
+        name: z.string(),
+        description: z.string(),
+      })
+    ),
     rootCauses: z.array(z.string()),
     personalityInsights: z.array(z.string()),
     recommendations: z.array(z.string()),
@@ -502,10 +510,12 @@ const analyzeWithAIStep = createStep({
 const storeResultsStep = createStep({
   id: 'store-results',
   inputSchema: z.object({
-    failurePatterns: z.array(z.object({
-      name: z.string(),
-      description: z.string(),
-    })),
+    failurePatterns: z.array(
+      z.object({
+        name: z.string(),
+        description: z.string(),
+      })
+    ),
     rootCauses: z.array(z.string()),
     personalityInsights: z.array(z.string()),
     recommendations: z.array(z.string()),
@@ -522,13 +532,16 @@ const storeResultsStep = createStep({
 
     const { data, error } = await supabase
       .from('habit_failure_profiles')
-      .upsert({
-        failure_patterns: inputData.failurePatterns,
-        root_causes: inputData.rootCauses,
-        personality_insights: inputData.personalityInsights,
-        recommendations: inputData.recommendations,
-        generated_at: new Date().toISOString(),
-      }, { onConflict: 'user_id' })
+      .upsert(
+        {
+          failure_patterns: inputData.failurePatterns,
+          root_causes: inputData.rootCauses,
+          personality_insights: inputData.personalityInsights,
+          recommendations: inputData.recommendations,
+          generated_at: new Date().toISOString(),
+        },
+        { onConflict: 'user_id' }
+      )
       .select('id')
       .single();
 
@@ -658,8 +671,8 @@ export async function chatWithCoach(userId: string, message: string) {
 
   const response = await agent.generate({
     messages: [{ role: 'user', content: message }],
-    threadId: `coaching_${userId}`,   // Groups conversations
-    resourceId: userId,                // Links working memory to user
+    threadId: `coaching_${userId}`, // Groups conversations
+    resourceId: userId, // Links working memory to user
   });
 
   return response.text;
@@ -739,18 +752,22 @@ SUPABASE_DB_CONNECTION_STRING=postgresql://...
 You don't need to migrate everything at once. Adopt Mastra incrementally:
 
 **Step 1: Deploy Mastra server alongside Supabase**
+
 - Keep existing Edge Functions running
 - Add Mastra server for new AI features
 
 **Step 2: Migrate `analyze-failure` to a Mastra workflow**
+
 - Replace the Edge Function with `analyzeFailureWorkflow`
 - Update the React Native app to call Mastra instead
 
 **Step 3: Migrate remaining AI functions**
+
 - Move `generate-habits` and `weekly-iteration` to Mastra
 - Retire the Edge Functions
 
 **Step 4: Add memory and coaching (post-MVP)**
+
 - Enable working memory for user context persistence
 - Add the conversational habit coach agent
 
@@ -764,7 +781,10 @@ serve(async (req) => {
   const completion = await openai.chat.completions.create({
     model: 'gpt-4o-mini',
     response_format: { type: 'json_object' },
-    messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: JSON.stringify(profile.data) }],
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: JSON.stringify(profile.data) },
+    ],
   });
   const result = JSON.parse(completion.choices[0].message.content);
   await supabase.from('habit_failure_profiles').upsert(result);
@@ -786,13 +806,13 @@ The workflow handles data fetching, AI analysis, validation, storage, and error 
 
 ## Cost Impact
 
-| Component | Without Mastra | With Mastra |
-|-----------|---------------|-------------|
-| OpenAI API | ~$5/month | ~$5/month (same model, same calls) |
-| Supabase | $0 (free tier) | $0 (free tier) |
-| Mastra hosting | N/A | $0 (Vercel free tier) or $20/month (Vercel Pro) |
-| Mastra Cloud (optional) | N/A | Free beta, ~$29/month post-beta |
-| **Total added cost** | | **$0-$20/month** |
+| Component               | Without Mastra | With Mastra                                     |
+| ----------------------- | -------------- | ----------------------------------------------- |
+| OpenAI API              | ~$5/month      | ~$5/month (same model, same calls)              |
+| Supabase                | $0 (free tier) | $0 (free tier)                                  |
+| Mastra hosting          | N/A            | $0 (Vercel free tier) or $20/month (Vercel Pro) |
+| Mastra Cloud (optional) | N/A            | Free beta, ~$29/month post-beta                 |
+| **Total added cost**    |                | **$0-$20/month**                                |
 
 Mastra itself is open source and free. The only added cost is hosting the Mastra server, which fits within Vercel's free tier at MVP scale.
 
@@ -879,6 +899,7 @@ describe('Failure Analysis Workflow', () => {
 **Symptom**: Agent forgets user context between sessions.
 
 **Solutions**:
+
 1. Verify `SUPABASE_DB_CONNECTION_STRING` is set correctly
 2. Ensure `resourceId` is passed consistently (use the Supabase user UUID)
 3. Check that `scope: 'resource'` is set in working memory config
@@ -888,6 +909,7 @@ describe('Failure Analysis Workflow', () => {
 **Symptom**: Workflow stops mid-execution.
 
 **Solutions**:
+
 1. Check Mastra dev server logs for step-level errors
 2. Verify Zod schemas match the actual data shapes
 3. Test each step individually before composing
@@ -897,6 +919,7 @@ describe('Failure Analysis Workflow', () => {
 **Symptom**: Tools fail with database errors.
 
 **Solutions**:
+
 1. Use the service role key (not the anon key) in Mastra tools
 2. Verify the connection string uses the correct port (5432 for direct, 6543 for pooled)
 3. Check that RLS policies allow service role access

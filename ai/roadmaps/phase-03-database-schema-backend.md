@@ -30,6 +30,7 @@ Design and implement the complete database schema for HabitDx using Supabase Pos
 ## Database Tables
 
 ### 1. user_profiles
+
 Extended user data beyond Supabase auth.users
 
 ```sql
@@ -38,13 +39,13 @@ CREATE TABLE user_profiles (
   full_name TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
-  
+
   -- Onboarding data
   past_failures TEXT[], -- Array of past habit attempts
   constraints JSONB, -- Schedule, energy patterns, life constraints
   goals TEXT[], -- User's habit goals
   onboarding_completed BOOLEAN DEFAULT FALSE,
-  
+
   -- Settings
   timezone TEXT DEFAULT 'America/New_York',
   notification_enabled BOOLEAN DEFAULT TRUE,
@@ -53,6 +54,7 @@ CREATE TABLE user_profiles (
 ```
 
 Tasks:
+
 - [ ] Create migration for user_profiles table
 - [ ] Add trigger to auto-create profile on user signup
 - [ ] Add updated_at trigger for auto-timestamp
@@ -60,6 +62,7 @@ Tasks:
 - [ ] Set up RLS policies (users can only see own profile)
 
 ### 2. habit_failure_profiles
+
 AI-generated diagnosis of user's failure patterns
 
 ```sql
@@ -67,17 +70,17 @@ CREATE TABLE habit_failure_profiles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES user_profiles(id) ON DELETE CASCADE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  
+
   -- AI Analysis
   failure_patterns TEXT[], -- e.g., ["evening energy crashes", "weekend disruption"]
   root_causes TEXT[], -- e.g., ["Poor sleep schedule", "No morning routine"]
   personality_insights JSONB, -- Structured AI analysis
   recommendations TEXT[], -- High-level suggestions
-  
+
   -- Shareability
   share_token TEXT UNIQUE, -- For public sharing
   view_count INTEGER DEFAULT 0,
-  
+
   -- Versioning
   version INTEGER DEFAULT 1,
   is_active BOOLEAN DEFAULT TRUE
@@ -85,6 +88,7 @@ CREATE TABLE habit_failure_profiles (
 ```
 
 Tasks:
+
 - [ ] Create migration for habit_failure_profiles
 - [ ] Add unique index on (user_id, is_active) where is_active=true
 - [ ] Add index on share_token
@@ -92,6 +96,7 @@ Tasks:
 - [ ] Set up RLS policies
 
 ### 3. habit_stacks
+
 Collection of habits for a user
 
 ```sql
@@ -100,24 +105,26 @@ CREATE TABLE habit_stacks (
   user_id UUID REFERENCES user_profiles(id) ON DELETE CASCADE,
   failure_profile_id UUID REFERENCES habit_failure_profiles(id) ON DELETE SET NULL,
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  
+
   -- Stack metadata
   name TEXT DEFAULT 'My Habit Stack',
   description TEXT,
   is_active BOOLEAN DEFAULT TRUE,
-  
+
   -- AI generation context
   generation_context JSONB -- Original prompt/constraints used
 );
 ```
 
 Tasks:
+
 - [ ] Create migration for habit_stacks
 - [ ] Add unique index on (user_id, is_active) where is_active=true
 - [ ] Add foreign key indexes
 - [ ] Set up RLS policies
 
 ### 4. habits
+
 Individual habit definitions
 
 ```sql
@@ -125,27 +132,28 @@ CREATE TABLE habits (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   stack_id UUID REFERENCES habit_stacks(id) ON DELETE CASCADE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  
+
   -- Habit details
   title TEXT NOT NULL, -- e.g., "Morning meditation"
   description TEXT,
   rationale TEXT, -- "Why this works for you" AI explanation
-  
+
   -- Scheduling
   frequency_type TEXT CHECK (frequency_type IN ('daily', 'weekly', 'custom')),
   frequency_days INTEGER[], -- 0=Sun, 1=Mon, etc. for weekly
   reminder_time TIME, -- Time of day for push notification
-  
+
   -- Status
   is_active BOOLEAN DEFAULT TRUE,
   archived_at TIMESTAMPTZ,
-  
+
   -- Order in stack
   display_order INTEGER DEFAULT 0
 );
 ```
 
 Tasks:
+
 - [ ] Create migration for habits table
 - [ ] Add index on (stack_id, is_active)
 - [ ] Add check constraints on frequency_type
@@ -153,6 +161,7 @@ Tasks:
 - [ ] Create trigger to validate frequency_days
 
 ### 5. habit_logs
+
 Daily check-in records
 
 ```sql
@@ -160,21 +169,22 @@ CREATE TABLE habit_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   habit_id UUID REFERENCES habits(id) ON DELETE CASCADE,
   user_id UUID REFERENCES user_profiles(id) ON DELETE CASCADE,
-  
+
   -- Check-in data
   log_date DATE NOT NULL,
   completed BOOLEAN NOT NULL,
   obstacle TEXT, -- Optional: what blocked completion
-  
+
   -- Metadata
   checked_in_at TIMESTAMPTZ DEFAULT NOW(),
   checked_in_via TEXT DEFAULT 'app', -- 'app', 'notification', 'widget'
-  
+
   UNIQUE(habit_id, log_date) -- One log per habit per day
 );
 ```
 
 Tasks:
+
 - [ ] Create migration for habit_logs
 - [ ] Add unique index on (habit_id, log_date)
 - [ ] Add index on (user_id, log_date) for queries
@@ -182,6 +192,7 @@ Tasks:
 - [ ] Create function to validate log_date isn't future
 
 ### 6. weekly_iterations
+
 AI-generated weekly insights and adjustments
 
 ```sql
@@ -190,21 +201,21 @@ CREATE TABLE weekly_iterations (
   user_id UUID REFERENCES user_profiles(id) ON DELETE CASCADE,
   stack_id UUID REFERENCES habit_stacks(id) ON DELETE SET NULL,
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  
+
   -- Week metadata
   week_start_date DATE NOT NULL,
   week_end_date DATE NOT NULL,
-  
+
   -- AI Analysis
   patterns_detected TEXT[], -- What the AI noticed
   success_rate JSONB, -- Per-habit completion rates
   adjustment_suggestion TEXT NOT NULL, -- The ONE adjustment
   adjustment_rationale TEXT, -- Why this adjustment
-  
+
   -- User interaction
   user_response TEXT CHECK (user_response IN ('accepted', 'declined', 'pending')),
   responded_at TIMESTAMPTZ,
-  
+
   -- Implementation
   implemented BOOLEAN DEFAULT FALSE,
   implementation_notes TEXT
@@ -212,6 +223,7 @@ CREATE TABLE weekly_iterations (
 ```
 
 Tasks:
+
 - [ ] Create migration for weekly_iterations
 - [ ] Add index on (user_id, week_start_date)
 - [ ] Add check constraint on dates (end > start)
@@ -221,6 +233,7 @@ Tasks:
 ## Technical Tasks
 
 ### 1. Create Database Migrations
+
 - [ ] Migration 001: user_profiles
 - [ ] Migration 002: habit_failure_profiles
 - [ ] Migration 003: habit_stacks
@@ -234,6 +247,7 @@ Tasks:
 ### 2. Implement Row Level Security (RLS)
 
 #### user_profiles
+
 ```sql
 -- Users can only view/update their own profile
 CREATE POLICY "Users can view own profile"
@@ -246,6 +260,7 @@ CREATE POLICY "Users can update own profile"
 ```
 
 Tasks:
+
 - [ ] Enable RLS on all tables
 - [ ] Create SELECT policies for each table
 - [ ] Create INSERT policies where needed
@@ -256,6 +271,7 @@ Tasks:
 ### 3. Create Database Functions
 
 #### auto_update_timestamp
+
 ```sql
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
@@ -267,6 +283,7 @@ $$ LANGUAGE plpgsql;
 ```
 
 Functions to create:
+
 - [ ] `update_updated_at_column()` - Auto-update timestamps
 - [ ] `create_user_profile()` - Auto-create profile on signup
 - [ ] `generate_share_token()` - Unique shareable URLs
@@ -274,12 +291,14 @@ Functions to create:
 - [ ] `get_habit_completion_rate()` - Calculate success metrics
 
 ### 4. Create Database Triggers
+
 - [ ] Trigger: auto-update updated_at on user_profiles
 - [ ] Trigger: create profile after auth.users insert
 - [ ] Trigger: validate habit log dates
 - [ ] Trigger: increment share_token view count
 
 ### 5. Create Seed Data for Testing
+
 ```sql
 -- supabase/seed.sql
 INSERT INTO user_profiles (id, full_name, ...)
@@ -295,6 +314,7 @@ VALUES (...);
 - [ ] Document seed data in README
 
 ### 6. Build TypeScript Types
+
 ```typescript
 // types/database.ts
 export interface UserProfile {
@@ -317,6 +337,7 @@ export interface HabitFailureProfile {
 - [ ] Export types for use across app
 
 ### 7. Create Database Client Utilities
+
 ```typescript
 // lib/db.ts
 export const getProfile = async (userId: string) => {
@@ -366,6 +387,7 @@ export const getProfile = async (userId: string) => {
 ## Testing Checklist
 
 ### Schema Validation
+
 - [ ] All tables created successfully
 - [ ] Foreign keys enforce relationships
 - [ ] Check constraints work (e.g., frequency_type)
@@ -373,6 +395,7 @@ export const getProfile = async (userId: string) => {
 - [ ] Default values applied correctly
 
 ### RLS Testing
+
 - [ ] User A cannot access User B's profile
 - [ ] User A cannot access User B's habits
 - [ ] User A cannot access User B's logs
@@ -380,6 +403,7 @@ export const getProfile = async (userId: string) => {
 - [ ] Unauthenticated users blocked from all tables
 
 ### Performance Testing
+
 - [ ] Query user profile by ID < 10ms
 - [ ] Query habits for stack < 20ms
 - [ ] Query habit logs for week < 30ms
@@ -387,6 +411,7 @@ export const getProfile = async (userId: string) => {
 - [ ] Complex joins perform acceptably
 
 ### Data Integrity
+
 - [ ] Deleting user cascades to all related data
 - [ ] Cannot create habit without stack
 - [ ] Cannot create log for non-existent habit
@@ -395,16 +420,17 @@ export const getProfile = async (userId: string) => {
 
 ## Risks & Mitigations
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|--------|------------|
-| RLS policy bugs leak data | Medium | Critical | Thorough testing with multiple test users |
-| Poor query performance | Low | Medium | Add indexes early, monitor queries |
-| Schema changes break app | Medium | High | Use migrations, never alter directly |
-| Foreign key cascades delete too much | Low | High | Test cascade behavior thoroughly |
+| Risk                                 | Likelihood | Impact   | Mitigation                                |
+| ------------------------------------ | ---------- | -------- | ----------------------------------------- |
+| RLS policy bugs leak data            | Medium     | Critical | Thorough testing with multiple test users |
+| Poor query performance               | Low        | Medium   | Add indexes early, monitor queries        |
+| Schema changes break app             | Medium     | High     | Use migrations, never alter directly      |
+| Foreign key cascades delete too much | Low        | High     | Test cascade behavior thoroughly          |
 
 ## Dependencies for Next Phase
 
 Phase 4 (Smart Onboarding) requires:
+
 - ✅ user_profiles table ready
 - ✅ habit_failure_profiles table ready
 - ✅ RLS policies working

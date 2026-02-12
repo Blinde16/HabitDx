@@ -31,12 +31,13 @@ Build the AI-powered Habit Failure Profile generator using GPT-4o-mini. This is 
 ## AI Failure Profile Components
 
 ### Profile Structure
+
 ```typescript
 interface HabitFailureProfile {
   id: string;
   user_id: string;
   created_at: string;
-  
+
   // AI-generated insights
   failure_patterns: string[]; // 2-4 key patterns
   root_causes: string[]; // 2-3 root causes
@@ -46,11 +47,11 @@ interface HabitFailureProfile {
     archetype: string; // e.g., "Perfectionist", "Overcommitter"
   };
   recommendations: string[]; // 3-5 high-level suggestions
-  
+
   // Sharing
   share_token: string; // Unique URL token
   view_count: number;
-  
+
   // Metadata
   version: number;
   is_active: boolean;
@@ -58,6 +59,7 @@ interface HabitFailureProfile {
 ```
 
 ### Example Profile Output
+
 ```
 🎯 Your Habit Failure Profile
 
@@ -72,8 +74,8 @@ ROOT CAUSES:
 • All-or-nothing mindset creating shame spirals
 
 YOUR SUPERPOWER:
-You're a "High-Achiever Optimizer" - you love systems and improvement. 
-Your strength is your analytical mind. Your weakness? That same mind 
+You're a "High-Achiever Optimizer" - you love systems and improvement.
+Your strength is your analytical mind. Your weakness? That same mind
 convinces you to quit when results aren't immediate.
 
 WHAT YOU NEED:
@@ -85,6 +87,7 @@ WHAT YOU NEED:
 ## Technical Tasks
 
 ### 1. Create Supabase Edge Function
+
 ```typescript
 // supabase/functions/analyze-failure/index.ts
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
@@ -102,6 +105,7 @@ serve(async (req) => {
 ```
 
 Tasks:
+
 - [ ] Create `supabase/functions/analyze-failure/` directory
 - [ ] Initialize Deno function
 - [ ] Add OpenAI API integration
@@ -113,6 +117,7 @@ Tasks:
 - [ ] Deploy and test function
 
 ### 2. Design AI Prompt Engineering
+
 ```typescript
 const constructPrompt = (userData: OnboardingData) => {
   return `You are an expert behavioral psychologist analyzing why someone's habits fail.
@@ -154,6 +159,7 @@ Return ONLY valid JSON matching this schema:
 ```
 
 Tasks:
+
 - [ ] Write initial prompt template
 - [ ] Test prompt with sample data
 - [ ] Iterate on prompt to reduce generic responses
@@ -163,6 +169,7 @@ Tasks:
 - [ ] Document prompt rationale
 
 ### 3. Implement OpenAI API Integration
+
 ```typescript
 // lib/openai.ts
 import OpenAI from 'openai';
@@ -194,6 +201,7 @@ export async function generateFailureProfile(prompt: string) {
 ```
 
 Tasks:
+
 - [ ] Install OpenAI SDK in Edge Function
 - [ ] Configure API key in Supabase secrets
 - [ ] Implement API call with error handling
@@ -203,11 +211,13 @@ Tasks:
 - [ ] Validate JSON response structure
 
 ### 4. Build Profile Display Screen
+
 ```
 app/(tabs)/profile.tsx
 ```
 
 UI Components:
+
 - [ ] Profile header with user name
 - [ ] "Failure Patterns" section
   - List with icons for each pattern
@@ -228,12 +238,14 @@ UI Components:
 - [ ] "Regenerate Profile" button (secondary)
 
 Design:
+
 - [ ] Use cards for visual separation
 - [ ] Add emoji/icons for personality
 - [ ] Highlight key insights
 - [ ] Make it screenshot-worthy
 
 ### 5. Implement Share Functionality
+
 ```typescript
 // lib/sharing.ts
 export const generateShareToken = () => {
@@ -247,7 +259,7 @@ export const getShareUrl = (token: string) => {
 
 export const shareProfile = async (token: string) => {
   const url = getShareUrl(token);
-  
+
   if (Platform.OS === 'ios') {
     await Share.share({ url, message: 'Check out my Habit Failure Profile!' });
   } else {
@@ -257,6 +269,7 @@ export const shareProfile = async (token: string) => {
 ```
 
 Tasks:
+
 - [ ] Create share token generation function
 - [ ] Add share_token column to profiles (already in schema)
 - [ ] Implement share URL creation
@@ -266,11 +279,13 @@ Tasks:
 - [ ] Test sharing on iOS and Android
 
 ### 6. Create Public Profile View
+
 ```
 app/share/[token].tsx
 ```
 
 For users who receive a shared link:
+
 - [ ] Public route (no auth required)
 - [ ] Fetch profile by share_token
 - [ ] Display profile in read-only mode
@@ -280,6 +295,7 @@ For users who receive a shared link:
 - [ ] Handle invalid/expired tokens
 
 ### 7. Add Profile Caching & Versioning
+
 - [ ] Check for existing active profile before generating
 - [ ] Only regenerate if user explicitly requests
 - [ ] Set is_active=false on old profiles when regenerating
@@ -287,6 +303,7 @@ For users who receive a shared link:
 - [ ] Allow viewing profile history (P1 feature)
 
 ### 8. Implement Error Handling
+
 ```typescript
 // Handle various failure modes
 try {
@@ -306,6 +323,7 @@ try {
 ```
 
 Error scenarios:
+
 - [ ] OpenAI API rate limit hit
 - [ ] OpenAI API timeout
 - [ ] Invalid API response format
@@ -314,6 +332,7 @@ Error scenarios:
 - [ ] Network errors
 
 ### 9. Add Loading States
+
 - [ ] Show "Analyzing..." screen during generation
 - [ ] Animated progress indicator
 - [ ] Encouraging messages while waiting
@@ -323,6 +342,7 @@ Error scenarios:
 ## AI Prompt Optimization Strategy
 
 ### Iteration Plan
+
 1. **Version 1:** Basic prompt, test for completeness
 2. **Version 2:** Add specificity requirements, reduce generic responses
 3. **Version 3:** Add few-shot examples of good profiles
@@ -330,6 +350,7 @@ Error scenarios:
 5. **Version 5:** A/B test against user satisfaction scores
 
 ### Prompt Testing
+
 - [ ] Create test suite with 10 diverse user profiles
 - [ ] Generate profiles for each test case
 - [ ] Rate each profile for:
@@ -341,6 +362,7 @@ Error scenarios:
 - [ ] Document prompt version history
 
 ### Quality Checks
+
 - [ ] Profile doesn't repeat user's exact words
 - [ ] Insights are surprising/non-obvious
 - [ ] Recommendations are specific (not "try harder")
@@ -372,6 +394,7 @@ Error scenarios:
 ## Testing Checklist
 
 ### Edge Function Tests
+
 - [ ] Function deploys successfully
 - [ ] Authentication check works
 - [ ] Fetches user onboarding data
@@ -383,6 +406,7 @@ Error scenarios:
 - [ ] Handles errors gracefully
 
 ### AI Quality Tests
+
 - [ ] Generate 10 profiles from test data
 - [ ] Verify each profile is unique
 - [ ] Check for generic phrases
@@ -392,6 +416,7 @@ Error scenarios:
 - [ ] Test with maximum onboarding data
 
 ### UI Tests
+
 - [ ] Profile screen displays all sections
 - [ ] Text is readable and well-formatted
 - [ ] Share button works on iOS
@@ -401,6 +426,7 @@ Error scenarios:
 - [ ] Loading states show during generation
 
 ### Share Tests
+
 - [ ] Share URL opens in browser
 - [ ] Public profile loads without auth
 - [ ] View count increments
@@ -408,6 +434,7 @@ Error scenarios:
 - [ ] Meta tags render for social preview
 
 ### Edge Cases
+
 - [ ] User with no onboarding data
 - [ ] OpenAI API returns invalid JSON
 - [ ] OpenAI API timeout
@@ -418,17 +445,18 @@ Error scenarios:
 
 ## Risks & Mitigations
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|--------|------------|
-| AI responses feel generic | High | Critical | Extensive prompt engineering, add examples, iterate |
-| OpenAI API costs too high | Low | Medium | Use gpt-4o-mini, cache profiles, monitor usage |
-| API rate limits hit | Low | High | Implement request queue, retry logic |
-| Profiles aren't shareable-worthy | Medium | High | Focus on design, test with users, make it Instagram-worthy |
-| Generation takes too long | Low | Medium | Optimize prompt length, use streaming if possible |
+| Risk                             | Likelihood | Impact   | Mitigation                                                 |
+| -------------------------------- | ---------- | -------- | ---------------------------------------------------------- |
+| AI responses feel generic        | High       | Critical | Extensive prompt engineering, add examples, iterate        |
+| OpenAI API costs too high        | Low        | Medium   | Use gpt-4o-mini, cache profiles, monitor usage             |
+| API rate limits hit              | Low        | High     | Implement request queue, retry logic                       |
+| Profiles aren't shareable-worthy | Medium     | High     | Focus on design, test with users, make it Instagram-worthy |
+| Generation takes too long        | Low        | Medium   | Optimize prompt length, use streaming if possible          |
 
 ## Cost Optimization
 
 ### Token Usage
+
 - Average onboarding data: ~300 tokens
 - System + user prompt: ~500 tokens
 - Expected output: ~400 tokens
@@ -436,6 +464,7 @@ Error scenarios:
 - Cost (gpt-4o-mini): ~$0.0002/profile
 
 ### Optimization Strategies
+
 - [ ] Cache profiles (don't regenerate unnecessarily)
 - [ ] Limit prompt verbosity
 - [ ] Use lower temperature for consistency
@@ -443,6 +472,7 @@ Error scenarios:
 - [ ] Set monthly budget alerts
 
 ### Projected Costs (MVP)
+
 - 50 users x 1 profile = 50 profiles
 - 50 x $0.0002 = $0.01
 - Monthly estimated: <$5 for MVP validation
@@ -450,6 +480,7 @@ Error scenarios:
 ## Dependencies for Next Phase
 
 Phase 6 (Habit Stack Generation) requires:
+
 - ✅ Working Habit Failure Profile in database
 - ✅ AI infrastructure (OpenAI integration)
 - ✅ Profile data available for context

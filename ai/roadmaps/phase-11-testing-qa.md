@@ -31,11 +31,12 @@ Comprehensive testing and quality assurance phase to ensure HabitDx MVP is stabl
 ## Testing Strategy
 
 ### Testing Pyramid
+
 ```
         /\
        /  \     E2E Tests (10%)
       /    \    - Full user flows
-     /------\   
+     /------\
     /        \  Integration Tests (30%)
    /          \ - API + DB interactions
   /------------\
@@ -46,12 +47,14 @@ Comprehensive testing and quality assurance phase to ensure HabitDx MVP is stabl
 ## Unit Testing
 
 ### 1. Set Up Testing Infrastructure
+
 ```bash
 npx expo install jest-expo jest
 npm install --save-dev @testing-library/react-native @testing-library/jest-native
 ```
 
 Tasks:
+
 - [ ] Install Jest and React Native Testing Library
 - [ ] Configure jest.config.js
 - [ ] Set up test file structure (co-located with source)
@@ -59,34 +62,43 @@ Tasks:
 - [ ] Configure coverage thresholds
 
 ### 2. Utility Function Tests
+
 ```typescript
 // utils/__tests__/streaks.test.ts
 describe('calculateStreak', () => {
   it('calculates current streak correctly', () => {
-    const logs = [/* test data */];
+    const logs = [
+      /* test data */
+    ];
     expect(calculateStreak(logs)).toBe(5);
   });
-  
+
   it('handles "don\'t miss twice" logic', () => {
     // One miss shouldn't break streak
-    const logs = [/* test data with one gap */];
+    const logs = [
+      /* test data with one gap */
+    ];
     expect(calculateStreak(logs)).toBe(7);
   });
-  
+
   it('breaks streak after two consecutive misses', () => {
-    const logs = [/* test data with two gaps */];
+    const logs = [
+      /* test data with two gaps */
+    ];
     expect(calculateStreak(logs)).toBe(0);
   });
 });
 ```
 
 Test files to create:
+
 - [ ] `utils/__tests__/streaks.test.ts`
 - [ ] `utils/__tests__/schedule.test.ts`
 - [ ] `utils/__tests__/validation.test.ts`
 - [ ] `utils/__tests__/dateHelpers.test.ts`
 
 ### 3. Component Unit Tests
+
 ```typescript
 // components/__tests__/HabitCheckInCard.test.tsx
 describe('HabitCheckInCard', () => {
@@ -94,15 +106,15 @@ describe('HabitCheckInCard', () => {
     render(<HabitCheckInCard habit={mockHabit} />);
     expect(screen.getByText('Morning Pages')).toBeOnTheScreen();
   });
-  
+
   it('calls onCheckIn when tapped', () => {
     const onCheckIn = jest.fn();
     render(<HabitCheckInCard habit={mockHabit} onCheckIn={onCheckIn} />);
-    
+
     fireEvent.press(screen.getByRole('button'));
     expect(onCheckIn).toHaveBeenCalledWith(mockHabit.id, true);
   });
-  
+
   it('shows completed state when todayLog exists', () => {
     render(<HabitCheckInCard habit={mockHabit} todayLog={mockLog} />);
     expect(screen.getByText('Completed')).toBeOnTheScreen();
@@ -111,6 +123,7 @@ describe('HabitCheckInCard', () => {
 ```
 
 Components to test:
+
 - [ ] HabitCheckInCard
 - [ ] OnboardingButton
 - [ ] ProgressIndicator
@@ -119,28 +132,28 @@ Components to test:
 - [ ] Button, Input, Card (design system components)
 
 ### 4. Store Tests
+
 ```typescript
 // stores/__tests__/authStore.test.ts
 describe('authStore', () => {
   beforeEach(() => {
     // Reset store state
   });
-  
+
   it('signs in user and sets session', async () => {
     await authStore.signIn('test@example.com', 'password');
     expect(authStore.user).toBeDefined();
     expect(authStore.session).toBeDefined();
   });
-  
+
   it('handles sign in errors', async () => {
-    await expect(
-      authStore.signIn('invalid@example.com', 'wrong')
-    ).rejects.toThrow();
+    await expect(authStore.signIn('invalid@example.com', 'wrong')).rejects.toThrow();
   });
 });
 ```
 
 Stores to test:
+
 - [ ] authStore
 - [ ] onboardingStore
 - [ ] habitStackStore
@@ -149,6 +162,7 @@ Stores to test:
 - [ ] notificationStore
 
 ### 5. Database Query Tests
+
 ```typescript
 // lib/__tests__/db.test.ts
 describe('database queries', () => {
@@ -157,9 +171,11 @@ describe('database queries', () => {
     expect(error).toBeNull();
     expect(data.id).toBe('user-id');
   });
-  
+
   it('creates habit log with upsert', async () => {
-    const logData = { /* ... */ };
+    const logData = {
+      /* ... */
+    };
     const { data, error } = await createHabitLog(logData);
     expect(error).toBeNull();
     expect(data.habit_id).toBe(logData.habit_id);
@@ -168,6 +184,7 @@ describe('database queries', () => {
 ```
 
 Queries to test:
+
 - [ ] getProfile
 - [ ] createHabitLog
 - [ ] getTodayLogs
@@ -177,6 +194,7 @@ Queries to test:
 ## Integration Testing
 
 ### 1. API Integration Tests
+
 Test Edge Functions with real Supabase instance:
 
 ```typescript
@@ -185,10 +203,10 @@ describe('analyze-failure Edge Function', () => {
   it('generates failure profile from onboarding data', async () => {
     const response = await fetch('http://localhost:54321/functions/v1/analyze-failure', {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${token}` },
       body: JSON.stringify({ userId: 'test-user' }),
     });
-    
+
     const data = await response.json();
     expect(data.failure_patterns).toBeDefined();
     expect(data.failure_patterns.length).toBeGreaterThan(0);
@@ -197,11 +215,13 @@ describe('analyze-failure Edge Function', () => {
 ```
 
 Edge Functions to test:
+
 - [ ] analyze-failure
 - [ ] generate-habits
 - [ ] weekly-iteration
 
 ### 2. Database Integration Tests
+
 Test with Supabase local instance:
 
 ```bash
@@ -210,6 +230,7 @@ npm run test:integration
 ```
 
 Tests:
+
 - [ ] User signup creates profile automatically
 - [ ] RLS policies prevent unauthorized access
 - [ ] Cascade deletes work correctly
@@ -217,6 +238,7 @@ Tests:
 - [ ] Upserts prevent duplicates
 
 ### 3. Auth Flow Integration Tests
+
 - [ ] Sign up creates user and profile
 - [ ] Email verification flow works
 - [ ] Password reset flow works
@@ -227,12 +249,14 @@ Tests:
 ## End-to-End Testing
 
 ### 1. Set Up E2E Testing
+
 ```bash
 npm install --save-dev detox
 npx detox init
 ```
 
 Configure Detox for iOS and Android:
+
 - [ ] Install Detox
 - [ ] Configure .detoxrc.json
 - [ ] Set up iOS simulator/device
@@ -242,6 +266,7 @@ Configure Detox for iOS and Android:
 ### 2. Critical User Flows
 
 #### Flow 1: New User Onboarding
+
 ```typescript
 // e2e/onboarding.e2e.ts
 describe('Onboarding Flow', () => {
@@ -251,22 +276,22 @@ describe('Onboarding Flow', () => {
     await element(by.id('email-input')).typeText('test@example.com');
     await element(by.id('password-input')).typeText('password123');
     await element(by.id('create-account-button')).tap();
-    
+
     // 2. Complete onboarding screens
     await element(by.id('get-started-button')).tap();
     await element(by.id('past-failure-exercise')).tap();
     await element(by.id('next-button')).tap();
     // ... continue through all screens
-    
+
     // 3. See generated habit stack
     await waitFor(element(by.id('habit-stack-screen')))
       .toBeVisible()
       .withTimeout(10000);
     await expect(element(by.text('Your Personalized Habit Stack'))).toBeVisible();
-    
+
     // 4. Accept habit stack
     await element(by.id('accept-stack-button')).tap();
-    
+
     // 5. Land on home screen
     await expect(element(by.id('home-screen'))).toBeVisible();
   });
@@ -274,21 +299,22 @@ describe('Onboarding Flow', () => {
 ```
 
 #### Flow 2: Daily Check-in
+
 ```typescript
 describe('Daily Check-in Flow', () => {
   it('checks in on habit and logs obstacle', async () => {
     // 1. Tap habit card
     await element(by.id('habit-card-0')).tap();
     await expect(element(by.id('completed-badge'))).toBeVisible();
-    
+
     // 2. Tap second habit to skip
     await element(by.id('habit-card-1')).longPress();
     await element(by.id('skip-button')).tap();
-    
+
     // 3. Add obstacle
     await element(by.id('obstacle-input')).typeText('No time');
     await element(by.id('save-obstacle-button')).tap();
-    
+
     // 4. Verify completion summary updates
     await expect(element(by.text('1 of 2 completed'))).toBeVisible();
   });
@@ -296,21 +322,22 @@ describe('Daily Check-in Flow', () => {
 ```
 
 #### Flow 3: Weekly Insight Review
+
 ```typescript
 describe('Weekly Insight Flow', () => {
   it('views insight and accepts adjustment', async () => {
     // 1. Navigate to insights tab
     await element(by.id('insights-tab')).tap();
-    
+
     // 2. Open latest insight
     await element(by.id('latest-insight-card')).tap();
-    
+
     // 3. Review adjustment
     await expect(element(by.id('adjustment-suggestion'))).toBeVisible();
-    
+
     // 4. Accept adjustment
     await element(by.id('accept-adjustment-button')).tap();
-    
+
     // 5. Verify success message
     await expect(element(by.text('Adjustment applied!'))).toBeVisible();
   });
@@ -318,6 +345,7 @@ describe('Weekly Insight Flow', () => {
 ```
 
 E2E tests to create:
+
 - [ ] Full onboarding flow
 - [ ] Daily check-in flow
 - [ ] Weekly insight acceptance flow
@@ -327,6 +355,7 @@ E2E tests to create:
 ## Performance Testing
 
 ### 1. Load Time Benchmarks
+
 ```typescript
 // performance/__tests__/load-times.test.ts
 describe('Screen Load Performance', () => {
@@ -334,13 +363,14 @@ describe('Screen Load Performance', () => {
     const start = performance.now();
     render(<HomeScreen />);
     const end = performance.now();
-    
+
     expect(end - start).toBeLessThan(500);
   });
 });
 ```
 
 Benchmarks:
+
 - [ ] App launch: <3 seconds (cold start)
 - [ ] Home screen: <500ms
 - [ ] Check-in tap: <100ms (optimistic update)
@@ -348,23 +378,27 @@ Benchmarks:
 - [ ] Settings screen: <500ms
 
 ### 2. Animation Performance
+
 - [ ] All animations run at 60fps
 - [ ] No dropped frames during scroll
 - [ ] Check-in animation smooth on iPhone SE (2016)
 - [ ] Confetti animation doesn't lag
 
 Use React DevTools Profiler:
+
 - [ ] Identify slow components
 - [ ] Optimize re-renders
 - [ ] Memoize expensive calculations
 
 ### 3. Memory Usage
+
 - [ ] App uses <100MB RAM (iOS)
 - [ ] App uses <150MB RAM (Android)
 - [ ] No memory leaks (use Instruments/Android Profiler)
 - [ ] Images properly cached and released
 
 ### 4. Network Performance
+
 - [ ] API calls timeout after 10 seconds
 - [ ] Retry logic works on network errors
 - [ ] Offline mode queues check-ins
@@ -373,6 +407,7 @@ Use React DevTools Profiler:
 ## Security Testing
 
 ### 1. Authentication Security
+
 - [ ] Passwords never logged or exposed
 - [ ] Session tokens stored securely (SecureStore)
 - [ ] Tokens expire after inactivity
@@ -380,6 +415,7 @@ Use React DevTools Profiler:
 - [ ] HTTPS enforced for all API calls
 
 ### 2. Data Security
+
 - [ ] RLS policies tested thoroughly
 - [ ] User A cannot access User B's data
 - [ ] SQL injection prevented (parameterized queries)
@@ -387,6 +423,7 @@ Use React DevTools Profiler:
 - [ ] CSRF tokens used where applicable
 
 ### 3. Dependency Vulnerabilities
+
 ```bash
 npm audit
 npm audit fix
@@ -398,6 +435,7 @@ npm audit fix
 - [ ] Document accepted risks (if any)
 
 ### 4. Privacy Compliance
+
 - [ ] Privacy policy in place
 - [ ] Terms of service in place
 - [ ] User data can be exported
@@ -407,46 +445,50 @@ npm audit fix
 ## Beta Testing
 
 ### 1. Recruit Beta Users
+
 Target: 10-15 beta testers
 
 Criteria:
+
 - [ ] Matches target persona (28-38, tried 3+ habit apps)
 - [ ] Mix of iOS and Android users
 - [ ] Willing to provide detailed feedback
 - [ ] Available for 2-week testing period
 
 ### 2. Set Up Beta Distribution
+
 iOS:
+
 - [ ] Set up TestFlight
 - [ ] Create beta build
 - [ ] Invite beta testers
 - [ ] Provide testing instructions
 
 Android:
+
 - [ ] Set up Google Play Internal Testing track
 - [ ] Create beta build
 - [ ] Invite beta testers
 - [ ] Provide testing instructions
 
 ### 3. Beta Testing Script
+
 Provide testers with guided tasks:
 
 **Week 1:**
+
 1. Complete onboarding (time yourself)
 2. Review Habit Failure Profile (rate 1-5)
 3. Review generated habits (rate 1-5)
 4. Check in daily for 7 days
 5. Report any bugs or confusion
 
-**Week 2:**
-6. Review weekly insight (rate 1-5)
-7. Accept or decline adjustment
-8. Continue checking in
-9. Test notification behavior
-10. Complete exit survey
+**Week 2:** 6. Review weekly insight (rate 1-5) 7. Accept or decline adjustment 8. Continue checking in 9. Test notification behavior 10. Complete exit survey
 
 ### 4. Collect Feedback
+
 Create feedback form:
+
 - [ ] Overall satisfaction (1-5)
 - [ ] Onboarding experience (1-5)
 - [ ] Habit suggestions quality (1-5)
@@ -457,6 +499,7 @@ Create feedback form:
 - [ ] Open-ended: What's missing?
 
 ### 5. Iterate Based on Feedback
+
 - [ ] Categorize feedback (bugs, UX issues, feature requests)
 - [ ] Prioritize P0 issues (blockers)
 - [ ] Fix critical bugs
@@ -466,9 +509,11 @@ Create feedback form:
 ## Bug Tracking
 
 ### 1. Set Up Issue Tracker
+
 Use GitHub Issues or similar:
 
 Labels:
+
 - `bug` - Something broken
 - `p0-critical` - Must fix before launch
 - `p1-high` - Fix soon after launch
@@ -477,7 +522,9 @@ Labels:
 - `feature-request` - Not a bug, enhancement
 
 ### 2. Bug Triage Process
+
 For each bug:
+
 1. Reproduce the issue
 2. Assign severity (P0/P1/P2)
 3. Assign to team member
@@ -485,18 +532,22 @@ For each bug:
 5. Close issue
 
 ### 3. Pre-Launch Bug Criteria
+
 **Cannot launch with:**
+
 - [ ] P0 bugs (app crashes, data loss, auth broken)
 - [ ] Security vulnerabilities
 - [ ] Critical user flows broken
 
 **Can launch with:**
+
 - P1/P2 bugs (minor UI issues, edge cases)
 - Known limitations (documented)
 
 ## Test Coverage Goals
 
 ### Critical Paths (100% coverage required):
+
 - [ ] Authentication flow
 - [ ] Onboarding data save
 - [ ] Habit check-in logic
@@ -504,12 +555,14 @@ For each bug:
 - [ ] Notification scheduling
 
 ### High Priority (80% coverage target):
+
 - [ ] All Zustand stores
 - [ ] Database queries
 - [ ] Utility functions
 - [ ] Core components
 
 ### Medium Priority (50% coverage target):
+
 - [ ] UI components
 - [ ] Layout components
 - [ ] Helper functions
@@ -540,6 +593,7 @@ For each bug:
 ## Testing Checklist
 
 ### Pre-Launch Checklist
+
 - [ ] All unit tests pass
 - [ ] All integration tests pass
 - [ ] All E2E tests pass
@@ -555,7 +609,9 @@ For each bug:
 - [ ] App Store assets prepared
 
 ### Device Testing Matrix
+
 Test on:
+
 - [ ] iPhone 15 Pro (iOS 17)
 - [ ] iPhone SE 2020 (iOS 17) - low-end iOS
 - [ ] iPhone 12 (iOS 16) - older iOS version
@@ -565,16 +621,17 @@ Test on:
 
 ## Risks & Mitigations
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|--------|------------|
-| Beta users find critical bugs | Medium | High | Fix immediately, delay launch if needed |
-| Performance issues on old devices | Medium | Medium | Optimize, test on target devices |
-| Test coverage too low | Low | Medium | Prioritize critical paths, add tests |
-| Beta users give negative feedback | Low | High | Iterate quickly, address concerns |
+| Risk                              | Likelihood | Impact | Mitigation                              |
+| --------------------------------- | ---------- | ------ | --------------------------------------- |
+| Beta users find critical bugs     | Medium     | High   | Fix immediately, delay launch if needed |
+| Performance issues on old devices | Medium     | Medium | Optimize, test on target devices        |
+| Test coverage too low             | Low        | Medium | Prioritize critical paths, add tests    |
+| Beta users give negative feedback | Low        | High   | Iterate quickly, address concerns       |
 
 ## Dependencies for Next Phase
 
 Phase 12 (MVP Launch) requires:
+
 - ✅ All tests passing
 - ✅ Zero P0 bugs
 - ✅ Beta feedback positive (>4/5)

@@ -31,6 +31,7 @@ Build the core daily habit check-in interface that allows users to log habit com
 ## Daily Check-in UI Flow
 
 ### Home Screen Layout
+
 ```
 ┌─────────────────────────────┐
 │  Monday, Feb 9              │
@@ -54,6 +55,7 @@ Build the core daily habit check-in interface that allows users to log habit com
 ```
 
 ### Check-in States
+
 1. **Not Done Yet** (⬜) - Scheduled today, not checked in
 2. **Completed** (✅) - Checked in today
 3. **Missed** (❌) - Past reminder time, not done
@@ -62,17 +64,18 @@ Build the core daily habit check-in interface that allows users to log habit com
 ## Technical Tasks
 
 ### 1. Create Habit Check-in Store (Zustand)
+
 ```typescript
 // stores/checkinStore.ts
 interface CheckinStore {
   todaysHabits: HabitWithStatus[];
   loading: boolean;
-  
+
   fetchTodaysHabits: () => Promise<void>;
   checkInHabit: (habitId: string) => Promise<void>;
   undoCheckIn: (habitId: string) => Promise<void>;
   logObstacle: (habitId: string, obstacle: string) => Promise<void>;
-  
+
   // Computed
   completionRate: number; // % of scheduled habits done today
   currentStreak: (habitId: string) => number;
@@ -87,6 +90,7 @@ interface HabitWithStatus extends Habit {
 ```
 
 Tasks:
+
 - [ ] Create Zustand store
 - [ ] Implement fetchTodaysHabits (filters by schedule)
 - [ ] Implement checkInHabit (saves to habit_logs)
@@ -97,11 +101,13 @@ Tasks:
 - [ ] Add offline support with queue
 
 ### 2. Build Home Screen (Main Check-in Interface)
+
 ```
 app/(tabs)/home.tsx
 ```
 
 UI Components:
+
 - [ ] Date header (Today, Yesterday, etc.)
 - [ ] Overall completion status ("2 of 3 complete")
 - [ ] List of today's habits
@@ -111,6 +117,7 @@ UI Components:
 - [ ] Error state
 
 Design:
+
 - [ ] Large, tappable habit cards
 - [ ] Clear visual states (icons, colors)
 - [ ] Streak counter visible but subtle
@@ -118,6 +125,7 @@ Design:
 - [ ] Celebrate completion (confetti on 100%?)
 
 ### 3. Create Habit Check-in Card Component
+
 ```typescript
 // components/HabitCheckinCard.tsx
 interface HabitCheckinCardProps {
@@ -127,7 +135,12 @@ interface HabitCheckinCardProps {
   onLogObstacle: (habitId: string) => void;
 }
 
-export const HabitCheckinCard = ({ habit, onCheckIn, onUndo, onLogObstacle }: HabitCheckinCardProps) => {
+export const HabitCheckinCard = ({
+  habit,
+  onCheckIn,
+  onUndo,
+  onLogObstacle,
+}: HabitCheckinCardProps) => {
   // Render habit card with check-in button
   // Show completion state, streak, reminder time
   // Allow swipe actions for undo/obstacle
@@ -135,6 +148,7 @@ export const HabitCheckinCard = ({ habit, onCheckIn, onUndo, onLogObstacle }: Ha
 ```
 
 Card Features:
+
 - [ ] Habit title (large, readable)
 - [ ] Check-in button (entire card is tappable)
 - [ ] Completion state icon (✅ ⬜ ❌)
@@ -145,31 +159,31 @@ Card Features:
 - [ ] Swipe right to undo (if completed)
 
 ### 4. Implement Check-in Logic
+
 ```typescript
 // lib/checkin.ts
 export const checkInHabit = async (habitId: string) => {
   const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-  
-  const { data, error } = await supabase
-    .from('habit_logs')
-    .insert({
-      habit_id: habitId,
-      user_id: userId,
-      log_date: today,
-      completed: true,
-      checked_in_at: new Date().toISOString(),
-      checked_in_via: 'app',
-    });
-  
+
+  const { data, error } = await supabase.from('habit_logs').insert({
+    habit_id: habitId,
+    user_id: userId,
+    log_date: today,
+    completed: true,
+    checked_in_at: new Date().toISOString(),
+    checked_in_via: 'app',
+  });
+
   if (error && error.code === '23505') {
     // Duplicate log, handle gracefully
   }
-  
+
   return { data, error };
 };
 ```
 
 Tasks:
+
 - [ ] Implement checkInHabit function
 - [ ] Implement undoCheckIn (delete log)
 - [ ] Implement logObstacle (insert with completed=false)
@@ -179,12 +193,14 @@ Tasks:
 - [ ] Handle offline state
 
 ### 5. Build Obstacle Logging Modal
+
 ```typescript
 // components/ObstacleModal.tsx
 // Appears when user swipes left on habit card
 ```
 
 UI:
+
 - [ ] Modal or bottom sheet
 - [ ] Habit name at top
 - [ ] "What got in the way?" prompt
@@ -200,12 +216,14 @@ UI:
 - [ ] Close on background tap
 
 Logic:
+
 - [ ] Save obstacle to habit_logs
 - [ ] Mark habit as completed=false
 - [ ] Close modal after save
 - [ ] Show confirmation toast
 
 ### 6. Calculate and Display Streaks
+
 ```typescript
 // utils/streaks.ts
 export const calculateStreak = (habitId: string, logs: HabitLog[]) => {
@@ -213,19 +231,20 @@ export const calculateStreak = (habitId: string, logs: HabitLog[]) => {
   // Use "don't miss twice" logic:
   // - One miss doesn't break streak
   // - Two consecutive misses resets to 0
-  
+
   let streak = 0;
   let missedYesterday = false;
-  
+
   // Sort logs by date descending
   // Count backward from today
   // Stop when two consecutive misses found
-  
+
   return streak;
 };
 ```
 
 Streak Rules:
+
 - [ ] One missed day doesn't break streak
 - [ ] Two consecutive misses resets streak
 - [ ] Only count scheduled days
@@ -233,6 +252,7 @@ Streak Rules:
 - [ ] Celebrate milestones (7, 14, 30 days)
 
 Tasks:
+
 - [ ] Implement calculateStreak function
 - [ ] Fetch habit logs for streak calculation
 - [ ] Display streak on habit card
@@ -240,29 +260,31 @@ Tasks:
 - [ ] Don't emphasize streak breaking (positive framing)
 
 ### 7. Implement Today's Habits Filter
+
 ```typescript
 // utils/scheduling.ts
 export const isTodayScheduled = (habit: Habit): boolean => {
   const today = new Date().getDay(); // 0=Sun, 6=Sat
-  
+
   if (habit.frequency_type === 'daily') {
     return habit.frequency_days.includes(today);
   } else if (habit.frequency_type === 'weekly') {
     return habit.frequency_days.includes(today);
   }
-  
+
   return false;
 };
 
 export const getTodaysHabits = (habits: Habit[]): Habit[] => {
   return habits
-    .filter(h => h.is_active)
+    .filter((h) => h.is_active)
     .filter(isTodayScheduled)
     .sort((a, b) => a.display_order - b.display_order);
 };
 ```
 
 Tasks:
+
 - [ ] Implement isTodayScheduled
 - [ ] Implement getTodaysHabits
 - [ ] Filter by active status
@@ -270,6 +292,7 @@ Tasks:
 - [ ] Handle edge cases (no habits today)
 
 ### 8. Add Completion Status Indicator
+
 ```
 ┌─────────────────────────────┐
 │  Monday, Feb 9              │
@@ -278,6 +301,7 @@ Tasks:
 ```
 
 UI:
+
 - [ ] Progress dots or bar
 - [ ] Percentage text
 - [ ] Color changes based on completion:
@@ -289,6 +313,7 @@ UI:
 - [ ] Celebrate 100% (animation, haptic)
 
 ### 9. Implement Offline Support
+
 ```typescript
 // lib/offline.ts
 interface QueuedCheckIn {
@@ -311,18 +336,19 @@ export const queueCheckIn = async (checkIn: QueuedCheckIn) => {
 export const syncCheckIns = async () => {
   const queue = await AsyncStorage.getItem('checkin_queue');
   if (!queue) return;
-  
+
   const checkIns = JSON.parse(queue);
-  
+
   for (const checkIn of checkIns) {
     await supabase.from('habit_logs').insert(checkIn);
   }
-  
+
   await AsyncStorage.removeItem('checkin_queue');
 };
 ```
 
 Tasks:
+
 - [ ] Detect network status
 - [ ] Queue check-ins when offline
 - [ ] Sync queue when network returns
@@ -331,18 +357,22 @@ Tasks:
 - [ ] Update UI optimistically
 
 ### 10. Add Quick Actions
+
 Swipe gestures on habit cards:
+
 - [ ] **Swipe right:** Undo check-in (if completed today)
 - [ ] **Swipe left:** Log obstacle (why you didn't do it)
 - [ ] **Long press:** View habit details (description, rationale)
 
 Implement with:
+
 - [ ] React Native Gesture Handler
 - [ ] Animated feedback
 - [ ] Haptic feedback on action
 - [ ] Clear visual affordances
 
 ### 11. Create Empty States
+
 ```typescript
 // If no habits scheduled today
 <EmptyState
@@ -360,13 +390,16 @@ Implement with:
 ```
 
 Tasks:
+
 - [ ] Empty state for no habits today
 - [ ] Completion state for 100% done
 - [ ] Loading state
 - [ ] Error state (network issues)
 
 ### 12. Add Celebration Animations
+
 When user completes all habits:
+
 - [ ] Confetti animation
 - [ ] Success sound (optional)
 - [ ] Haptic feedback (3 taps)
@@ -374,6 +407,7 @@ When user completes all habits:
 - [ ] Share prompt (optional)
 
 Implementation:
+
 - [ ] Use lottie-react-native for confetti
 - [ ] Trigger on last habit completion
 - [ ] Only show once per day
@@ -409,6 +443,7 @@ Implementation:
 ## Testing Checklist
 
 ### Functional Tests
+
 - [ ] Check in on habit
 - [ ] Verify log saved to database
 - [ ] Undo check-in
@@ -420,6 +455,7 @@ Implementation:
 - [ ] Queue syncs when online
 
 ### UI Tests
+
 - [ ] Habit cards display correctly
 - [ ] Check-in animation smooth
 - [ ] Streak badge visible
@@ -429,6 +465,7 @@ Implementation:
 - [ ] Celebration animation on 100%
 
 ### Edge Cases
+
 - [ ] Check in on habit multiple times (prevent duplicate)
 - [ ] Check in on wrong day (past/future)
 - [ ] Undo check-in from previous day
@@ -439,6 +476,7 @@ Implementation:
 - [ ] Check in on archived habit
 
 ### Streak Tests
+
 - [ ] 7-day completion = 7-day streak
 - [ ] 1 miss doesn't break streak
 - [ ] 2 consecutive misses = streak reset
@@ -446,6 +484,7 @@ Implementation:
 - [ ] Unscheduled days don't affect streak
 
 ### Performance Tests
+
 - [ ] Home screen loads <500ms
 - [ ] Check-in response <100ms (optimistic)
 - [ ] Smooth scrolling with 10+ habits
@@ -453,16 +492,17 @@ Implementation:
 
 ## Risks & Mitigations
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|--------|------------|
-| Users forget to check in | High | High | Push notifications (Phase 8) |
-| Check-in feels like a chore | Medium | High | Make it < 2 seconds, add celebration |
-| Offline sync conflicts | Low | Medium | Use timestamps, prefer user data |
-| Streak pressure causes anxiety | Medium | Medium | "Don't miss twice" philosophy, positive framing |
+| Risk                           | Likelihood | Impact | Mitigation                                      |
+| ------------------------------ | ---------- | ------ | ----------------------------------------------- |
+| Users forget to check in       | High       | High   | Push notifications (Phase 8)                    |
+| Check-in feels like a chore    | Medium     | High   | Make it < 2 seconds, add celebration            |
+| Offline sync conflicts         | Low        | Medium | Use timestamps, prefer user data                |
+| Streak pressure causes anxiety | Medium     | Medium | "Don't miss twice" philosophy, positive framing |
 
 ## Dependencies for Next Phase
 
 Phase 8 (Push Notifications) requires:
+
 - ✅ Habits with reminder_time defined
 - ✅ Check-in functionality working
 - ✅ User can log habits daily

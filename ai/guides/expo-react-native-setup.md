@@ -47,6 +47,7 @@ mkdir -p src/app src/components src/hooks src/lib src/stores src/types
 ```
 
 Final structure:
+
 ```
 habitdx/
 ├── src/
@@ -121,11 +122,7 @@ habitdx/
       },
       "package": "com.habitdx.app",
       "versionCode": 1,
-      "permissions": [
-        "RECEIVE_BOOT_COMPLETED",
-        "VIBRATE",
-        "SCHEDULE_EXACT_ALARM"
-      ]
+      "permissions": ["RECEIVE_BOOT_COMPLETED", "VIBRATE", "SCHEDULE_EXACT_ALARM"]
     },
     "plugins": [
       "expo-router",
@@ -372,8 +369,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   session: null,
   user: null,
   loading: true,
-  setSession: (session) => 
-    set({ session, user: session?.user ?? null, loading: false }),
+  setSession: (session) => set({ session, user: session?.user ?? null, loading: false }),
   setLoading: (loading) => set({ loading }),
 }));
 ```
@@ -406,44 +402,45 @@ interface HabitState {
 export const useHabitStore = create<HabitState>((set, get) => ({
   habits: [],
   loading: false,
-  
+
   fetchHabits: async (userId: string) => {
     set({ loading: true });
-    
+
     const { data, error } = await supabase
       .from('habits')
       .select('*')
       .eq('user_id', userId)
       .eq('is_active', true)
       .order('created_at', { ascending: true });
-    
+
     if (error) {
       console.error('Error fetching habits:', error);
     } else {
       set({ habits: data || [] });
     }
-    
+
     set({ loading: false });
   },
-  
+
   checkIn: async (habitId: string, completed: boolean, obstacle?: string) => {
     const today = new Date().toISOString().split('T')[0];
     const userId = useAuthStore.getState().user?.id;
-    
+
     if (!userId) return;
-    
-    const { error } = await supabase
-      .from('habit_logs')
-      .upsert({
+
+    const { error } = await supabase.from('habit_logs').upsert(
+      {
         user_id: userId,
         habit_id: habitId,
         check_in_date: today,
         completed,
         obstacle,
-      }, {
+      },
+      {
         onConflict: 'habit_id,check_in_date',
-      });
-    
+      }
+    );
+
     if (error) {
       console.error('Error checking in:', error);
       throw error;
@@ -561,18 +558,18 @@ interface HabitCardProps {
 
 export function HabitCard({ habit, completed, onPress }: HabitCardProps) {
   const scale = useSharedValue(1);
-  
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
-  
+
   const handlePress = () => {
     scale.value = withSpring(0.95, {}, () => {
       scale.value = withSpring(1);
     });
     onPress();
   };
-  
+
   return (
     <Animated.View style={animatedStyle}>
       <Pressable
@@ -584,7 +581,7 @@ export function HabitCard({ habit, completed, onPress }: HabitCardProps) {
             <Ionicons name="checkmark" size={24} color="#10b981" />
           )}
         </View>
-        
+
         <View style={styles.content}>
           <Text style={styles.name}>{habit.name}</Text>
           <Text style={styles.tinyVersion}>{habit.tiny_version}</Text>
@@ -753,7 +750,7 @@ describe('Button', () => {
   it('calls onPress when pressed', () => {
     const onPress = jest.fn();
     const { getByText } = render(<Button title="Press me" onPress={onPress} />);
-    
+
     fireEvent.press(getByText('Press me'));
     expect(onPress).toHaveBeenCalled();
   });

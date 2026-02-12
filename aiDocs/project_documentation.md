@@ -4,7 +4,7 @@
 
 # 1. PROJECT DESCRIPTION
 
-**HabitDx** is an AI-powered habit diagnosis app for knowledge workers who've tried and failed at building habits. Unlike generic tracking apps that simply log whether you completed a task, HabitDx analyzes *why* your habits fail and delivers personalized weekly adjustments based on your specific patterns.
+**HabitDx** is an AI-powered habit diagnosis app for knowledge workers who've tried and failed at building habits. Unlike generic tracking apps that simply log whether you completed a task, HabitDx analyzes _why_ your habits fail and delivers personalized weekly adjustments based on your specific patterns.
 
 The app solves the core frustration voiced by our target users: "I know what to do, why can't I just do it?" Instead of blaming willpower, HabitDx treats habit failure as a design problem. Through a 5-minute smart intake, the AI generates your personal "Habit Failure Profile"—identifying patterns like "evening energy crashes" or "weekend routine disruption"—then designs habits that work around your constraints. Each week, the app analyzes your check-in data and delivers one specific adjustment, turning self-blame into system fixes. The result: habits that fit your actual life instead of fighting it.
 
@@ -15,26 +15,30 @@ The app solves the core frustration voiced by our target users: "I know what to 
 ## 2.1 Problem Statement
 
 **92% of habit attempts fail**, and existing apps make the problem worse by:
+
 - Tracking without guidance (passive scorecards)
 - Using streak-based motivation that creates shame spirals when broken
 - Offering generic advice that ignores individual constraints
-- Providing no diagnosis of *why* habits fail
+- Providing no diagnosis of _why_ habits fail
 
 Our target users—knowledge workers 28-38 who've tried 3+ habit apps—feel quiet despair about their inability to build consistent habits. They've read Atomic Habits, downloaded Habitica and Streaks, and still can't make habits stick. The bottleneck isn't motivation—it's personalized design and intelligent iteration.
 
 ## 2.2 Target Users
 
 ### Primary Persona: "Frustrated High-Achiever"
+
 - **Demographics**: Age 28-38, knowledge worker (PM, engineer, marketer), $70K-150K income
 - **Behaviors**: Downloaded 3+ habit apps, read productivity books, longest streak ~2-3 weeks
 - **Pain points**: Shame from repeated failure, no diagnosis of root causes, rigid systems that break
 - **Where to find**: r/productivity, r/habits, James Clear followers, Notion/Obsidian users
 
 ### Secondary Persona: "Overwhelmed New Parent"
+
 - Massive life transition, desperate for efficiency, severe time constraints
-- *Note: Future expansion target, not MVP focus*
+- _Note: Future expansion target, not MVP focus_
 
 ### NOT For
+
 - Habit beginners who've never tried tracking
 - Casual users wanting a simple checkbox (use Streaks)
 - Gamification seekers (use Habitica)
@@ -43,51 +47,52 @@ Our target users—knowledge workers 28-38 who've tried 3+ habit apps—feel qui
 ## 2.3 Goals and Success Metrics
 
 ### Primary Goals
-1. Help users understand *why* their habits fail
+
+1. Help users understand _why_ their habits fail
 2. Design habits that fit users' actual constraints
 3. Iterate weekly based on real data, not generic advice
 
 ### Success Metrics
 
-| Metric | Target | Measurement |
-|--------|--------|-------------|
-| Onboarding completion | >70% | Users who complete intake / signups |
-| Week 1 return rate | >40% | Users who check in day 7 / signups |
-| Week 4 retention | >20% | Users active at day 28 / signups |
-| Iteration acceptance | >50% | Users who implement weekly suggestion |
-| Free → Paid conversion | >5% | Paid users / total users |
-| Habit Failure Profile shares | >10% | Shares / profiles generated |
+| Metric                       | Target | Measurement                           |
+| ---------------------------- | ------ | ------------------------------------- |
+| Onboarding completion        | >70%   | Users who complete intake / signups   |
+| Week 1 return rate           | >40%   | Users who check in day 7 / signups    |
+| Week 4 retention             | >20%   | Users active at day 28 / signups      |
+| Iteration acceptance         | >50%   | Users who implement weekly suggestion |
+| Free → Paid conversion       | >5%    | Paid users / total users              |
+| Habit Failure Profile shares | >10%   | Shares / profiles generated           |
 
 ## 2.4 Features by Priority
 
 ### P0 — Must Have (MVP)
 
-| Feature | Description | Rationale |
-|---------|-------------|-----------|
-| Smart onboarding | 5-min intake capturing past failures, constraints, goals | Core data for personalization |
-| Habit Failure Profile | AI-generated diagnosis of user's failure patterns | Key differentiator, shareable artifact |
-| Personalized habit stack | 1-3 AI-designed habits with "why this works for you" | Immediate actionable value |
-| Daily check-in | 10-second tap (done/not done + optional obstacle) | Minimal friction data collection |
-| Weekly iteration | AI analyzes patterns, delivers ONE adjustment | Core value loop |
-| Push notifications | Configurable reminders per habit | Accountability trigger |
+| Feature                  | Description                                              | Rationale                              |
+| ------------------------ | -------------------------------------------------------- | -------------------------------------- |
+| Smart onboarding         | 5-min intake capturing past failures, constraints, goals | Core data for personalization          |
+| Habit Failure Profile    | AI-generated diagnosis of user's failure patterns        | Key differentiator, shareable artifact |
+| Personalized habit stack | 1-3 AI-designed habits with "why this works for you"     | Immediate actionable value             |
+| Daily check-in           | 10-second tap (done/not done + optional obstacle)        | Minimal friction data collection       |
+| Weekly iteration         | AI analyzes patterns, delivers ONE adjustment            | Core value loop                        |
+| Push notifications       | Configurable reminders per habit                         | Accountability trigger                 |
 
 ### P1 — Should Have (v1.1)
 
-| Feature | Description | Rationale |
-|---------|-------------|-----------|
-| Insight history | View past weekly adjustments and their impact | Show compounding value |
-| Constraint updates | Easy way to update when life changes | Maintain relevance |
-| Streak visualization | "Don't miss twice" philosophy (one miss ≠ reset) | Reduce shame spiral |
-| Export/share profile | Share Habit Failure Profile to social | Virality mechanism |
+| Feature              | Description                                      | Rationale              |
+| -------------------- | ------------------------------------------------ | ---------------------- |
+| Insight history      | View past weekly adjustments and their impact    | Show compounding value |
+| Constraint updates   | Easy way to update when life changes             | Maintain relevance     |
+| Streak visualization | "Don't miss twice" philosophy (one miss ≠ reset) | Reduce shame spiral    |
+| Export/share profile | Share Habit Failure Profile to social            | Virality mechanism     |
 
 ### P2 — Nice to Have (v1.2+)
 
-| Feature | Description | Rationale |
-|---------|-------------|-----------|
-| Ad-hoc AI questions | "Why did I fail this week?" chat | Deeper engagement |
-| Progress analytics | Trends over 4/8/12 weeks | Long-term retention |
-| Apple Health integration | Auto-detect sleep, activity | Reduce manual input |
-| Social accountability | Paired check-ins with friend | Retention boost |
+| Feature                  | Description                      | Rationale           |
+| ------------------------ | -------------------------------- | ------------------- |
+| Ad-hoc AI questions      | "Why did I fail this week?" chat | Deeper engagement   |
+| Progress analytics       | Trends over 4/8/12 weeks         | Long-term retention |
+| Apple Health integration | Auto-detect sleep, activity      | Reduce manual input |
+| Social accountability    | Paired check-ins with friend     | Retention boost     |
 
 ### Out of Scope (Not Building)
 
@@ -101,45 +106,49 @@ Our target users—knowledge workers 28-38 who've tried 3+ habit apps—feel qui
 ## 2.5 User Stories
 
 ### Onboarding
+
 1. As a new user, I want to describe my past habit failures so the app understands my patterns
 2. As a new user, I want to input my schedule and energy patterns so habits fit my life
 3. As a new user, I want to see my Habit Failure Profile so I understand why I've been failing
 4. As a new user, I want to receive personalized habits with explanations so I trust the recommendations
 
 ### Daily Use
+
 5. As a user, I want to check in with one tap so tracking doesn't become a burden
 6. As a user, I want to optionally note what blocked me so the AI can learn my obstacles
 7. As a user, I want reminders at the right time so I don't forget my habits
 
 ### Weekly Iteration
+
 8. As a user, I want to receive one specific adjustment each week so I can improve incrementally
-9. As a user, I want to understand *why* the adjustment was suggested so I learn about myself
+9. As a user, I want to understand _why_ the adjustment was suggested so I learn about myself
 10. As a user, I want to accept or decline adjustments so I stay in control
 
 ### Settings
+
 11. As a user, I want to update my constraints when life changes so habits stay relevant
 12. As a user, I want to regenerate my habit stack if I want to start fresh
 
 ## 2.6 Risks and Mitigations
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|--------|------------|
-| AI insights feel generic | Medium | High | Heavy prompt engineering, user feedback loop, personalization from intake |
-| Users don't complete onboarding | Medium | High | Progressive disclosure, show value early (teaser of profile) |
-| Users don't return after week 1 | High | High | Push notifications, compelling weekly insights, email sequences |
-| Atoms (James Clear) copies feature | Low | Medium | Move fast, build community, iterate faster |
-| Technical delays | Medium | Medium | Ruthless scope control, weekly team check-ins |
+| Risk                               | Likelihood | Impact | Mitigation                                                                |
+| ---------------------------------- | ---------- | ------ | ------------------------------------------------------------------------- |
+| AI insights feel generic           | Medium     | High   | Heavy prompt engineering, user feedback loop, personalization from intake |
+| Users don't complete onboarding    | Medium     | High   | Progressive disclosure, show value early (teaser of profile)              |
+| Users don't return after week 1    | High       | High   | Push notifications, compelling weekly insights, email sequences           |
+| Atoms (James Clear) copies feature | Low        | Medium | Move fast, build community, iterate faster                                |
+| Technical delays                   | Medium     | Medium | Ruthless scope control, weekly team check-ins                             |
 
 ## 2.7 Timeline and Milestones
 
-| Milestone | Target Date | Deliverable |
-|-----------|-------------|-------------|
-| M1: Foundation | Week 2 | Auth, navigation, database schema |
-| M2: Onboarding | Week 4 | Smart intake + Habit Failure Profile |
-| M3: Core Loop | Week 6 | Habit stack + daily check-in |
-| M4: Iteration | Week 8 | Weekly analysis + insight delivery |
-| M5: Polish | Week 10 | Bug fixes, beta feedback integration |
-| M6: Soft Launch | Week 11 | TestFlight/internal release |
+| Milestone       | Target Date | Deliverable                          |
+| --------------- | ----------- | ------------------------------------ |
+| M1: Foundation  | Week 2      | Auth, navigation, database schema    |
+| M2: Onboarding  | Week 4      | Smart intake + Habit Failure Profile |
+| M3: Core Loop   | Week 6      | Habit stack + daily check-in         |
+| M4: Iteration   | Week 8      | Weekly analysis + insight delivery   |
+| M5: Polish      | Week 10     | Bug fixes, beta feedback integration |
+| M6: Soft Launch | Week 11     | TestFlight/internal release          |
 
 ---
 
@@ -152,12 +161,14 @@ Our target users—knowledge workers 28-38 who've tried 3+ habit apps—feel qui
 **Objective**: Establish technical infrastructure and basic app shell
 
 #### 1.1 Project Setup
+
 - Initialize Expo project with TypeScript
 - Configure ESLint, Prettier, and project structure
 - Set up Git repository with branch protection
 - Create development, staging, production environments
 
 #### 1.2 Backend Configuration
+
 - Create Supabase project
 - Configure authentication (email + Google OAuth)
 - Design and implement database schema
@@ -165,6 +176,7 @@ Our target users—knowledge workers 28-38 who've tried 3+ habit apps—feel qui
 - Create Edge Functions scaffold
 
 #### 1.3 App Shell
+
 - Implement navigation structure (React Navigation)
 - Create common UI components (buttons, inputs, cards)
 - Set up global state management (Zustand or Context)
@@ -175,6 +187,7 @@ Our target users—knowledge workers 28-38 who've tried 3+ habit apps—feel qui
 **Objective**: Build the intake flow that collects user data for AI analysis
 
 #### 2.1 Intake Flow Design
+
 - Design conversational UI for intake (not forms)
 - Create 5-screen progressive disclosure flow:
   1. Past habits tried and failed (free text + suggestions)
@@ -184,17 +197,20 @@ Our target users—knowledge workers 28-38 who've tried 3+ habit apps—feel qui
   5. Identity goal ("I want to be someone who...")
 
 #### 2.2 Data Storage
+
 - Store intake responses in user_profiles table
 - Implement local caching for offline completion
 - Add progress persistence (resume if app closes)
 
 #### 2.3 AI Integration — Failure Analysis
+
 - Write system prompt for failure pattern analysis
 - Implement Edge Function to call GPT-4o-mini
 - Parse and store AI response in habit_failure_profiles table
 - Handle API errors gracefully (retry, fallback)
 
 #### 2.4 Habit Failure Profile UI
+
 - Design shareable profile card component
 - Display failure patterns with explanations
 - Add "Share" functionality (image export)
@@ -205,24 +221,28 @@ Our target users—knowledge workers 28-38 who've tried 3+ habit apps—feel qui
 **Objective**: Build the daily habit tracking experience
 
 #### 3.1 AI Habit Generation
+
 - Write system prompt for habit stack generation
 - Input: failure profile + constraints + identity goal
 - Output: 1-3 habits with anchor, tiny version, celebration, rationale
 - Store in habit_stacks table
 
 #### 3.2 Home Screen
+
 - Display today's habits with status
 - Show current streak (with "don't miss twice" logic)
 - Quick-tap to mark complete
 - Visual feedback on completion (animation)
 
 #### 3.3 Check-in Flow
+
 - Tap habit → mark complete (success animation)
 - Long-press or swipe → mark incomplete + obstacle prompt
 - Obstacle options: "No time", "Forgot", "Too tired", "Life happened", "Other"
 - Store in habit_logs table with timestamp
 
 #### 3.4 Push Notifications
+
 - Implement Expo Push Notifications
 - Per-habit reminder scheduling
 - Smart timing based on user's schedule constraints
@@ -233,17 +253,20 @@ Our target users—knowledge workers 28-38 who've tried 3+ habit apps—feel qui
 **Objective**: Build the weekly AI analysis and insight delivery
 
 #### 4.1 Weekly Analysis Job
+
 - Create scheduled Edge Function (runs Sunday evening)
 - Query user's check-in data for past 7 days
 - Identify patterns: which habits failed, when, what obstacles
 
 #### 4.2 AI Insight Generation
+
 - Write system prompt for iteration analysis
 - Input: week's data + original profile + constraints
 - Output: one specific adjustment with rationale
 - Store in weekly_iterations table
 
 #### 4.3 Insight Delivery
+
 - Push notification: "Your weekly habit review is ready"
 - Insight screen with:
   - Summary of week (X of Y habits completed)
@@ -252,6 +275,7 @@ Our target users—knowledge workers 28-38 who've tried 3+ habit apps—feel qui
   - "Accept" / "Keep current" buttons
 
 #### 4.4 Adjustment Implementation
+
 - If accepted, update habit_stack with new parameters
 - Log acceptance/rejection for future AI learning
 - Show confirmation with encouragement
@@ -261,12 +285,14 @@ Our target users—knowledge workers 28-38 who've tried 3+ habit apps—feel qui
 **Objective**: Refine UX, fix bugs, prepare for launch
 
 #### 5.1 UX Improvements
+
 - Optimize onboarding based on completion data
 - Add loading states and error handling throughout
 - Implement empty states and first-use guidance
 - Performance optimization (lazy loading, caching)
 
 #### 5.2 Settings & Account
+
 - Profile settings (name, email, photo)
 - Notification preferences (per-habit timing)
 - Constraint update flow
@@ -274,12 +300,14 @@ Our target users—knowledge workers 28-38 who've tried 3+ habit apps—feel qui
 - Account deletion (GDPR compliance)
 
 #### 5.3 Testing & QA
+
 - Unit tests for critical functions
 - Integration tests for auth and API flows
 - Manual QA on iOS and Android
 - Beta testing with 10-20 users
 
 #### 5.4 Launch Prep
+
 - App Store assets (screenshots, description)
 - TestFlight setup for iOS
 - Internal testing track for Android
@@ -288,6 +316,7 @@ Our target users—knowledge workers 28-38 who've tried 3+ habit apps—feel qui
 ## 3.2 Technical Approach
 
 ### Frontend Architecture
+
 ```
 src/
 ├── app/                    # Expo Router screens
@@ -306,6 +335,7 @@ src/
 ```
 
 ### Backend Architecture
+
 ```
 supabase/
 ├── migrations/            # Database schema changes
@@ -317,6 +347,7 @@ supabase/
 ```
 
 ### AI Prompt Strategy
+
 - System prompts stored in version control
 - Environment variables for model selection
 - Structured JSON output with Zod validation
@@ -325,6 +356,7 @@ supabase/
 ## 3.3 Dependencies and Prerequisites
 
 ### Technical Dependencies
+
 - Node.js 18+
 - Expo SDK 50+
 - Supabase account
@@ -333,6 +365,7 @@ supabase/
 - Google Play Developer account ($25 one-time)
 
 ### Team Prerequisites
+
 - React Native / Expo experience
 - Basic SQL / Supabase knowledge
 - Understanding of AI prompt engineering
@@ -345,6 +378,7 @@ supabase/
 ## Phase 1: Foundation (Weeks 1-2)
 
 ### Week 1
+
 - [ ] Initialize Expo project with TypeScript template
 - [ ] Set up Git repository with main/develop branches
 - [ ] Create Supabase project and configure environment
@@ -354,6 +388,7 @@ supabase/
 - [ ] Create basic navigation structure
 
 ### Week 2
+
 - [ ] Build auth screens (login, signup, forgot password)
 - [ ] Implement auth state management
 - [ ] Create common UI component library
@@ -364,6 +399,7 @@ supabase/
 ## Phase 2: Smart Onboarding (Weeks 3-4)
 
 ### Week 3
+
 - [ ] Design onboarding flow wireframes
 - [ ] Build Screen 1: Past habits (text input + suggestions)
 - [ ] Build Screen 2: Why they failed (multi-select)
@@ -373,6 +409,7 @@ supabase/
 - [ ] Implement progress persistence
 
 ### Week 4
+
 - [ ] Write AI prompt for failure analysis
 - [ ] Create analyze-failure Edge Function
 - [ ] Test AI responses with sample data
@@ -384,6 +421,7 @@ supabase/
 ## Phase 3: Core Loop (Weeks 5-6)
 
 ### Week 5
+
 - [ ] Write AI prompt for habit generation
 - [ ] Create generate-habits Edge Function
 - [ ] Build home screen with habit list
@@ -392,6 +430,7 @@ supabase/
 - [ ] Build obstacle logging flow
 
 ### Week 6
+
 - [ ] Implement streak tracking logic
 - [ ] Set up push notification infrastructure
 - [ ] Build notification permission flow
@@ -402,6 +441,7 @@ supabase/
 ## Phase 4: Iteration Engine (Weeks 7-8)
 
 ### Week 7
+
 - [ ] Write AI prompt for weekly analysis
 - [ ] Create weekly-iteration Edge Function
 - [ ] Build scheduled job trigger (Supabase cron)
@@ -409,6 +449,7 @@ supabase/
 - [ ] Build weekly insight notification
 
 ### Week 8
+
 - [ ] Design insight delivery screen
 - [ ] Implement accept/decline flow
 - [ ] Build adjustment implementation logic
@@ -419,6 +460,7 @@ supabase/
 ## Phase 5: Polish (Weeks 9-10)
 
 ### Week 9
+
 - [ ] Conduct internal QA testing
 - [ ] Fix critical bugs
 - [ ] Optimize onboarding completion rate
@@ -427,6 +469,7 @@ supabase/
 - [ ] Build constraint update flow
 
 ### Week 10
+
 - [ ] Recruit 10-20 beta testers
 - [ ] Distribute via TestFlight / internal track
 - [ ] Collect and analyze feedback
@@ -437,12 +480,14 @@ supabase/
 ## Post-MVP (Weeks 11+)
 
 ### Week 11: Soft Launch
+
 - [ ] Submit to App Store review
 - [ ] Submit to Google Play review
 - [ ] Prepare launch posts (Reddit, Twitter)
 - [ ] Set up basic analytics dashboard
 
 ### Week 12+: Iterate
+
 - [ ] Analyze user behavior data
 - [ ] Prioritize v1.1 features based on feedback
 - [ ] Begin P1 feature development
@@ -460,54 +505,55 @@ Everything else is secondary. If users don't feel the AI "gets" them and provide
 
 ## 5.2 Minimum Feature Set
 
-| Feature | Included | Rationale |
-|---------|----------|-----------|
-| Email/Google auth | ✅ | Required for persistence |
-| Smart onboarding (5 screens) | ✅ | Core data collection |
-| AI Failure Profile | ✅ | Key differentiator |
-| AI habit stack (1-3 habits) | ✅ | Immediate value |
-| Daily check-in (tap + obstacle) | ✅ | Data for iteration |
-| Weekly AI insight | ✅ | Core value loop |
-| Push notifications | ✅ | Accountability trigger |
-| Basic settings | ✅ | Minimum usability |
+| Feature                         | Included | Rationale                |
+| ------------------------------- | -------- | ------------------------ |
+| Email/Google auth               | ✅       | Required for persistence |
+| Smart onboarding (5 screens)    | ✅       | Core data collection     |
+| AI Failure Profile              | ✅       | Key differentiator       |
+| AI habit stack (1-3 habits)     | ✅       | Immediate value          |
+| Daily check-in (tap + obstacle) | ✅       | Data for iteration       |
+| Weekly AI insight               | ✅       | Core value loop          |
+| Push notifications              | ✅       | Accountability trigger   |
+| Basic settings                  | ✅       | Minimum usability        |
 
 ## 5.3 What We're Cutting
 
-| Feature | Status | Why Cut |
-|---------|--------|---------|
-| Gamification | ❌ | Distracts from core value |
-| Social features | ❌ | Complexity, not core |
-| Web version | ❌ | Mobile-first, resource constraint |
-| Calendar sync | ❌ | Nice-to-have, not essential |
-| Wearable integration | ❌ | Complexity, future feature |
-| Payment/subscription | ❌ | Validate free first |
-| Analytics dashboard | ❌ | P1 feature |
-| Multiple languages | ❌ | US-first launch |
+| Feature              | Status | Why Cut                           |
+| -------------------- | ------ | --------------------------------- |
+| Gamification         | ❌     | Distracts from core value         |
+| Social features      | ❌     | Complexity, not core              |
+| Web version          | ❌     | Mobile-first, resource constraint |
+| Calendar sync        | ❌     | Nice-to-have, not essential       |
+| Wearable integration | ❌     | Complexity, future feature        |
+| Payment/subscription | ❌     | Validate free first               |
+| Analytics dashboard  | ❌     | P1 feature                        |
+| Multiple languages   | ❌     | US-first launch                   |
 
 ## 5.4 Simplest Technical Approach
 
-| Component | Choice | Why |
-|-----------|--------|-----|
-| Frontend | Expo + React Native | Cross-platform, fast iteration |
-| Backend | Supabase | Auth + DB + Functions in one |
-| AI | GPT-4o-mini via API | Cheapest viable option |
-| State | Zustand | Simple, lightweight |
-| Navigation | Expo Router | File-based, less boilerplate |
+| Component  | Choice              | Why                            |
+| ---------- | ------------------- | ------------------------------ |
+| Frontend   | Expo + React Native | Cross-platform, fast iteration |
+| Backend    | Supabase            | Auth + DB + Functions in one   |
+| AI         | GPT-4o-mini via API | Cheapest viable option         |
+| State      | Zustand             | Simple, lightweight            |
+| Navigation | Expo Router         | File-based, less boilerplate   |
 
 ## 5.5 MVP Validation Criteria
 
 **After 4 weeks with 50+ users, we need:**
 
-| Metric | Target | If Not Met |
-|--------|--------|------------|
-| Onboarding completion | >70% | Simplify intake flow |
-| Week 1 return | >40% | Improve habit suggestions |
-| Iteration engagement | >50% | Refine AI prompts |
-| Qualitative feedback | "Insightful" | Pivot or iterate |
+| Metric                | Target       | If Not Met                |
+| --------------------- | ------------ | ------------------------- |
+| Onboarding completion | >70%         | Simplify intake flow      |
+| Week 1 return         | >40%         | Improve habit suggestions |
+| Iteration engagement  | >50%         | Refine AI prompts         |
+| Qualitative feedback  | "Insightful" | Pivot or iterate          |
 
 ## 5.6 What "Done" Looks Like
 
 A user can:
+
 1. Sign up with email or Google
 2. Complete 5-minute onboarding
 3. See their personalized Habit Failure Profile
@@ -589,14 +635,14 @@ A user can:
 -- ============================================
 CREATE TABLE user_profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  
+
   -- Basic info
   display_name TEXT,
-  
+
   -- Onboarding responses (JSONB for flexibility)
   past_habits JSONB,          -- [{habit, duration, why_failed}]
   failure_reasons TEXT[],     -- ['no_time', 'forgot', 'too_ambitious']
-  
+
   -- Constraints
   wake_time TIME,
   sleep_time TIME,
@@ -604,10 +650,10 @@ CREATE TABLE user_profiles (
   work_end TIME,
   energy_pattern TEXT,        -- 'morning', 'afternoon', 'evening'
   life_constraints TEXT[],    -- ['kids', 'commute', 'health_issues']
-  
+
   -- Goals
   identity_goal TEXT,         -- "I want to be someone who..."
-  
+
   -- Metadata
   onboarding_completed_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -620,18 +666,18 @@ CREATE TABLE user_profiles (
 CREATE TABLE habit_failure_profiles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  
+
   -- AI analysis output
   failure_patterns JSONB,     -- [{pattern, description, frequency}]
   root_causes TEXT[],
   personality_insights TEXT,
   recommendations TEXT[],
-  
+
   -- Raw AI response for debugging
   raw_response JSONB,
   model_used TEXT,
   tokens_used INTEGER,
-  
+
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -641,15 +687,15 @@ CREATE TABLE habit_failure_profiles (
 CREATE TABLE habit_stacks (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  
+
   -- Stack metadata
   version INTEGER DEFAULT 1,
   is_active BOOLEAN DEFAULT TRUE,
-  
+
   -- AI generation context
   generation_rationale TEXT,
   based_on_profile_id UUID REFERENCES habit_failure_profiles(id),
-  
+
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -660,26 +706,26 @@ CREATE TABLE habits (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   stack_id UUID REFERENCES habit_stacks(id) ON DELETE CASCADE,
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  
+
   -- Habit definition
   name TEXT NOT NULL,                    -- "Morning stretch"
   tiny_version TEXT,                     -- "One stretch for 30 seconds"
   anchor TEXT,                           -- "After I pour my coffee"
   celebration TEXT,                      -- "Say 'I'm getting stronger'"
-  
+
   -- Why this habit
   addresses_pattern TEXT,                -- Links to failure pattern
   rationale TEXT,                        -- AI explanation
-  
+
   -- Scheduling
   reminder_time TIME,
   reminder_enabled BOOLEAN DEFAULT TRUE,
   days_of_week INTEGER[] DEFAULT '{1,2,3,4,5,6,7}', -- 1=Mon, 7=Sun
-  
+
   -- Status
   is_active BOOLEAN DEFAULT TRUE,
   order_index INTEGER DEFAULT 0,
-  
+
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -691,19 +737,19 @@ CREATE TABLE habit_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   habit_id UUID REFERENCES habits(id) ON DELETE CASCADE,
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  
+
   -- Check-in data
   logged_date DATE NOT NULL,
   completed BOOLEAN NOT NULL,
   partial BOOLEAN DEFAULT FALSE,         -- Did smaller version
-  
+
   -- Obstacle tracking
   obstacle TEXT,                         -- 'no_time', 'forgot', etc.
   obstacle_note TEXT,                    -- Free text if "other"
-  
+
   -- Metadata
   logged_at TIMESTAMPTZ DEFAULT NOW(),
-  
+
   UNIQUE(habit_id, logged_date)
 );
 
@@ -714,25 +760,25 @@ CREATE TABLE weekly_iterations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
   stack_id UUID REFERENCES habit_stacks(id),
-  
+
   -- Week reference
   week_start DATE NOT NULL,
   week_end DATE NOT NULL,
-  
+
   -- AI analysis
   summary JSONB,                         -- {completed, missed, patterns}
   insight TEXT,                          -- The one adjustment
   insight_rationale TEXT,                -- Why this adjustment
   affected_habit_id UUID REFERENCES habits(id),
   suggested_change JSONB,                -- {field, old_value, new_value}
-  
+
   -- User response
   status TEXT DEFAULT 'pending',         -- 'pending', 'accepted', 'declined'
   responded_at TIMESTAMPTZ,
-  
+
   -- Raw AI response
   raw_response JSONB,
-  
+
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -781,11 +827,10 @@ CREATE POLICY "Users can view own iterations" ON weekly_iterations
 **Purpose**: Generate Habit Failure Profile from onboarding data
 
 **Input**:
+
 ```json
 {
-  "past_habits": [
-    {"habit": "Morning workout", "duration": "2 weeks", "why_failed": "Too tired"}
-  ],
+  "past_habits": [{ "habit": "Morning workout", "duration": "2 weeks", "why_failed": "Too tired" }],
   "failure_reasons": ["no_time", "too_ambitious"],
   "energy_pattern": "evening",
   "constraints": ["kids", "long_commute"],
@@ -794,6 +839,7 @@ CREATE POLICY "Users can view own iterations" ON weekly_iterations
 ```
 
 **Output**:
+
 ```json
 {
   "failure_patterns": [
@@ -813,6 +859,7 @@ CREATE POLICY "Users can view own iterations" ON weekly_iterations
 **Purpose**: Generate personalized habit stack
 
 **Input**:
+
 ```json
 {
   "failure_profile_id": "uuid",
@@ -822,6 +869,7 @@ CREATE POLICY "Users can view own iterations" ON weekly_iterations
 ```
 
 **Output**:
+
 ```json
 {
   "habits": [
@@ -842,6 +890,7 @@ CREATE POLICY "Users can view own iterations" ON weekly_iterations
 **Purpose**: Analyze week and generate insight (called by cron)
 
 **Input**:
+
 ```json
 {
   "user_id": "uuid",
@@ -851,6 +900,7 @@ CREATE POLICY "Users can view own iterations" ON weekly_iterations
 ```
 
 **Output**:
+
 ```json
 {
   "summary": {
@@ -874,6 +924,7 @@ CREATE POLICY "Users can view own iterations" ON weekly_iterations
 ## 6.4 AI Prompts
 
 ### Failure Analysis Prompt
+
 ```
 You are a habit architect trained in behavioral science (BJ Fogg's Tiny Habits, James Clear's Atomic Habits, and behavioral psychology).
 
@@ -906,6 +957,7 @@ Be specific, insightful, and empathetic. Avoid generic advice.
 ```
 
 ### Habit Generation Prompt
+
 ```
 You are a habit architect. Based on the user's Failure Profile, design a personalized habit stack.
 
@@ -944,6 +996,7 @@ OUTPUT FORMAT (JSON):
 ```
 
 ### Weekly Iteration Prompt
+
 ```
 You are a habit coach reviewing a user's week. Provide ONE specific adjustment.
 
@@ -990,17 +1043,20 @@ OUTPUT FORMAT (JSON):
 ## 6.5 Security Considerations
 
 ### Authentication
+
 - Supabase Auth handles JWT tokens
 - Refresh tokens stored securely in device keychain
 - Session expiry: 1 week with refresh
 
 ### Data Protection
+
 - All API calls over HTTPS
 - Row Level Security ensures users only access own data
 - API keys stored in environment variables, never in client
 - Edge Functions have service role access (bypasses RLS for batch jobs)
 
 ### Privacy
+
 - Minimal PII collected (email, optional name)
 - Habit data is sensitive but not regulated (not HIPAA)
 - Data deletion endpoint for GDPR compliance
@@ -1009,22 +1065,26 @@ OUTPUT FORMAT (JSON):
 ## 6.6 Deployment
 
 ### Development
+
 - Local Expo development server
 - Supabase local instance or development project
 - Environment: `.env.development`
 
 ### Staging
+
 - Expo development build
 - Supabase staging project
 - Environment: `.env.staging`
 
 ### Production
+
 - Expo production build (EAS Build)
 - Supabase production project
 - Environment: `.env.production`
 - App Store / Google Play distribution
 
 ### Environment Variables
+
 ```
 EXPO_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
 EXPO_PUBLIC_SUPABASE_ANON_KEY=xxx
@@ -1033,12 +1093,12 @@ OPENAI_API_KEY=xxx (Edge Functions only)
 
 ## 6.7 Cost Projections
 
-| Scale | Users | AI Cost/mo | Supabase | Total |
-|-------|-------|-----------|----------|-------|
-| MVP | 100 | $1 | $0 | $1 |
-| Early | 1,000 | $10 | $0 | $10 |
-| Growth | 10,000 | $100 | $25 | $125 |
-| Scale | 50,000 | $500 | $100 | $600 |
+| Scale  | Users  | AI Cost/mo | Supabase | Total |
+| ------ | ------ | ---------- | -------- | ----- |
+| MVP    | 100    | $1         | $0       | $1    |
+| Early  | 1,000  | $10        | $0       | $10   |
+| Growth | 10,000 | $100       | $25      | $125  |
+| Scale  | 50,000 | $500       | $100     | $600  |
 
 ---
 
@@ -1046,13 +1106,13 @@ OPENAI_API_KEY=xxx (Edge Functions only)
 
 ## Key Decisions
 
-| Decision | Choice | Rationale |
-|----------|--------|-----------|
-| Framework | Expo + React Native | Cross-platform, fast iteration |
-| Backend | Supabase | All-in-one, generous free tier |
-| AI Model | GPT-4o-mini | Best cost/quality for this use case |
-| State | Zustand | Simple, lightweight, sufficient |
-| Navigation | Expo Router | File-based, less boilerplate |
+| Decision   | Choice              | Rationale                           |
+| ---------- | ------------------- | ----------------------------------- |
+| Framework  | Expo + React Native | Cross-platform, fast iteration      |
+| Backend    | Supabase            | All-in-one, generous free tier      |
+| AI Model   | GPT-4o-mini         | Best cost/quality for this use case |
+| State      | Zustand             | Simple, lightweight, sufficient     |
+| Navigation | Expo Router         | File-based, less boilerplate        |
 
 ## File Naming Conventions
 
