@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "HabitDx",
+    "slug": "habitdx",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.habitdx.app"
+    },
+    "android": {
+      "package": "com.habitdx.app"
+    },
+    "scheme": "habitdx"
+  }
+}
