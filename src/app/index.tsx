@@ -1,15 +1,44 @@
-import { Link } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+import { useAuthStore } from '../stores/authStore';
+import { AuthButton } from '../components/auth';
 
 export default function HomeScreen() {
+  const { user, signOut, loading } = useAuthStore();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>HabitDx</Text>
-      <Text style={styles.subtitle}>Foundation scaffold with Expo Router</Text>
-      <Link href="/" style={styles.link}>
-        Tap here (placeholder)
-      </Link>
+      <Text style={styles.subtitle}>Welcome to your habit tracking journey!</Text>
+
+      {user && (
+        <View style={styles.userInfo}>
+          <Text style={styles.welcomeText}>Welcome, {user.email}!</Text>
+          {user.user_metadata?.name && (
+            <Text style={styles.nameText}>{user.user_metadata.name}</Text>
+          )}
+        </View>
+      )}
+
+      <View style={styles.content}>
+        <Text style={styles.contentText}>Phase 2: Authentication System ✅</Text>
+        <Text style={styles.contentSubtext}>
+          You&apos;re now signed in and ready to start building habits.
+        </Text>
+      </View>
+
+      <View style={styles.actions}>
+        <AuthButton title="Sign Out" onPress={handleSignOut} loading={loading} variant="outline" />
+      </View>
+
       <StatusBar style="auto" />
     </View>
   );
@@ -24,18 +53,51 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   title: {
-    fontSize: 28,
+    fontSize: 36,
     fontWeight: 'bold',
     marginBottom: 8,
+    color: '#111',
   },
   subtitle: {
     fontSize: 16,
-    color: '#555',
-    marginBottom: 16,
+    color: '#6b7280',
+    marginBottom: 32,
     textAlign: 'center',
   },
-  link: {
-    fontSize: 16,
-    color: '#1e90ff',
+  userInfo: {
+    backgroundColor: '#f3f4f6',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 24,
+    width: '100%',
+  },
+  welcomeText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#111',
+    marginBottom: 4,
+  },
+  nameText: {
+    fontSize: 14,
+    color: '#6b7280',
+  },
+  content: {
+    marginBottom: 32,
+    alignItems: 'center',
+  },
+  contentText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#10b981',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  contentSubtext: {
+    fontSize: 14,
+    color: '#6b7280',
+    textAlign: 'center',
+  },
+  actions: {
+    width: '100%',
   },
 });
