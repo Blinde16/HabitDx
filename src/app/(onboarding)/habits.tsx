@@ -105,8 +105,8 @@ export default function HabitStackScreen() {
   };
 
   const handleStartTracking = () => {
-    // Navigate to home screen (daily check-in)
-    router.replace('/(tabs)/home');
+    // Navigate to notification permission screen
+    router.replace('/(onboarding)/notifications');
   };
 
   const getDayNames = (days: number[]): string => {
