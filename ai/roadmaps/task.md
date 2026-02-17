@@ -96,53 +96,67 @@ Before writing any code, confirm these are ready:
 
 **Goal:** 5-screen intake flow that captures the data needed for AI diagnosis. This phase is CRITICAL — it feeds the Failure Profile, which is our key differentiator.
 
-### 2.1 Onboarding State Management
+### 2.1 Onboarding State Management ✅
 
-- [ ] Create Zustand onboarding store (`src/stores/onboardingStore.ts`)
-- [ ] Track current step (1-5) and all responses
-- [ ] Implement progress persistence (resume if app closes mid-flow)
-- [ ] Add validation rules per screen
+- [x] Create Zustand onboarding store (`src/stores/onboardingStore.ts`)
+- [x] Track current step (1-5) and all responses
+- [x] Implement progress persistence (resume if app closes mid-flow)
+- [x] Add validation rules per screen
 
-### 2.2 Screen 1: Past Habits
+### 2.2 Screen 1: Welcome ✅
 
-- [ ] Build UI: "What habits have you tried before?"
-- [ ] Free text input with suggested chips (e.g. "Exercise", "Meditation", "Reading", "Diet")
-- [ ] Allow multiple entries with duration ("How long did it last?")
-- [ ] Store as structured data: `[{habit, duration, why_failed}]`
+- [x] Build UI: "Finally understand why your habits fail"
+- [x] Show 3 benefit bullets with icons
+- [x] "Get Started" button
+- [x] "This takes ~5 minutes" subtext
+- [x] Skip link (logs out, returns to login)
 
-### 2.3 Screen 2: Why They Failed
+### 2.3 Screen 2: Past Failures ✅
 
-- [ ] Build UI: "Why do you think they didn't stick?"
-- [ ] Multi-select options: "No time", "Forgot", "Too ambitious", "Lost motivation", "Life got in the way", "Felt pointless", "Other"
-- [ ] Optional free-text for "Other"
-- [ ] Store as `failure_reasons` array
+- [x] Build UI: "What habits have you tried before?"
+- [x] Multi-select chips (Exercise, Meditation, Reading, etc.)
+- [x] Allow custom habit input
+- [x] "Why did these fail?" text area with character counter
+- [x] Store as structured data with validation
 
-### 2.4 Screen 3: Schedule Constraints
+### 2.4 Screen 3: Constraints ✅
 
-- [ ] Build UI: "Tell us about your day"
-- [ ] Time pickers for: wake time, sleep time, work start, work end
-- [ ] Multi-select for life constraints: "Kids", "Long commute", "Health issues", "Shift work", "Caretaking", "Other"
-- [ ] Store in `user_profiles` constraint fields
+- [x] Build UI: "Help us understand your life"
+- [x] Energy pattern selector: Morning / Afternoon / Evening / Varies
+- [x] Schedule type multi-select (9-5 job, Shift work, etc.)
+- [x] Obstacles multi-select (Lack of time, Forgetfulness, etc.)
+- [x] Store in `user_profiles` constraint fields
 
-### 2.5 Screen 4: Energy Patterns
+### 2.5 Screen 4: Goals ✅
 
-- [ ] Build UI: "When do you feel most energized?"
-- [ ] Visual slider or selector: Morning / Afternoon / Evening
-- [ ] Optional: brief explanation of why this matters ("We'll design habits for YOUR peak energy")
-- [ ] Store as `energy_pattern`
+- [x] Build UI: "What are you working toward?"
+- [x] Goal cards with icons (max 3 selection)
+- [x] "Why does this matter to you?" text area
+- [x] Character counter (20-300 chars)
+- [x] Store as `goals` array
 
-### 2.6 Screen 5: Identity Goal
+### 2.6 Screen 5: Confirmation ✅
 
-- [ ] Build UI: "I want to be someone who..."
-- [ ] Single text input with inspiring placeholder text
-- [ ] Examples shown as chips: "...takes care of their health", "...reads every day", "...stays calm under pressure"
-- [ ] Store as `identity_goal`
+- [x] Build UI: "Perfect! Here's what happens next:"
+- [x] Timeline preview (5 steps)
+- [x] Notification permission toggle
+- [x] Privacy note
+- [x] "Analyze My Data" button
 
-### 2.7 Onboarding Completion
+### 2.7 Onboarding Completion ✅
 
-- [ ] Save all responses to `user_profiles` table via Supabase
-- [ ] Set `onboarding_completed_at` timestamp
-- [ ] Show loading state: "Analyzing your patterns..." (transition to Failure Profile)
+- [x] Save all responses to `user_profiles` table via Supabase
+- [x] Set `onboarding_completed` flag
+- [x] Handle errors gracefully with retry
+- [x] Navigate to home after successful submission
+
+### 2.8 UI Implementation ✅
+
+- [x] Install and configure NativeWind (Tailwind CSS for React Native)
+- [x] Convert all onboarding components to use NativeWind
+- [x] Convert all onboarding screens to use NativeWind
+- [x] Implement responsive layouts
+- [x] Add proper TypeScript types for className prop
 
 > **🔵 DECISION NEEDED:** The onboarding flow is described as "conversational UI (not forms)." How conversational do you want this?
 >
