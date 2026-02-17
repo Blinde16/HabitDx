@@ -12,6 +12,7 @@ import { useAuthStore } from '../../stores/authStore';
 import { useCheckinStore } from '../../stores/checkinStore';
 import type { HabitWithStatus } from '../../stores/checkinStore';
 import { ObstacleBottomSheet, SuccessAnimation } from '../../components/checkin';
+import NotificationService from '../../lib/notificationService';
 import { logInfo } from '../../lib/logger';
 
 export default function HomeScreen() {
@@ -44,6 +45,8 @@ export default function HomeScreen() {
   useEffect(() => {
     if (user) {
       initialize(user.id);
+      // Schedule notifications for all habits
+      NotificationService.scheduleAllHabitReminders(user.id);
     }
   }, [user]);
 
