@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useOnboardingStore } from '../../stores/onboardingStore';
 import { OnboardingContainer, MultiSelectChip } from '../../components/onboarding';
@@ -85,16 +85,19 @@ export default function ConstraintsScreen() {
       title="Help us understand your life"
       subtitle="This helps us design habits that actually fit your schedule"
     >
-      <View style={styles.section}>
-        <Text style={styles.sectionLabel}>When do you have the most energy?</Text>
-        <View style={styles.energyOptions}>
+      <View className="mb-8">
+        <Text className="text-base font-semibold text-gray-700 mb-3">
+          When do you have the most energy?
+        </Text>
+        <View className="flex-row gap-3">
           {ENERGY_OPTIONS.map((option) => (
             <TouchableOpacity
               key={option.value}
-              style={[
-                styles.energyOption,
-                data.constraints.peak_energy === option.value && styles.energyOptionSelected,
-              ]}
+              className={`flex-1 py-4 items-center rounded-xl border-2 ${
+                data.constraints.peak_energy === option.value
+                  ? 'bg-blue-100 border-blue-500'
+                  : 'bg-gray-100 border-gray-200'
+              }`}
               onPress={() =>
                 updateData('constraints', {
                   ...data.constraints,
@@ -102,12 +105,11 @@ export default function ConstraintsScreen() {
                 })
               }
             >
-              <Text style={styles.energyIcon}>{option.icon}</Text>
+              <Text className="text-3xl mb-2">{option.icon}</Text>
               <Text
-                style={[
-                  styles.energyLabel,
-                  data.constraints.peak_energy === option.value && styles.energyLabelSelected,
-                ]}
+                className={`text-sm font-semibold ${
+                  data.constraints.peak_energy === option.value ? 'text-blue-800' : 'text-gray-500'
+                }`}
               >
                 {option.label}
               </Text>
@@ -116,9 +118,11 @@ export default function ConstraintsScreen() {
         </View>
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionLabel}>What&apos;s your daily schedule like?</Text>
-        <View style={styles.chipContainer}>
+      <View className="mb-8">
+        <Text className="text-base font-semibold text-gray-700 mb-3">
+          What&apos;s your daily schedule like?
+        </Text>
+        <View className="flex-row flex-wrap">
           {SCHEDULE_OPTIONS.map((schedule) => (
             <MultiSelectChip
               key={schedule}
@@ -130,9 +134,11 @@ export default function ConstraintsScreen() {
         </View>
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionLabel}>What makes habits hard for you?</Text>
-        <View style={styles.chipContainer}>
+      <View className="mb-8">
+        <Text className="text-base font-semibold text-gray-700 mb-3">
+          What makes habits hard for you?
+        </Text>
+        <View className="flex-row flex-wrap">
           {OBSTACLE_OPTIONS.map((obstacle) => (
             <MultiSelectChip
               key={obstacle}
@@ -144,70 +150,12 @@ export default function ConstraintsScreen() {
         </View>
       </View>
 
-      <View style={styles.actions}>
-        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-          <Text style={styles.backButtonText}>← Back</Text>
+      <View className="mt-8 gap-3">
+        <TouchableOpacity className="py-3 items-center" onPress={handleBack}>
+          <Text className="text-base text-blue-500 font-semibold">← Back</Text>
         </TouchableOpacity>
         <AuthButton title="Next" onPress={handleNext} variant="primary" disabled={!canProceed()} />
       </View>
     </OnboardingContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  section: {
-    marginBottom: 32,
-  },
-  sectionLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: 12,
-  },
-  energyOptions: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  energyOption: {
-    flex: 1,
-    paddingVertical: 16,
-    alignItems: 'center',
-    borderRadius: 12,
-    backgroundColor: '#f3f4f6',
-    borderWidth: 2,
-    borderColor: '#e5e7eb',
-  },
-  energyOptionSelected: {
-    backgroundColor: '#dbeafe',
-    borderColor: '#3b82f6',
-  },
-  energyIcon: {
-    fontSize: 32,
-    marginBottom: 8,
-  },
-  energyLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#6b7280',
-  },
-  energyLabelSelected: {
-    color: '#1e40af',
-  },
-  chipContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  actions: {
-    marginTop: 32,
-    gap: 12,
-  },
-  backButton: {
-    paddingVertical: 12,
-    alignItems: 'center',
-  },
-  backButtonText: {
-    fontSize: 16,
-    color: '#3b82f6',
-    fontWeight: '600',
-  },
-});

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 
 interface ProgressIndicatorProps {
   current: number;
@@ -10,36 +10,13 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({ current, t
   const progress = (current / total) * 100;
 
   return (
-    <View style={styles.container}>
-      <View style={styles.barBackground}>
-        <View style={[styles.barFill, { width: `${progress}%` }]} />
+    <View className="mb-6">
+      <View className="h-1 bg-gray-200 rounded-sm overflow-hidden mb-2">
+        <View className="h-full bg-blue-500 rounded-sm" style={{ width: `${progress}%` }} />
       </View>
-      <Text style={styles.text}>
+      <Text className="text-xs text-gray-500 text-right">
         {current} of {total}
       </Text>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 24,
-  },
-  barBackground: {
-    height: 4,
-    backgroundColor: '#e5e7eb',
-    borderRadius: 2,
-    overflow: 'hidden',
-    marginBottom: 8,
-  },
-  barFill: {
-    height: '100%',
-    backgroundColor: '#3b82f6',
-    borderRadius: 2,
-  },
-  text: {
-    fontSize: 12,
-    color: '#6b7280',
-    textAlign: 'right',
-  },
-});

@@ -3,6 +3,7 @@ import { Session, User, AuthError } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
+import { logAuth, logError } from '../lib/logger';
 
 // Secure storage adapter for Supabase auth
 const SecureStoreAdapter = {
@@ -66,7 +67,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       } = await supabase.auth.getSession();
 
       if (error) {
-        console.error('Error getting session:', error);
+        logError(new Error(error.message), { context: 'auth.initialize', event: 'get_session_error' });
         set({ error: error.message, loading: false, initialized: true });
         return;
       }
@@ -80,7 +81,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
 
       // Listen for auth changes
       supabase.auth.onAuthStateChange(async (event, session) => {
-        console.log('Auth state changed:', event);
+        logAuth.signOut(session?.user?.id || 'unknown');
 
         set({
           session,
@@ -89,11 +90,14 @@ export const useAuthStore = create<AuthStore>((set) => ({
 
         // Handle specific events
         if (event === 'SIGNED_OUT') {
+          if (session?.user?.id) {
+            logAuth.signOut(session.user.id);
+          }
           set({ user: null, session: null });
         }
       });
     } catch (error) {
-      console.error('Error initializing auth:', error);
+      logError(error as Error, { context: 'auth.initialize' });
       set({
         error: error instanceof Error ? error.message : 'Failed to initialize auth',
         loading: false,
@@ -105,6 +109,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   signUp: async (email: string, password: string, metadata?: Record<string, unknown>) => {
     try {
       set({ loading: true, error: null });
+      logAuth.signUpAttempt(email);
 
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -120,11 +125,16 @@ export const useAuthStore = create<AuthStore>((set) => ({
 
       // Check if email confirmation is required
       if (data.user && !data.session) {
+        logAuth.signUpSuccess(data.user.id, email);
         set({
           loading: false,
           error: 'Please check your email to verify your account.',
         });
         return;
+      }
+
+      if (data.user) {
+        logAuth.signUpSuccess(data.user.id, email);
       }
 
       set({
@@ -134,7 +144,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       });
     } catch (error) {
       const authError = error as AuthError;
-      console.error('Sign up error:', authError);
+      logAuth.signUpError(email, authError);
       set({
         error: authError.message || 'Failed to sign up',
         loading: false,
@@ -146,6 +156,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   signIn: async (email: string, password: string) => {
     try {
       set({ loading: true, error: null });
+      logAuth.signInAttempt(email);
 
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -156,6 +167,8 @@ export const useAuthStore = create<AuthStore>((set) => ({
         throw error;
       }
 
+      logAuth.signInSuccess(data.user.id, email);
+
       set({
         user: data.user,
         session: data.session,
@@ -163,7 +176,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       });
     } catch (error) {
       const authError = error as AuthError;
-      console.error('Sign in error:', authError);
+      logAuth.signInError(email, authError);
       set({
         error: authError.message || 'Failed to sign in',
         loading: false,
@@ -205,12 +218,17 @@ export const useAuthStore = create<AuthStore>((set) => ({
 
   signOut: async () => {
     try {
+      const { session } = useAuthStore.getState();
       set({ loading: true, error: null });
 
       const { error } = await supabase.auth.signOut();
 
       if (error) {
         throw error;
+      }
+
+      if (session?.user?.id) {
+        logAuth.signOut(session.user.id);
       }
 
       set({
@@ -220,7 +238,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       });
     } catch (error) {
       const authError = error as AuthError;
-      console.error('Sign out error:', authError);
+      logError(authError, { context: 'auth.signOut' });
       set({
         error: authError.message || 'Failed to sign out',
         loading: false,

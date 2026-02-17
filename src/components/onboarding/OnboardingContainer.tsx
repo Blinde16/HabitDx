@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { ProgressIndicator } from './ProgressIndicator';
 
 interface OnboardingContainerProps {
@@ -19,53 +19,23 @@ export const OnboardingContainer: React.FC<OnboardingContainerProps> = ({
 }) => {
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      className="flex-1 bg-white"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingTop: 40, paddingBottom: 40 }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
         <ProgressIndicator current={currentScreen} total={totalScreens} />
 
-        <View style={styles.header}>
-          <Text style={styles.title}>{title}</Text>
-          {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+        <View className="mb-8">
+          <Text className="text-3xl font-bold text-gray-900 mb-2">{title}</Text>
+          {subtitle && <Text className="text-base text-gray-500 leading-6">{subtitle}</Text>}
         </View>
 
-        <View style={styles.content}>{children}</View>
+        <View className="flex-1">{children}</View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: 24,
-    paddingTop: 40,
-    paddingBottom: 40,
-  },
-  header: {
-    marginBottom: 32,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#111',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#6b7280',
-    lineHeight: 24,
-  },
-  content: {
-    flex: 1,
-  },
-});

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TextInput, Text, StyleSheet, TextInputProps } from 'react-native';
+import { View, TextInput, Text, TextInputProps } from 'react-native';
 
 interface CharacterCounterProps extends TextInputProps {
   value: string;
@@ -21,77 +21,36 @@ export const CharacterCounter: React.FC<CharacterCounterProps> = ({
   const isValid = length >= minLength && length <= maxLength;
   const isTooShort = length > 0 && length < minLength;
 
+  const getBorderColor = () => {
+    if (error) return 'border-red-500';
+    if (isValid) return 'border-green-500';
+    return 'border-gray-300';
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
+    <View className="mb-4">
+      <Text className="text-sm font-semibold text-gray-800 mb-2">{label}</Text>
       <TextInput
-        style={[styles.input, error ? styles.inputError : null, isValid ? styles.inputValid : null]}
+        className={`min-h-[100px] border rounded-lg px-3 py-3 text-base text-gray-900 ${getBorderColor()}`}
+        style={{ textAlignVertical: 'top' }}
         value={value}
         multiline
         maxLength={maxLength}
         {...props}
       />
-      <View style={styles.footer}>
-        {isTooShort && (
-          <Text style={styles.hint}>At least {minLength - length} more characters needed</Text>
-        )}
-        {error && <Text style={styles.error}>{error}</Text>}
-        <Text style={[styles.counter, length > maxLength * 0.9 && styles.counterWarning]}>
+      <View className="flex-row justify-between items-center mt-1">
+        <View className="flex-1">
+          {isTooShort && (
+            <Text className="text-xs text-gray-500">
+              At least {minLength - length} more characters needed
+            </Text>
+          )}
+          {error && <Text className="text-xs text-red-500">{error}</Text>}
+        </View>
+        <Text className={`text-xs ${length > maxLength * 0.9 ? 'text-amber-500' : 'text-gray-400'}`}>
           {length}/{maxLength}
         </Text>
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 16,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 8,
-  },
-  input: {
-    minHeight: 100,
-    borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    fontSize: 16,
-    color: '#111',
-    textAlignVertical: 'top',
-  },
-  inputError: {
-    borderColor: '#ef4444',
-  },
-  inputValid: {
-    borderColor: '#10b981',
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  hint: {
-    fontSize: 12,
-    color: '#6b7280',
-    flex: 1,
-  },
-  error: {
-    fontSize: 12,
-    color: '#ef4444',
-    flex: 1,
-  },
-  counter: {
-    fontSize: 12,
-    color: '#9ca3af',
-  },
-  counterWarning: {
-    color: '#f59e0b',
-  },
-});

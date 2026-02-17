@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { View, TouchableOpacity, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useOnboardingStore } from '../../stores/onboardingStore';
 import {
@@ -68,9 +68,9 @@ export default function PastFailuresScreen() {
       title="Let's start with your history"
       subtitle="What habits have you tried before?"
     >
-      <View style={styles.section}>
-        <Text style={styles.sectionLabel}>Select all that apply:</Text>
-        <View style={styles.chipContainer}>
+      <View className="mb-8">
+        <Text className="text-base font-semibold text-gray-700 mb-3">Select all that apply:</Text>
+        <View className="flex-row flex-wrap">
           {HABIT_OPTIONS.map((habit) => (
             <MultiSelectChip
               key={habit}
@@ -92,11 +92,11 @@ export default function PastFailuresScreen() {
         </View>
 
         {!showCustomInput ? (
-          <TouchableOpacity style={styles.addButton} onPress={() => setShowCustomInput(true)}>
-            <Text style={styles.addButtonText}>+ Add other</Text>
+          <TouchableOpacity className="mt-2 py-2" onPress={() => setShowCustomInput(true)}>
+            <Text className="text-sm text-blue-500 font-semibold">+ Add other</Text>
           </TouchableOpacity>
         ) : (
-          <View style={styles.customInput}>
+          <View className="mt-4">
             <CharacterCounter
               value={customHabit}
               onChangeText={setCustomHabit}
@@ -105,29 +105,29 @@ export default function PastFailuresScreen() {
               label="Custom habit"
               placeholder="e.g., Learning Spanish"
             />
-            <View style={styles.customActions}>
+            <View className="flex-row gap-3 mt-2">
               <TouchableOpacity
-                style={styles.customCancel}
+                className="flex-1 py-3 items-center rounded-lg bg-gray-100"
                 onPress={() => {
                   setShowCustomInput(false);
                   setCustomHabit('');
                 }}
               >
-                <Text style={styles.customCancelText}>Cancel</Text>
+                <Text className="text-base font-semibold text-gray-500">Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.customAdd, !customHabit.trim() && styles.customAddDisabled]}
+                className={`flex-1 py-3 items-center rounded-lg bg-blue-500 ${!customHabit.trim() ? 'opacity-50' : ''}`}
                 onPress={handleAddCustom}
                 disabled={!customHabit.trim()}
               >
-                <Text style={styles.customAddText}>Add</Text>
+                <Text className="text-base font-semibold text-white">Add</Text>
               </TouchableOpacity>
             </View>
           </View>
         )}
       </View>
 
-      <View style={styles.section}>
+      <View className="mb-8">
         <CharacterCounter
           value={data.failureDescription}
           onChangeText={(text) => updateData('failureDescription', text)}
@@ -138,85 +138,12 @@ export default function PastFailuresScreen() {
         />
       </View>
 
-      <View style={styles.actions}>
-        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-          <Text style={styles.backButtonText}>← Back</Text>
+      <View className="mt-8 gap-3">
+        <TouchableOpacity className="py-3 items-center" onPress={handleBack}>
+          <Text className="text-base text-blue-500 font-semibold">← Back</Text>
         </TouchableOpacity>
         <AuthButton title="Next" onPress={handleNext} variant="primary" disabled={!canProceed()} />
       </View>
     </OnboardingContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  section: {
-    marginBottom: 32,
-  },
-  sectionLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: 12,
-  },
-  chipContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  addButton: {
-    marginTop: 8,
-    paddingVertical: 8,
-  },
-  addButtonText: {
-    fontSize: 14,
-    color: '#3b82f6',
-    fontWeight: '600',
-  },
-  customInput: {
-    marginTop: 16,
-  },
-  customActions: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 8,
-  },
-  customCancel: {
-    flex: 1,
-    paddingVertical: 12,
-    alignItems: 'center',
-    borderRadius: 8,
-    backgroundColor: '#f3f4f6',
-  },
-  customCancelText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#6b7280',
-  },
-  customAdd: {
-    flex: 1,
-    paddingVertical: 12,
-    alignItems: 'center',
-    borderRadius: 8,
-    backgroundColor: '#3b82f6',
-  },
-  customAddDisabled: {
-    opacity: 0.5,
-  },
-  customAddText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#fff',
-  },
-  actions: {
-    marginTop: 32,
-    gap: 12,
-  },
-  backButton: {
-    paddingVertical: 12,
-    alignItems: 'center',
-  },
-  backButtonText: {
-    fontSize: 16,
-    color: '#3b82f6',
-    fontWeight: '600',
-  },
-});
