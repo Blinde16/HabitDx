@@ -28,5 +28,13 @@ module.exports = {
       version: 'detect',
     },
   },
-  ignorePatterns: ['node_modules/', '.expo/', 'dist/', 'build/', 'coverage/', '*.config.js'],
+  ignorePatterns: [
+    'node_modules/',
+    '.expo/',
+    'dist/',
+    'build/',
+    'coverage/',
+    '*.config.js',
+    'supabase/functions/',
+  ],
 };

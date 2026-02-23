@@ -1,5 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { OpenAI } from 'https://esm.sh/openai@4.20.1';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -33,9 +34,9 @@ interface FailureProfileResponse {
 
 function constructPrompt(userData: OnboardingData): string {
   const pastHabitsText = userData.past_habits
-    .map(h => `- ${h.habit} (tried for ${h.duration}, failed because: ${h.why_failed})`)
+    .map((h) => `- ${h.habit} (tried for ${h.duration}, failed because: ${h.why_failed})`)
     .join('\n');
-  
+
   const failureReasonsText = userData.failure_reasons.join(', ');
   const constraintsText = userData.life_constraints.join(', ');
   const goalsText = userData.goals?.join(', ') || 'Not specified';
@@ -124,13 +125,10 @@ serve(async (req) => {
     } = await supabaseClient.auth.getUser();
 
     if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        {
-          status: 401,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     // Get user's onboarding data
@@ -141,13 +139,10 @@ serve(async (req) => {
       .single();
 
     if (profileError || !profile) {
-      return new Response(
-        JSON.stringify({ error: 'Profile not found', details: profileError }),
-        {
-          status: 404,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
+      return new Response(JSON.stringify({ error: 'Profile not found', details: profileError }), {
+        status: 404,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     // Check if user already has an active profile
@@ -161,9 +156,9 @@ serve(async (req) => {
     if (existingProfile) {
       // Return existing profile (caching to save API costs)
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           profile: existingProfile,
-          cached: true 
+          cached: true,
         }),
         {
           status: 200,
@@ -178,61 +173,46 @@ serve(async (req) => {
     const pastFailureNames: string[] = profile.past_failures || [];
 
     const prompt = constructPrompt({
-      past_habits: pastFailureNames.map(habit => ({
+      past_habits: pastFailureNames.map((habit) => ({
         habit,
         duration: 'unknown',
         why_failed: constraints.failure_description || 'Not specified',
       })),
-      failure_reasons: constraints.failure_description
-        ? [constraints.failure_description]
-        : [],
+      failure_reasons: constraints.failure_description ? [constraints.failure_description] : [],
       energy_pattern: constraints.peak_energy || 'varies',
-      life_constraints: [
-        ...(constraints.obstacles || []),
-        ...(constraints.schedule_type || []),
-      ],
+      life_constraints: [...(constraints.obstacles || []), ...(constraints.schedule_type || [])],
       identity_goal: (profile.goals || [])[0] || '',
       goals: profile.goals || [],
       motivation: constraints.failure_description || '',
     });
 
-    // Call Gemini API
-    const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
-    if (!geminiApiKey) {
-      throw new Error('GEMINI_API_KEY not configured');
+    // Call OpenAI API
+    if (!Deno.env.get('OPENAI_API_KEY')) {
+      throw new Error('OPENAI_API_KEY not configured');
     }
 
+    const openai = new OpenAI({ apiKey: Deno.env.get('OPENAI_API_KEY') });
     const startTime = Date.now();
 
-    const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          system_instruction: {
-            parts: [{ text: 'You are an expert behavioral psychologist specializing in habit formation analysis. You provide deep, personalized insights that help people understand why their habits fail.' }],
-          },
-          contents: [{ role: 'user', parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 1000,
-            responseMimeType: 'application/json',
-          },
-        }),
-      }
-    );
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        {
+          role: 'system',
+          content:
+            'You are an expert behavioral psychologist specializing in habit formation analysis. You provide deep, personalized insights that help people understand why their habits fail.',
+        },
+        { role: 'user', content: prompt },
+      ],
+      response_format: { type: 'json_object' },
+      temperature: 0.7,
+      max_tokens: 1000,
+    });
 
-    if (!geminiResponse.ok) {
-      const errorData = await geminiResponse.text();
-      throw new Error(`Gemini API error: ${geminiResponse.status} ${errorData}`);
-    }
-
-    const geminiData = await geminiResponse.json();
     const duration = Date.now() - startTime;
 
     // Parse AI response
-    const aiContent = geminiData.candidates[0].content.parts[0].text;
+    const aiContent = completion.choices[0].message.content || '{}';
     const profileData: FailureProfileResponse = JSON.parse(aiContent);
 
     // Validate response structure
@@ -261,8 +241,8 @@ serve(async (req) => {
         view_count: 0,
         version: 1,
         is_active: true,
-        model_used: 'gemini-1.5-flash',
-        tokens_used: geminiData.usageMetadata?.totalTokenCount || 0,
+        model_used: 'gpt-4o-mini',
+        tokens_used: completion.usage?.total_tokens || 0,
         raw_response: aiContent,
       })
       .select()
@@ -273,7 +253,9 @@ serve(async (req) => {
     }
 
     // Log success
-    console.log(`Profile generated for user ${user.id} in ${duration}ms, tokens: ${openaiData.usage?.total_tokens}`);
+    console.log(
+      `Profile generated for user ${user.id} in ${duration}ms, tokens: ${completion.usage?.total_tokens}`
+    );
 
     return new Response(
       JSON.stringify({
@@ -286,7 +268,6 @@ serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     );
-
   } catch (error) {
     console.error('Error in analyze-failure function:', error);
 
