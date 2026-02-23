@@ -139,6 +139,15 @@ export default function PastFailuresScreen() {
       </View>
 
       <View className="mt-8 gap-3">
+        {!canProceed() && (
+          <Text className="text-xs text-center text-gray-400">
+            {data.pastFailures.length === 0
+              ? 'Select at least one habit above'
+              : data.failureDescription.length < 20
+              ? `Describe why they failed (${20 - data.failureDescription.length} more characters needed)`
+              : null}
+          </Text>
+        )}
         <TouchableOpacity className="py-3 items-center" onPress={handleBack}>
           <Text className="text-base text-blue-500 font-semibold">← Back</Text>
         </TouchableOpacity>

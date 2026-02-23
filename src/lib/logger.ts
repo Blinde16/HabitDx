@@ -1,76 +1,68 @@
-import winston from 'winston';
+import { Platform } from 'react-native';
 
-/**
- * Structured Logger Configuration for HabitDx
- * 
- * Philosophy: Use structured logging instead of console.log for better debugging and AI-assisted troubleshooting.
- * 
- * Log Levels:
- * - error: Application errors that need immediate attention
- * - warn: Warning conditions that should be reviewed
- * - info: General informational messages about app flow
- * - http: HTTP request/response logging
- * - debug: Detailed debugging information
- * 
- * Features:
- * - JSON formatting for machine readability
- * - File transport for persistent logs
- * - Console transport for development
- * - Metadata support for context
- */
+// Web-safe logger: uses console on web/browser, winston on native/Node
+// Winston's File transport requires Node.js `fs` which is unavailable in browsers.
 
-const { combine, timestamp, json, printf, colorize, errors } = winston.format;
+type LogMeta = Record<string, any>;
 
-// Custom format for console output (human-readable)
-const consoleFormat = printf(({ level, message, timestamp, ...metadata }) => {
-  let msg = `${timestamp} [${level}]: ${message}`;
-  if (Object.keys(metadata).length > 0) {
-    msg += ` ${JSON.stringify(metadata)}`;
-  }
-  return msg;
-});
+type Logger = {
+  error: (message: string, meta?: LogMeta) => void;
+  warn: (message: string, meta?: LogMeta) => void;
+  info: (message: string, meta?: LogMeta) => void;
+  debug: (message: string, meta?: LogMeta) => void;
+};
 
-// Create logger instance
-const logger = winston.createLogger({
-  level: process.env.LOG_LEVEL || 'info',
-  format: combine(
-    errors({ stack: true }), // Log stack traces
-    timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    json() // JSON format for file logs
-  ),
-  defaultMeta: {
-    service: 'habitdx-app',
-    environment: process.env.NODE_ENV || 'development',
-  },
-  transports: [
-    // Write all logs to combined.log
-    new winston.transports.File({
-      filename: 'logs/combined.log',
-      maxsize: 5242880, // 5MB
-      maxFiles: 5,
-    }),
-    // Write error logs to error.log
-    new winston.transports.File({
-      filename: 'logs/error.log',
-      level: 'error',
-      maxsize: 5242880, // 5MB
-      maxFiles: 5,
-    }),
-  ],
-});
-
-// Add console transport for development
-if (process.env.NODE_ENV !== 'production') {
-  logger.add(
-    new winston.transports.Console({
-      format: combine(
-        colorize(),
-        timestamp({ format: 'HH:mm:ss' }),
-        consoleFormat
-      ),
-    })
-  );
+function createConsoleLogger(): Logger {
+  const fmt = (level: string, message: string, meta?: LogMeta) => {
+    const ts = new Date().toISOString();
+    const base = `${ts} [${level}]: ${message}`;
+    return meta && Object.keys(meta).length > 0 ? `${base} ${JSON.stringify(meta)}` : base;
+  };
+  return {
+    error: (msg, meta) => console.error(fmt('error', msg, meta)),
+    warn: (msg, meta) => console.warn(fmt('warn', msg, meta)),
+    info: (msg, meta) => console.info(fmt('info', msg, meta)),
+    debug: (msg, meta) => console.debug(fmt('debug', msg, meta)),
+  };
 }
+
+function createWinstonLogger(): Logger {
+  // Dynamically required so Metro doesn't try to bundle it for web
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const winston = require('winston');
+  const { combine, timestamp, json, printf, colorize, errors } = winston.format;
+
+  const consoleFormat = printf(({ level, message, timestamp, ...metadata }: any) => {
+    let msg = `${timestamp} [${level}]: ${message}`;
+    if (Object.keys(metadata).length > 0) msg += ` ${JSON.stringify(metadata)}`;
+    return msg;
+  });
+
+  const instance = winston.createLogger({
+    level: process.env.LOG_LEVEL || 'info',
+    format: combine(errors({ stack: true }), timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), json()),
+    defaultMeta: { service: 'habitdx-app', environment: process.env.NODE_ENV || 'development' },
+    transports: [
+      new winston.transports.File({ filename: 'logs/combined.log', maxsize: 5242880, maxFiles: 5 }),
+      new winston.transports.File({ filename: 'logs/error.log', level: 'error', maxsize: 5242880, maxFiles: 5 }),
+    ],
+  });
+
+  if (process.env.NODE_ENV !== 'production') {
+    instance.add(new winston.transports.Console({
+      format: combine(colorize(), timestamp({ format: 'HH:mm:ss' }), consoleFormat),
+    }));
+  }
+
+  return {
+    error: (msg, meta) => instance.error(msg, meta),
+    warn: (msg, meta) => instance.warn(msg, meta),
+    info: (msg, meta) => instance.info(msg, meta),
+    debug: (msg, meta) => instance.debug(msg, meta),
+  };
+}
+
+const logger: Logger = Platform.OS === 'web' ? createConsoleLogger() : createWinstonLogger();
 
 // Helper functions for common logging patterns
 

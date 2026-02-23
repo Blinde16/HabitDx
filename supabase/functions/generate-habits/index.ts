@@ -228,6 +228,10 @@ serve(async (req) => {
       );
     }
 
+    // Map from actual user_profiles schema
+    // constraints = JSONB { peak_energy, schedule_type, obstacles, failure_description }
+    const constraints = (userProfile.constraints as Record<string, any>) || {};
+
     // Construct AI prompt
     const prompt = constructPrompt(
       {
@@ -237,55 +241,57 @@ serve(async (req) => {
         recommendations: failureProfile.recommendations || [],
       },
       {
-        energy_pattern: userProfile.energy_pattern || 'morning',
-        life_constraints: userProfile.life_constraints || [],
-        identity_goal: userProfile.identity_goal || '',
-        past_habits: userProfile.past_habits || [],
+        energy_pattern: constraints.peak_energy || 'morning',
+        life_constraints: [
+          ...(constraints.obstacles || []),
+          ...(constraints.schedule_type || []),
+        ],
+        identity_goal: (userProfile.goals || [])[0] || '',
+        past_habits: (userProfile.past_failures || []).map((habit: string) => ({
+          habit,
+          duration: 'unknown',
+          why_failed: constraints.failure_description || 'Not specified',
+        })),
       }
     );
 
-    // Call OpenAI API
-    const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
-    if (!openaiApiKey) {
-      throw new Error('OPENAI_API_KEY not configured');
+    // Call Gemini API
+    const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
+    if (!geminiApiKey) {
+      throw new Error('GEMINI_API_KEY not configured');
     }
 
     const startTime = Date.now();
 
-    const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openaiApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are an expert habit designer specializing in personalized, tiny habits that stick. You design habits based on behavioral science and individual failure patterns.',
+    const geminiResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system_instruction: {
+            parts: [{ text: 'You are an expert habit designer specializing in personalized, tiny habits that stick. You design habits based on behavioral science and individual failure patterns.' }],
           },
-          {
-            role: 'user',
-            content: prompt,
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0.8,
+            maxOutputTokens: 1500,
+            responseMimeType: 'application/json',
           },
-        ],
-        temperature: 0.8, // Higher creativity for diverse habit suggestions
-        max_tokens: 1500,
-        response_format: { type: 'json_object' },
-      }),
-    });
+        }),
+      }
+    );
 
-    if (!openaiResponse.ok) {
-      const errorData = await openaiResponse.text();
-      throw new Error(`OpenAI API error: ${openaiResponse.status} ${errorData}`);
+    if (!geminiResponse.ok) {
+      const errorData = await geminiResponse.text();
+      throw new Error(`Gemini API error: ${geminiResponse.status} ${errorData}`);
     }
 
-    const openaiData = await openaiResponse.json();
+    const geminiData = await geminiResponse.json();
     const duration = Date.now() - startTime;
 
     // Parse AI response
-    const aiContent = openaiData.choices[0].message.content;
+    const aiContent = geminiData.candidates[0].content.parts[0].text;
     const habitsData: GenerateHabitsResponse = JSON.parse(aiContent);
 
     // Validate response
@@ -344,7 +350,7 @@ serve(async (req) => {
         habits: createdHabits,
         cached: false,
         generation_time_ms: duration,
-        tokens_used: openaiData.usage?.total_tokens || 0,
+        tokens_used: geminiData.usageMetadata?.totalTokenCount || 0,
       }),
       {
         status: 200,

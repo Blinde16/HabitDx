@@ -80,7 +80,7 @@ export default function InsightsScreen() {
 
     Alert.alert(
       'Keep Current Habit?',
-      'No problem! We'll keep your habit as is.',
+      "No problem! We'll keep your habit as is.",
       [
         { text: 'Cancel', style: 'cancel' },
         {

@@ -172,59 +172,67 @@ serve(async (req) => {
       );
     }
 
-    // Construct AI prompt
+    // Map from actual user_profiles schema to prompt format
+    // past_failures = string[], constraints = JSONB { peak_energy, schedule_type, obstacles, failure_description }
+    const constraints = (profile.constraints as Record<string, any>) || {};
+    const pastFailureNames: string[] = profile.past_failures || [];
+
     const prompt = constructPrompt({
-      past_habits: profile.past_habits || [],
-      failure_reasons: profile.failure_reasons || [],
-      energy_pattern: profile.energy_pattern || 'varies',
-      life_constraints: profile.life_constraints || [],
-      identity_goal: profile.identity_goal || '',
+      past_habits: pastFailureNames.map(habit => ({
+        habit,
+        duration: 'unknown',
+        why_failed: constraints.failure_description || 'Not specified',
+      })),
+      failure_reasons: constraints.failure_description
+        ? [constraints.failure_description]
+        : [],
+      energy_pattern: constraints.peak_energy || 'varies',
+      life_constraints: [
+        ...(constraints.obstacles || []),
+        ...(constraints.schedule_type || []),
+      ],
+      identity_goal: (profile.goals || [])[0] || '',
       goals: profile.goals || [],
-      motivation: profile.motivation || '',
+      motivation: constraints.failure_description || '',
     });
 
-    // Call OpenAI API
-    const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
-    if (!openaiApiKey) {
-      throw new Error('OPENAI_API_KEY not configured');
+    // Call Gemini API
+    const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
+    if (!geminiApiKey) {
+      throw new Error('GEMINI_API_KEY not configured');
     }
 
     const startTime = Date.now();
 
-    const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openaiApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are an expert behavioral psychologist specializing in habit formation analysis. You provide deep, personalized insights that help people understand why their habits fail.',
+    const geminiResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system_instruction: {
+            parts: [{ text: 'You are an expert behavioral psychologist specializing in habit formation analysis. You provide deep, personalized insights that help people understand why their habits fail.' }],
           },
-          {
-            role: 'user',
-            content: prompt,
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 1000,
+            responseMimeType: 'application/json',
           },
-        ],
-        temperature: 0.7,
-        max_tokens: 1000,
-        response_format: { type: 'json_object' },
-      }),
-    });
+        }),
+      }
+    );
 
-    if (!openaiResponse.ok) {
-      const errorData = await openaiResponse.text();
-      throw new Error(`OpenAI API error: ${openaiResponse.status} ${errorData}`);
+    if (!geminiResponse.ok) {
+      const errorData = await geminiResponse.text();
+      throw new Error(`Gemini API error: ${geminiResponse.status} ${errorData}`);
     }
 
-    const openaiData = await openaiResponse.json();
+    const geminiData = await geminiResponse.json();
     const duration = Date.now() - startTime;
 
     // Parse AI response
-    const aiContent = openaiData.choices[0].message.content;
+    const aiContent = geminiData.candidates[0].content.parts[0].text;
     const profileData: FailureProfileResponse = JSON.parse(aiContent);
 
     // Validate response structure
@@ -253,8 +261,8 @@ serve(async (req) => {
         view_count: 0,
         version: 1,
         is_active: true,
-        model_used: 'gpt-4o-mini',
-        tokens_used: openaiData.usage?.total_tokens || 0,
+        model_used: 'gemini-1.5-flash',
+        tokens_used: geminiData.usageMetadata?.totalTokenCount || 0,
         raw_response: aiContent,
       })
       .select()

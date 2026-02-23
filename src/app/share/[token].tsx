@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import FailureProfileService from '../../../lib/failureProfileService';
-import type { HabitFailureProfile } from '../../../types/failure-profile';
-import { logInfo, logError } from '../../../lib/logger';
+import FailureProfileService from '../../lib/failureProfileService';
+import type { HabitFailureProfile } from '../../types/failure-profile';
+import { logInfo, logError } from '../../lib/logger';
 
 export default function SharedProfileScreen() {
   const { token } = useLocalSearchParams<{ token: string }>();
