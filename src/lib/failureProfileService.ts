@@ -33,13 +33,24 @@ export class FailureProfileService {
       const {
         data: { session },
       } = await supabase.auth.getSession();
+      let accessToken = session?.access_token;
+      if (!accessToken) {
+        const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
+        if (refreshError) {
+          throw refreshError;
+        }
+        accessToken = refreshed.session?.access_token;
+      }
+      if (!accessToken) {
+        throw new Error('No active session. Please sign in again.');
+      }
 
       // Call the Edge Function with explicit auth header
       const { data, error } = await supabase.functions.invoke('analyze-failure', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${session?.access_token}`,
+          authorization: `Bearer ${accessToken}`,
         },
       });
 
