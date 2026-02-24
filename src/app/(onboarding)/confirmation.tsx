@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useOnboardingStore } from '../../stores/onboardingStore';
 import { useAuthStore } from '../../stores/authStore';
@@ -13,15 +13,23 @@ export default function ConfirmationScreen() {
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async () => {
-    if (!user) return;
+    if (!user) {
+      Alert.alert('Not logged in', 'No user session found. Please sign out and sign back in.');
+      return;
+    }
+
+    console.log('[Confirmation] Starting submission for user:', user.id);
+    console.log('[Confirmation] Onboarding data:', JSON.stringify(data, null, 2));
 
     try {
       setSubmitting(true);
       await submitOnboarding(user.id);
-      // Navigate to Failure Profile screen after successful submission
+      console.log('[Confirmation] submitOnboarding succeeded — navigating to failure-profile');
       router.push('/(onboarding)/failure-profile');
     } catch (err) {
-      console.error('Onboarding submission error:', err);
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error('[Confirmation] Submission failed:', msg);
+      Alert.alert('Submission Error', msg);
       setSubmitting(false);
     }
   };
@@ -37,6 +45,12 @@ export default function ConfirmationScreen() {
       totalScreens={5}
       title="Perfect! Here's what happens next:"
     >
+      {error && (
+        <View className="bg-red-100 rounded-lg p-3 mb-4 border-l-4 border-red-500">
+          <Text className="text-red-900 text-sm font-semibold">Error: {error}</Text>
+        </View>
+      )}
+
       <View className="mb-8">
         <View className="flex-row mb-5">
           <View className="w-12 h-12 rounded-full bg-gray-100 items-center justify-center mr-4">
@@ -132,18 +146,8 @@ export default function ConfirmationScreen() {
         </Text>
       </View>
 
-      {error && (
-        <View className="bg-red-100 rounded-lg p-3 mb-4 border-l-4 border-red-500">
-          <Text className="text-red-900 text-sm">{error}</Text>
-        </View>
-      )}
-
       <View className="gap-3">
-        <TouchableOpacity
-          className="py-3 items-center"
-          onPress={handleBack}
-          disabled={submitting}
-        >
+        <TouchableOpacity className="py-3 items-center" onPress={handleBack} disabled={submitting}>
           <Text className="text-base text-blue-500 font-semibold">← Back</Text>
         </TouchableOpacity>
         <AuthButton
@@ -157,4 +161,3 @@ export default function ConfirmationScreen() {
     </OnboardingContainer>
   );
 }
-

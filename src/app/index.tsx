@@ -1,14 +1,18 @@
 import { useEffect } from 'react';
 import { View, ActivityIndicator } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useRootNavigationState } from 'expo-router';
 import { useAuthStore } from '../stores/authStore';
 import { supabase } from '../lib/supabase';
 
 export default function IndexScreen() {
   const router = useRouter();
   const { user } = useAuthStore();
+  const rootNavigationState = useRootNavigationState();
 
   useEffect(() => {
+    // Wait until the root navigator is mounted before navigating
+    if (!rootNavigationState?.key) return;
+
     if (!user) {
       router.replace('/(auth)/login');
       return;
@@ -31,7 +35,7 @@ export default function IndexScreen() {
     };
 
     routeUser();
-  }, [user, router]);
+  }, [user, router, rootNavigationState?.key]);
 
   return (
     <View className="flex-1 items-center justify-center bg-white">
