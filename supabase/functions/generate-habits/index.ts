@@ -206,6 +206,18 @@ serve(async (req) => {
         }
       );
     }
+    if (existingStack) {
+      // Deactivate any existing active stack (and its habits) before creating a new one
+      await supabaseClient
+        .from('habit_stacks')
+        .update({ is_active: false })
+        .eq('id', existingStack.id);
+
+      await supabaseClient
+        .from('habits')
+        .update({ is_active: false })
+        .eq('stack_id', existingStack.id);
+    }
 
     // Get user's failure profile
     const { data: failureProfile, error: profileError } = await supabaseClient
