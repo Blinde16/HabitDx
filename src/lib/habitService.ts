@@ -4,7 +4,7 @@
  * Handles API calls for habit generation, management, and logging
  */
 
-import { supabase } from './supabase';
+import { supabase, supabaseAnonKey, supabaseUrl } from './supabase';
 import { logAI, logError, logInfo, logHabit } from './logger';
 import type { Habit, HabitStack, GenerateHabitsResult } from '../types/habit';
 
@@ -18,23 +18,38 @@ export class HabitService {
 
       const startTime = Date.now();
 
-      // Get current session to pass auth token explicitly
+      // Get current session so we can attach auth header explicitly (required for web)
       const {
         data: { session },
       } = await supabase.auth.getSession();
+      let accessToken = session?.access_token;
+      if (!accessToken) {
+        const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
+        if (refreshError) {
+          throw refreshError;
+        }
+        accessToken = refreshed.session?.access_token;
+      }
+      if (!accessToken) {
+        throw new Error('No active session. Please sign in again.');
+      }
 
-      // Call the Edge Function
-      const { data, error } = await supabase.functions.invoke('generate-habits', {
+      const response = await fetch(`${supabaseUrl}/functions/v1/generate-habits`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${session?.access_token}`,
+          apikey: supabaseAnonKey,
+          authorization: `Bearer ${accessToken}`,
         },
+        body: JSON.stringify({}),
       });
 
-      if (error) {
-        logError(error, { context: 'habits.generate', userId });
-        throw new Error(`Failed to generate habits: ${error.message}`);
+      const data = (await response.json()) as GenerateHabitsResult & { error?: string };
+
+      if (!response.ok) {
+        const errorMessage = data?.error || `Request failed with status ${response.status}`;
+        logError(new Error(errorMessage), { context: 'habits.generate', userId });
+        throw new Error(`Failed to generate habits: ${errorMessage}`);
       }
 
       const duration = Date.now() - startTime;
