@@ -14,6 +14,9 @@ export default function OnboardingLayout() {
       <Stack.Screen name="constraints" />
       <Stack.Screen name="goals" />
       <Stack.Screen name="confirmation" />
+      <Stack.Screen name="failure-profile" />
+      <Stack.Screen name="habits" />
+      <Stack.Screen name="notifications" />
     </Stack>
   );
 }

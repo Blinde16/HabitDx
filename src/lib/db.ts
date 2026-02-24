@@ -38,10 +38,10 @@ export const getProfile = async (userId: string) => {
  * Update user profile
  */
 export const updateProfile = async (userId: string, updates: UserProfileUpdate) => {
+  // Use upsert to handle cases where the profile row doesn't exist yet
   const { data, error } = await supabase
     .from('user_profiles')
-    .update(updates)
-    .eq('id', userId)
+    .upsert({ id: userId, ...updates }, { onConflict: 'id' })
     .select()
     .single();
 

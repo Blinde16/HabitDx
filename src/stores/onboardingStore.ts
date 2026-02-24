@@ -149,10 +149,13 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
       };
 
       // Save to database
-      const { error } = await updateProfile(userId, profileUpdate);
+      const { data: updatedProfile, error } = await updateProfile(userId, profileUpdate);
 
       if (error) {
         throw new Error(error.message);
+      }
+      if (!updatedProfile) {
+        throw new Error('Profile update failed: no profile was returned.');
       }
 
       // Clear progress after successful submission
