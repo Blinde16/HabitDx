@@ -43,7 +43,7 @@ interface OnboardingStore {
   submitOnboarding: (userId: string) => Promise<void>;
 
   // Validation
-  canProceed: () => boolean;
+  canProceed: (screen?: number) => boolean;
 }
 
 const initialData: OnboardingData = {
@@ -169,10 +169,11 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
     }
   },
 
-  canProceed: () => {
+  canProceed: (screen) => {
     const { currentScreen, data } = get();
+    const activeScreen = screen ?? currentScreen;
 
-    switch (currentScreen) {
+    switch (activeScreen) {
       case 1: // Welcome screen
         return true;
       case 2: // Past failures

@@ -67,7 +67,7 @@ export default function ConstraintsScreen() {
   };
 
   const handleNext = () => {
-    if (canProceed()) {
+    if (canProceed(3)) {
       nextScreen();
       router.push('/(onboarding)/goals');
     }
@@ -154,7 +154,7 @@ export default function ConstraintsScreen() {
         <TouchableOpacity className="py-3 items-center" onPress={handleBack}>
           <Text className="text-base text-blue-500 font-semibold">← Back</Text>
         </TouchableOpacity>
-        <AuthButton title="Next" onPress={handleNext} variant="primary" disabled={!canProceed()} />
+        <AuthButton title="Next" onPress={handleNext} variant="primary" disabled={!canProceed(3)} />
       </View>
     </OnboardingContainer>
   );

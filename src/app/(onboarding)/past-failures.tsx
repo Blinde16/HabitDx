@@ -50,7 +50,7 @@ export default function PastFailuresScreen() {
   };
 
   const handleNext = () => {
-    if (canProceed()) {
+    if (canProceed(2)) {
       nextScreen();
       router.push('/(onboarding)/constraints');
     }
@@ -139,7 +139,7 @@ export default function PastFailuresScreen() {
       </View>
 
       <View className="mt-8 gap-3">
-        {!canProceed() && (
+        {!canProceed(2) && (
           <Text className="text-xs text-center text-gray-400">
             {data.pastFailures.length === 0
               ? 'Select at least one habit above'
@@ -151,7 +151,7 @@ export default function PastFailuresScreen() {
         <TouchableOpacity className="py-3 items-center" onPress={handleBack}>
           <Text className="text-base text-blue-500 font-semibold">← Back</Text>
         </TouchableOpacity>
-        <AuthButton title="Next" onPress={handleNext} variant="primary" disabled={!canProceed()} />
+        <AuthButton title="Next" onPress={handleNext} variant="primary" disabled={!canProceed(2)} />
       </View>
     </OnboardingContainer>
   );

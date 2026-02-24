@@ -33,7 +33,7 @@ export default function GoalsScreen() {
   };
 
   const handleNext = () => {
-    if (canProceed()) {
+    if (canProceed(4)) {
       nextScreen();
       router.push('/(onboarding)/confirmation');
     }
@@ -108,7 +108,7 @@ export default function GoalsScreen() {
         <TouchableOpacity className="py-3 items-center" onPress={handleBack}>
           <Text className="text-base text-blue-500 font-semibold">← Back</Text>
         </TouchableOpacity>
-        <AuthButton title="Next" onPress={handleNext} variant="primary" disabled={!canProceed()} />
+        <AuthButton title="Next" onPress={handleNext} variant="primary" disabled={!canProceed(4)} />
       </View>
     </OnboardingContainer>
   );
