@@ -1,6 +1,6 @@
 /**
  * Habit Service
- * 
+ *
  * Handles API calls for habit generation, management, and logging
  */
 
@@ -18,11 +18,17 @@ export class HabitService {
 
       const startTime = Date.now();
 
+      // Get current session to pass auth token explicitly
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
       // Call the Edge Function
       const { data, error } = await supabase.functions.invoke('generate-habits', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${session?.access_token}`,
         },
       });
 
@@ -33,12 +39,7 @@ export class HabitService {
 
       const duration = Date.now() - startTime;
 
-      logAI.requestSuccess(
-        userId,
-        'generate-habits',
-        data.tokens_used,
-        duration
-      );
+      logAI.requestSuccess(userId, 'generate-habits', data.tokens_used, duration);
 
       logInfo('Habit stack generated successfully', {
         userId,
@@ -113,11 +114,7 @@ export class HabitService {
    */
   static async getHabitById(habitId: string): Promise<Habit | null> {
     try {
-      const { data, error } = await supabase
-        .from('habits')
-        .select('*')
-        .eq('id', habitId)
-        .single();
+      const { data, error } = await supabase.from('habits').select('*').eq('id', habitId).single();
 
       if (error) {
         if (error.code === 'PGRST116') {
@@ -136,10 +133,7 @@ export class HabitService {
   /**
    * Update a habit
    */
-  static async updateHabit(
-    habitId: string,
-    updates: Partial<Habit>
-  ): Promise<Habit> {
+  static async updateHabit(habitId: string, updates: Partial<Habit>): Promise<Habit> {
     try {
       logHabit.updated('system', habitId, updates);
 
@@ -223,17 +217,15 @@ export class HabitService {
     try {
       const today = new Date().toISOString().split('T')[0];
 
-      const { error } = await supabase
-        .from('habit_logs')
-        .upsert({
-          habit_id: habitId,
-          user_id: userId,
-          logged_date: today,
-          completed,
-          partial: false,
-          obstacle: obstacle || null,
-          obstacle_note: obstacleNote || null,
-        });
+      const { error } = await supabase.from('habit_logs').upsert({
+        habit_id: habitId,
+        user_id: userId,
+        logged_date: today,
+        completed,
+        partial: false,
+        obstacle: obstacle || null,
+        obstacle_note: obstacleNote || null,
+      });
 
       if (error) {
         throw error;
@@ -252,7 +244,7 @@ export class HabitService {
   static async getCheckInHistory(
     habitId: string,
     days: number = 7
-  ): Promise<any[]> {
+  ): Promise<Record<string, unknown>[]> {
     try {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - days);
@@ -278,18 +270,15 @@ export class HabitService {
   /**
    * Get completion rate for a habit
    */
-  static async getCompletionRate(
-    habitId: string,
-    days: number = 7
-  ): Promise<number> {
+  static async getCompletionRate(habitId: string, days: number = 7): Promise<number> {
     try {
       const history = await this.getCheckInHistory(habitId, days);
-      
+
       if (history.length === 0) {
         return 0;
       }
 
-      const completed = history.filter(log => log.completed).length;
+      const completed = history.filter((log) => log.completed).length;
       return (completed / days) * 100;
     } catch (error) {
       logError(error as Error, { context: 'habits.getCompletionRate', habitId });

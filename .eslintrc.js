@@ -22,6 +22,10 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     'no-console': ['warn', { allow: ['warn', 'error'] }],
+    // Disable import resolution rules — eslint-import-resolver-typescript
+    // has an interface mismatch with eslint-plugin-import in this setup
+    'import/namespace': 'off',
+    'import/no-unresolved': 'off',
   },
   settings: {
     react: {
