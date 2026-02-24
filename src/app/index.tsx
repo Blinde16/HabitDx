@@ -1,41 +1,41 @@
-import { Link } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect } from 'react';
+import { View, ActivityIndicator } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useAuthStore } from '../stores/authStore';
+import { supabase } from '../lib/supabase';
 
-export default function HomeScreen() {
+export default function IndexScreen() {
+  const router = useRouter();
+  const { user } = useAuthStore();
+
+  useEffect(() => {
+    if (!user) {
+      router.replace('/(auth)/login');
+      return;
+    }
+
+    const routeUser = async () => {
+      // Check if user has completed onboarding (has an active habit stack)
+      const { data } = await supabase
+        .from('habit_stacks')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .maybeSingle();
+
+      if (data) {
+        router.replace('/(tabs)/home');
+      } else {
+        router.replace('/(onboarding)/welcome');
+      }
+    };
+
+    routeUser();
+  }, [user, router]);
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>HabitDx</Text>
-      <Text style={styles.subtitle}>Foundation scaffold with Expo Router</Text>
-      <Link href="/" style={styles.link}>
-        Tap here (placeholder)
-      </Link>
-      <StatusBar style="auto" />
+    <View className="flex-1 items-center justify-center bg-white">
+      <ActivityIndicator size="large" color="#8B5CF6" />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-    backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#555',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  link: {
-    fontSize: 16,
-    color: '#1e90ff',
-  },
-});

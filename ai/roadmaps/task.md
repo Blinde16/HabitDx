@@ -27,126 +27,136 @@ Before writing any code, confirm these are ready:
 
 ---
 
-## Phase 1: Foundation
+## Phase 1: Foundation ✅ COMPLETED
 
 **Goal:** Technical infrastructure, auth, and empty app shell that navigates correctly.
 
-### 1.1 Project Initialization
+### 1.1 Project Initialization ✅
 
-- [ ] Initialize Expo project with TypeScript template (`npx create-expo-app`)
-- [ ] Configure folder structure per context doc (`src/app`, `src/components`, `src/hooks`, `src/lib`, `src/stores`, `src/types`)
-- [ ] Install and configure ESLint + Prettier
-- [ ] Set up path aliases (`@/components`, `@/lib`, etc.)
-- [ ] Initialize Git repo with `main` and `develop` branches
-- [ ] Create `.env.development` with Supabase + OpenAI keys
-- [ ] Add `.env` to `.gitignore`
+- [x] Initialize Expo project with TypeScript template (`npx create-expo-app`)
+- [x] Configure folder structure per context doc (`src/app`, `src/components`, `src/hooks`, `src/lib`, `src/stores`, `src/types`)
+- [x] Install and configure ESLint + Prettier
+- [x] Set up path aliases (`@/components`, `@/lib`, etc.)
+- [x] Initialize Git repo with `main` and `develop` branches
+- [x] Create `.env.development` with Supabase + OpenAI keys
+- [x] Add `.env` to `.gitignore`
 
-### 1.2 Navigation Shell
+### 1.2 Navigation Shell ✅
 
-- [ ] Install and configure Expo Router (file-based routing)
-- [ ] Create root layout (`src/app/_layout.tsx`) with auth gate logic
-- [ ] Create `(auth)` route group — login, signup, forgot-password placeholders
-- [ ] Create `(onboarding)` route group — 5 screen placeholders
-- [ ] Create `(tabs)` route group — home, insights, settings tabs
-- [ ] Implement tab bar with icons
+- [x] Install and configure Expo Router (file-based routing)
+- [x] Create root layout (`src/app/_layout.tsx`) with auth gate logic
+- [x] Create `(auth)` route group — login, signup, forgot-password placeholders
+- [x] Create `(onboarding)` route group — 5 screen placeholders
+- [x] Create `(tabs)` route group — home, insights, settings tabs
+- [x] Implement tab bar with icons
 
-### 1.3 Supabase Backend Setup
+### 1.3 Supabase Backend Setup ✅
 
-- [ ] Install `@supabase/supabase-js` and configure client (`src/lib/supabase.ts`)
-- [ ] Configure Supabase Auth (email + Google OAuth)
-- [ ] Write and run database migration for full schema:
+- [x] Install `@supabase/supabase-js` and configure client (`src/lib/supabase.ts`)
+- [x] Configure Supabase Auth (email + Google OAuth)
+- [x] Write and run database migration for full schema:
   - `user_profiles`
   - `habit_failure_profiles`
   - `habit_stacks`
   - `habits`
   - `habit_logs`
   - `weekly_iterations`
-- [ ] Apply Row Level Security policies (users only access own data)
-- [ ] Create indexes per architecture doc
+- [x] Apply Row Level Security policies (users only access own data)
+- [x] Create indexes per architecture doc
 - [ ] Scaffold Edge Function directories (`analyze-failure`, `generate-habits`, `weekly-iteration`)
 - [ ] Create `seed.sql` with sample test data
 
-> **🔵 DECISION NEEDED:** Do you already have a Supabase project created, or should I set one up locally with `supabase init`? Also — do you have Google OAuth credentials configured yet, or should we defer Google auth and start with email-only?
+### 1.4 Auth Flow ✅
 
-### 1.4 Auth Flow
+- [x] Create Zustand auth store (`src/stores/authStore.ts`)
+- [x] Build Login screen (email + password, Google sign-in button)
+- [x] Build Sign Up screen (email + password, Google sign-in button)
+- [x] Build Forgot Password screen (email input → reset link)
+- [x] Implement auth state listener (auto-redirect on login/logout)
+- [x] Handle session persistence (secure token storage)
+- [x] Add loading/error states to all auth screens
 
-- [ ] Create Zustand auth store (`src/stores/authStore.ts`)
-- [ ] Build Login screen (email + password, Google sign-in button)
-- [ ] Build Sign Up screen (email + password, Google sign-in button)
-- [ ] Build Forgot Password screen (email input → reset link)
-- [ ] Implement auth state listener (auto-redirect on login/logout)
-- [ ] Handle session persistence (secure token storage)
-- [ ] Add loading/error states to all auth screens
+### 1.5 Shared UI Components ✅
 
-### 1.5 Shared UI Components
-
-- [ ] Design token setup (colors, typography, spacing)
-- [ ] Build `Button` component (primary, secondary, ghost variants)
-- [ ] Build `TextInput` component (with label, error state)
-- [ ] Build `Card` component (for habits, insights)
-- [ ] Build `ProgressBar` component (for onboarding steps)
+- [x] Design token setup (colors, typography, spacing)
+- [x] Build `Button` component (primary, secondary, ghost variants)
+- [x] Build `TextInput` component (with label, error state)
+- [x] Build `Card` component (for habits, insights)
+- [x] Build `ProgressBar` component (for onboarding steps)
 - [ ] Build `BottomSheet` component (for obstacle selection)
-- [ ] Build screen `Container` / `SafeArea` wrapper
+- [x] Build screen `Container` / `SafeArea` wrapper
 
-> **🔵 DECISION NEEDED:** Do you have any existing brand guidelines (colors, fonts, logo)? Or should I propose a design direction? The visual tone should align with the "blame the design, not the person" philosophy — warm, supportive, clinical-but-not-cold.
-
-### Phase 1 Checkpoint
+### Phase 1 Checkpoint ✅
 
 > ✅ **User can sign up, log in, and see empty tab screens with navigation working.**
 
 ---
 
-## Phase 2: Smart Onboarding
+## Phase 2: Smart Onboarding ✅ COMPLETED
 
 **Goal:** 5-screen intake flow that captures the data needed for AI diagnosis. This phase is CRITICAL — it feeds the Failure Profile, which is our key differentiator.
 
-### 2.1 Onboarding State Management
+### 2.1 Onboarding State Management ✅
 
-- [ ] Create Zustand onboarding store (`src/stores/onboardingStore.ts`)
-- [ ] Track current step (1-5) and all responses
-- [ ] Implement progress persistence (resume if app closes mid-flow)
-- [ ] Add validation rules per screen
+- [x] Create Zustand onboarding store (`src/stores/onboardingStore.ts`)
+- [x] Track current step (1-5) and all responses
+- [x] Implement progress persistence (resume if app closes mid-flow)
+- [x] Add validation rules per screen
 
-### 2.2 Screen 1: Past Habits
+### 2.2 Screen 1: Welcome ✅
 
-- [ ] Build UI: "What habits have you tried before?"
-- [ ] Free text input with suggested chips (e.g. "Exercise", "Meditation", "Reading", "Diet")
-- [ ] Allow multiple entries with duration ("How long did it last?")
-- [ ] Store as structured data: `[{habit, duration, why_failed}]`
+- [x] Build UI: "Finally understand why your habits fail"
+- [x] Show 3 benefit bullets with icons
+- [x] "Get Started" button
+- [x] "This takes ~5 minutes" subtext
+- [x] Skip link (logs out, returns to login)
 
-### 2.3 Screen 2: Why They Failed
+### 2.3 Screen 2: Past Failures ✅
 
-- [ ] Build UI: "Why do you think they didn't stick?"
-- [ ] Multi-select options: "No time", "Forgot", "Too ambitious", "Lost motivation", "Life got in the way", "Felt pointless", "Other"
-- [ ] Optional free-text for "Other"
-- [ ] Store as `failure_reasons` array
+- [x] Build UI: "What habits have you tried before?"
+- [x] Multi-select chips (Exercise, Meditation, Reading, etc.)
+- [x] Allow custom habit input
+- [x] "Why did these fail?" text area with character counter
+- [x] Store as structured data with validation
 
-### 2.4 Screen 3: Schedule Constraints
+### 2.4 Screen 3: Constraints ✅
 
-- [ ] Build UI: "Tell us about your day"
-- [ ] Time pickers for: wake time, sleep time, work start, work end
-- [ ] Multi-select for life constraints: "Kids", "Long commute", "Health issues", "Shift work", "Caretaking", "Other"
-- [ ] Store in `user_profiles` constraint fields
+- [x] Build UI: "Help us understand your life"
+- [x] Energy pattern selector: Morning / Afternoon / Evening / Varies
+- [x] Schedule type multi-select (9-5 job, Shift work, etc.)
+- [x] Obstacles multi-select (Lack of time, Forgetfulness, etc.)
+- [x] Store in `user_profiles` constraint fields
 
-### 2.5 Screen 4: Energy Patterns
+### 2.5 Screen 4: Goals ✅
 
-- [ ] Build UI: "When do you feel most energized?"
-- [ ] Visual slider or selector: Morning / Afternoon / Evening
-- [ ] Optional: brief explanation of why this matters ("We'll design habits for YOUR peak energy")
-- [ ] Store as `energy_pattern`
+- [x] Build UI: "What are you working toward?"
+- [x] Goal cards with icons (max 3 selection)
+- [x] "Why does this matter to you?" text area
+- [x] Character counter (20-300 chars)
+- [x] Store as `goals` array
 
-### 2.6 Screen 5: Identity Goal
+### 2.6 Screen 5: Confirmation ✅
 
-- [ ] Build UI: "I want to be someone who..."
-- [ ] Single text input with inspiring placeholder text
-- [ ] Examples shown as chips: "...takes care of their health", "...reads every day", "...stays calm under pressure"
-- [ ] Store as `identity_goal`
+- [x] Build UI: "Perfect! Here's what happens next:"
+- [x] Timeline preview (5 steps)
+- [x] Notification permission toggle
+- [x] Privacy note
+- [x] "Analyze My Data" button
 
-### 2.7 Onboarding Completion
+### 2.7 Onboarding Completion ✅
 
-- [ ] Save all responses to `user_profiles` table via Supabase
-- [ ] Set `onboarding_completed_at` timestamp
-- [ ] Show loading state: "Analyzing your patterns..." (transition to Failure Profile)
+- [x] Save all responses to `user_profiles` table via Supabase
+- [x] Set `onboarding_completed` flag
+- [x] Handle errors gracefully with retry
+- [x] Navigate to home after successful submission
+
+### 2.8 UI Implementation ✅
+
+- [x] Install and configure NativeWind (Tailwind CSS for React Native)
+- [x] Convert all onboarding components to use NativeWind
+- [x] Convert all onboarding screens to use NativeWind
+- [x] Implement responsive layouts
+- [x] Add proper TypeScript types for className prop
 
 > **🔵 DECISION NEEDED:** The onboarding flow is described as "conversational UI (not forms)." How conversational do you want this?
 >

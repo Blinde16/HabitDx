@@ -1,5 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import Constants from 'expo-constants';
+import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
 
 // Get Supabase URL and anon key from environment variables
 const supabaseUrl = Constants.expoConfig?.extra?.EXPO_PUBLIC_SUPABASE_URL || '';
@@ -9,13 +11,50 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.warn('Supabase URL or Anon Key is missing. Please configure environment variables.');
 }
 
+// Custom storage adapter that uses SecureStore for native and localStorage for web
+const AuthStorage = {
+  getItem: async (key: string): Promise<string | null> => {
+    if (Platform.OS === 'web') {
+      return localStorage.getItem(key);
+    }
+    try {
+      return await SecureStore.getItemAsync(key);
+    } catch (error) {
+      console.error('Error getting item from SecureStore:', error);
+      return null;
+    }
+  },
+  setItem: async (key: string, value: string): Promise<void> => {
+    if (Platform.OS === 'web') {
+      localStorage.setItem(key, value);
+      return;
+    }
+    try {
+      await SecureStore.setItemAsync(key, value);
+    } catch (error) {
+      console.error('Error setting item in SecureStore:', error);
+    }
+  },
+  removeItem: async (key: string): Promise<void> => {
+    if (Platform.OS === 'web') {
+      localStorage.removeItem(key);
+      return;
+    }
+    try {
+      await SecureStore.deleteItemAsync(key);
+    } catch (error) {
+      console.error('Error removing item from SecureStore:', error);
+    }
+  },
+};
+
 // Create and export the Supabase client
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    storage: undefined, // Will be configured with proper storage in Phase 2
+    storage: AuthStorage,
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: false,
+    detectSessionInUrl: Platform.OS === 'web',
   },
 });
 

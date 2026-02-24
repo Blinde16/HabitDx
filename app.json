@@ -8,15 +8,48 @@
     "splash": {
       "backgroundColor": "#ffffff"
     },
+    "platforms": ["ios", "android", "web"],
+    "web": {
+      "bundler": "metro",
+      "favicon": "./assets/favicon.png"
+    },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.habitdx.app"
+      "bundleIdentifier": "com.habitdx.app",
+      "infoPlist": {
+        "UIBackgroundModes": ["remote-notification"]
+      }
     },
     "android": {
-      "package": "com.habitdx.app"
+      "package": "com.habitdx.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "NOTIFICATIONS",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE"
+      ]
+    },
+    "notification": {
+      "icon": "./assets/notification-icon.png",
+      "color": "#4A90E2",
+      "androidMode": "default",
+      "androidCollapsedTitle": "{{unread_count}} habits waiting"
     },
     "scheme": "habitdx",
-    "plugins": ["expo-router"],
+    "plugins": [
+      "expo-router",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#4A90E2",
+          "sounds": ["./assets/sounds/notification.wav"]
+        }
+      ]
+    ],
     "experiments": {
       "typedRoutes": true
     },
