@@ -4,7 +4,7 @@
  * Handles API calls to generate and retrieve Habit Failure Profiles
  */
 
-import { supabase } from './supabase';
+import { supabase, supabaseAnonKey, supabaseUrl } from './supabase';
 import { logAI, logError, logInfo } from './logger';
 import type {
   HabitFailureProfile,
@@ -45,18 +45,22 @@ export class FailureProfileService {
         throw new Error('No active session. Please sign in again.');
       }
 
-      // Call the Edge Function with explicit auth header
-      const { data, error } = await supabase.functions.invoke('analyze-failure', {
+      const response = await fetch(`${supabaseUrl}/functions/v1/analyze-failure`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          apikey: supabaseAnonKey,
           authorization: `Bearer ${accessToken}`,
         },
+        body: JSON.stringify({}),
       });
 
-      if (error) {
-        logError(error, { context: 'failureProfile.generate', userId });
-        throw new Error(`Failed to generate profile: ${error.message}`);
+      const data = (await response.json()) as GenerateProfileResult & { error?: string };
+
+      if (!response.ok) {
+        const errorMessage = data?.error || `Request failed with status ${response.status}`;
+        logError(new Error(errorMessage), { context: 'failureProfile.generate', userId });
+        throw new Error(`Failed to generate profile: ${errorMessage}`);
       }
 
       const duration = Date.now() - startTime;
