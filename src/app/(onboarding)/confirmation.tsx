@@ -146,8 +146,12 @@ export default function ConfirmationScreen() {
         </Text>
       </View>
 
-      <View className="gap-3">
-        <TouchableOpacity className="py-3 items-center" onPress={handleBack} disabled={submitting}>
+      <View>
+        <TouchableOpacity
+          className="py-3 items-center mb-2"
+          onPress={handleBack}
+          disabled={submitting}
+        >
           <Text className="text-base text-blue-500 font-semibold">← Back</Text>
         </TouchableOpacity>
         <AuthButton
