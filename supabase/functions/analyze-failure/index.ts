@@ -109,7 +109,7 @@ serve(async (req) => {
   try {
     // Extract JWT from Authorization header and verify it explicitly.
     // auth.getUser() without a token argument uses storage (unavailable in
-    // Deno), so we pass the JWT directly — the recommended edge-function pattern.
+    // Deno), so we pass the JWT directly ï¿½ the recommended edge-function pattern.
     const authHeader = req.headers.get('authorization') ?? req.headers.get('Authorization');
     const jwt = authHeader?.replace('Bearer ', '');
     if (!jwt) {

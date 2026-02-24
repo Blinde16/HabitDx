@@ -23,15 +23,15 @@ CREATE TABLE IF NOT EXISTS habit_failure_profiles (
 );
 
 -- Create unique index to ensure only one active profile per user
-CREATE UNIQUE INDEX idx_habit_failure_profiles_user_active 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_habit_failure_profiles_user_active 
   ON habit_failure_profiles(user_id) 
   WHERE is_active = TRUE;
 
 -- Create index on share_token for public access
-CREATE INDEX idx_habit_failure_profiles_share_token ON habit_failure_profiles(share_token) WHERE share_token IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_habit_failure_profiles_share_token ON habit_failure_profiles(share_token) WHERE share_token IS NOT NULL;
 
 -- Create index on user_id for queries
-CREATE INDEX idx_habit_failure_profiles_user_id ON habit_failure_profiles(user_id);
+CREATE INDEX IF NOT EXISTS idx_habit_failure_profiles_user_id ON habit_failure_profiles(user_id);
 
 -- Add comments
 COMMENT ON TABLE habit_failure_profiles IS 'AI-generated analysis of user habit failure patterns';

@@ -73,18 +73,9 @@ export const useIterationStore = create<IterationState>((set, get) => ({
 
       const startTime = Date.now();
 
-      // Get current session to pass auth token explicitly
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      // Call the Edge Function
+      // Call the Edge Function (SDK handles auth automatically)
       const { data, error } = await supabase.functions.invoke('weekly-iteration', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${session?.access_token}`,
-        },
+        body: {},
       });
 
       if (error) {

@@ -4,7 +4,7 @@
  * Handles API calls to generate and retrieve Habit Failure Profiles
  */
 
-import { supabase, supabaseAnonKey, supabaseUrl } from './supabase';
+import { supabase } from './supabase';
 import { logAI, logError, logInfo } from './logger';
 import type {
   HabitFailureProfile,
@@ -29,38 +29,22 @@ export class FailureProfileService {
 
       const startTime = Date.now();
 
-      // Get session so we can attach auth header explicitly (required for web)
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      let accessToken = session?.access_token;
-      if (!accessToken) {
-        const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
-        if (refreshError) {
-          throw refreshError;
-        }
-        accessToken = refreshed.session?.access_token;
-      }
-      if (!accessToken) {
-        throw new Error('No active session. Please sign in again.');
-      }
-
-      const response = await fetch(`${supabaseUrl}/functions/v1/analyze-failure`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          apikey: supabaseAnonKey,
-          authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({}),
+      const { data, error } = await supabase.functions.invoke('analyze-failure', {
+        body: {},
       });
 
-      const data = (await response.json()) as GenerateProfileResult & { error?: string };
-
-      if (!response.ok) {
-        const errorMessage = data?.error || `Request failed with status ${response.status}`;
-        logError(new Error(errorMessage), { context: 'failureProfile.generate', userId });
-        throw new Error(`Failed to generate profile: ${errorMessage}`);
+      if (error) {
+        // Extract actual error body from FunctionsHttpError
+        let detail = error.message;
+        if (error.context && typeof error.context.json === 'function') {
+          try {
+            const body = await error.context.json();
+            detail = body?.error || body?.message || detail;
+          } catch { /* ignore parse errors */ }
+        }
+        console.error('analyze-failure error detail:', detail);
+        logError(error, { context: 'failureProfile.generate', userId });
+        throw new Error(`Failed to generate profile: ${detail}`);
       }
 
       const duration = Date.now() - startTime;

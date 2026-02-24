@@ -49,7 +49,7 @@ interface AuthStore {
   clearError: () => void;
 }
 
-export const useAuthStore = create<AuthStore>((set) => ({
+export const useAuthStore = create<AuthStore>((set, get) => ({
   user: null,
   session: null,
   loading: false,
