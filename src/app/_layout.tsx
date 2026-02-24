@@ -7,7 +7,7 @@ import '../../global.css';
 
 export default function RootLayout() {
   const { initialize } = useAuthStore();
-  
+
   // Handle notification responses (deep linking)
   useNotificationResponse();
 
@@ -25,6 +25,10 @@ export default function RootLayout() {
       >
         <Stack.Screen name="index" />
         <Stack.Screen name="(auth)" />
+        <Stack.Screen name="(onboarding)" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="share" />
+        <Stack.Screen name="profile" />
       </Stack>
     </ProtectedRoute>
   );

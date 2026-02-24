@@ -24,12 +24,14 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     }
 
     const inAuthGroup = segments[0] === '(auth)';
+    const inPublicGroup = segments[0] === 'share';
 
-    if (!user && !inAuthGroup) {
-      // Redirect to login if not authenticated and not in auth group
+    if (!user && !inAuthGroup && !inPublicGroup) {
+      // Redirect to login if not authenticated
       router.replace('/(auth)/login');
     } else if (user && inAuthGroup) {
-      // Redirect to home if authenticated and in auth group
+      // Redirect authenticated users away from auth screens
+      // index.tsx will handle routing to onboarding vs tabs
       router.replace('/');
     }
   }, [user, initialized, loading, segments, router]);

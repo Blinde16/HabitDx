@@ -6,13 +6,13 @@ interface CompletionStats {
   total_scheduled: number;
   total_completed: number;
   completion_rate: number;
-  habits: Array<{
+  habits: {
     habit_id: string;
     habit_name: string;
     scheduled: number;
     completed: number;
     rate: number;
-  }>;
+  }[];
 }
 
 interface Pattern {
@@ -50,7 +50,7 @@ interface IterationState {
   iterationHistory: WeeklyIteration[];
   loading: boolean;
   error: string | null;
-  
+
   // Actions
   generateWeeklyIteration: (userId: string) => Promise<WeeklyIteration | null>;
   loadLatestIteration: (userId: string) => Promise<void>;
@@ -68,16 +68,22 @@ export const useIterationStore = create<IterationState>((set, get) => ({
   generateWeeklyIteration: async (userId: string) => {
     try {
       set({ loading: true, error: null });
-      
+
       logger.info('Generating weekly iteration', { userId });
 
       const startTime = Date.now();
+
+      // Get current session to pass auth token explicitly
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
       // Call the Edge Function
       const { data, error } = await supabase.functions.invoke('weekly-iteration', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${session?.access_token}`,
         },
       });
 
@@ -105,18 +111,18 @@ export const useIterationStore = create<IterationState>((set, get) => ({
 
       if (loadError) throw loadError;
 
-      set({ 
+      set({
         currentIteration: iteration as WeeklyIteration,
-        loading: false 
+        loading: false,
       });
 
       return iteration as WeeklyIteration;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       logger.error('Error in generateWeeklyIteration', { error: errorMessage });
-      set({ 
-        error: errorMessage, 
-        loading: false 
+      set({
+        error: errorMessage,
+        loading: false,
       });
       return null;
     }
@@ -134,25 +140,26 @@ export const useIterationStore = create<IterationState>((set, get) => ({
         .limit(1)
         .single();
 
-      if (error && error.code !== 'PGRST116') { // PGRST116 = no rows
+      if (error && error.code !== 'PGRST116') {
+        // PGRST116 = no rows
         throw error;
       }
 
-      set({ 
+      set({
         currentIteration: data as WeeklyIteration | null,
-        loading: false 
+        loading: false,
       });
 
-      logger.info('Latest iteration loaded', { 
+      logger.info('Latest iteration loaded', {
         userId,
-        hasIteration: !!data 
+        hasIteration: !!data,
       });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       logger.error('Error loading latest iteration', { error: errorMessage });
-      set({ 
-        error: errorMessage, 
-        loading: false 
+      set({
+        error: errorMessage,
+        loading: false,
       });
     }
   },
@@ -169,26 +176,26 @@ export const useIterationStore = create<IterationState>((set, get) => ({
 
       if (error) throw error;
 
-      set({ 
+      set({
         iterationHistory: (data as WeeklyIteration[]) || [],
-        loading: false 
+        loading: false,
       });
 
-      logger.info('Iteration history loaded', { 
+      logger.info('Iteration history loaded', {
         userId,
-        count: data?.length || 0 
+        count: data?.length || 0,
       });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       logger.error('Error loading iteration history', { error: errorMessage });
-      set({ 
-        error: errorMessage, 
-        loading: false 
+      set({
+        error: errorMessage,
+        loading: false,
       });
     }
   },
 
-  acceptAdjustment: async (iterationId: string, userId: string) => {
+  acceptAdjustment: async (iterationId: string, _userId: string) => {
     try {
       set({ loading: true, error: null });
 
@@ -197,17 +204,17 @@ export const useIterationStore = create<IterationState>((set, get) => ({
         throw new Error('No adjustment to accept');
       }
 
-      logger.info('Accepting adjustment', { 
+      logger.info('Accepting adjustment', {
         iterationId,
-        adjustmentType: currentIteration.adjustment_recommendation.type 
+        adjustmentType: currentIteration.adjustment_recommendation.type,
       });
 
       // Update iteration status
       const { error: updateError } = await supabase
         .from('weekly_iterations')
-        .update({ 
+        .update({
           status: 'accepted',
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('id', iterationId);
 
@@ -215,32 +222,32 @@ export const useIterationStore = create<IterationState>((set, get) => ({
 
       // Apply the adjustment to the habit
       const adjustment = currentIteration.adjustment_recommendation;
-      
+
       if (adjustment.type === 'TIME_CHANGE') {
         // Update reminder time
         await supabase
           .from('habits')
-          .update({ 
+          .update({
             reminder_time: adjustment.suggested_value,
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
           })
           .eq('id', adjustment.habit_id);
       } else if (adjustment.type === 'TINY_VERSION_SIMPLIFY') {
         // Update tiny version
         await supabase
           .from('habits')
-          .update({ 
+          .update({
             tiny_version: adjustment.suggested_value,
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
           })
           .eq('id', adjustment.habit_id);
       } else if (adjustment.type === 'ANCHOR_CHANGE') {
         // Update anchor
         await supabase
           .from('habits')
-          .update({ 
+          .update({
             anchor: adjustment.suggested_value,
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
           })
           .eq('id', adjustment.habit_id);
       } else if (adjustment.type === 'FREQUENCY_REDUCE') {
@@ -248,9 +255,9 @@ export const useIterationStore = create<IterationState>((set, get) => ({
         const newDays = adjustment.suggested_value.split(',').map(Number);
         await supabase
           .from('habits')
-          .update({ 
+          .update({
             days_of_week: newDays,
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
           })
           .eq('id', adjustment.habit_id);
       }
@@ -268,9 +275,9 @@ export const useIterationStore = create<IterationState>((set, get) => ({
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       logger.error('Error accepting adjustment', { error: errorMessage });
-      set({ 
-        error: errorMessage, 
-        loading: false 
+      set({
+        error: errorMessage,
+        loading: false,
       });
       throw error;
     }
@@ -284,9 +291,9 @@ export const useIterationStore = create<IterationState>((set, get) => ({
 
       const { error } = await supabase
         .from('weekly_iterations')
-        .update({ 
+        .update({
           status: 'declined',
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('id', iterationId);
 
@@ -307,9 +314,9 @@ export const useIterationStore = create<IterationState>((set, get) => ({
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       logger.error('Error declining adjustment', { error: errorMessage });
-      set({ 
-        error: errorMessage, 
-        loading: false 
+      set({
+        error: errorMessage,
+        loading: false,
       });
       throw error;
     }

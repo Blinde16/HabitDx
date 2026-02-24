@@ -1,17 +1,21 @@
 /**
  * Failure Profile Service
- * 
+ *
  * Handles API calls to generate and retrieve Habit Failure Profiles
  */
 
 import { supabase } from './supabase';
 import { logAI, logError, logInfo } from './logger';
-import type { HabitFailureProfile, GenerateProfileResult, PersonalityInsights } from '../types/failure-profile';
+import type {
+  HabitFailureProfile,
+  GenerateProfileResult,
+  PersonalityInsights,
+} from '../types/failure-profile';
 
 export class FailureProfileService {
   /**
    * Generate a new Failure Profile by calling the Edge Function
-   * 
+   *
    * This calls the analyze-failure Edge Function which:
    * 1. Fetches user's onboarding data
    * 2. Constructs AI prompt
@@ -25,11 +29,17 @@ export class FailureProfileService {
 
       const startTime = Date.now();
 
+      // Get current session to pass auth token explicitly
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
       // Call the Edge Function
       const { data, error } = await supabase.functions.invoke('analyze-failure', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${session?.access_token}`,
         },
       });
 
@@ -40,12 +50,7 @@ export class FailureProfileService {
 
       const duration = Date.now() - startTime;
 
-      logAI.requestSuccess(
-        userId,
-        'generate-failure-profile',
-        data.profile?.tokens_used,
-        duration
-      );
+      logAI.requestSuccess(userId, 'generate-failure-profile', data.profile?.tokens_used, duration);
 
       logInfo('Failure profile generated successfully', {
         userId,
@@ -167,10 +172,8 @@ export class FailureProfileService {
    */
   static getShareUrl(shareToken: string): string {
     // In development, use localhost. In production, use actual domain
-    const baseUrl = __DEV__ 
-      ? 'http://localhost:8081' 
-      : 'https://habitdx.app'; // Replace with actual domain
-    
+    const baseUrl = __DEV__ ? 'http://localhost:8081' : 'https://habitdx.app'; // Replace with actual domain
+
     return `${baseUrl}/share/${shareToken}`;
   }
 }
