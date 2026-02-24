@@ -1,5 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { OpenAI } from 'https://esm.sh/openai@4.20.1';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -9,11 +10,13 @@ const corsHeaders = {
 interface FailureProfile {
   failure_patterns: string[];
   root_causes: string[];
-  personality_insights: string | {
-    strength: string;
-    weakness: string;
-    archetype: string;
-  };
+  personality_insights:
+    | string
+    | {
+        strength: string;
+        weakness: string;
+        archetype: string;
+      };
   recommendations: string[];
 }
 
@@ -57,7 +60,7 @@ function parsePersonalityInsights(insights: string | any): any {
 
 function constructPrompt(failureProfile: FailureProfile, userProfile: UserProfile): string {
   const personality = parsePersonalityInsights(failureProfile.personality_insights);
-  
+
   const patternsText = failureProfile.failure_patterns.join('\n- ');
   const causesText = failureProfile.root_causes.join('\n- ');
   const constraintsText = userProfile.life_constraints.join(', ');
@@ -162,13 +165,10 @@ serve(async (req) => {
     } = await supabaseClient.auth.getUser();
 
     if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        {
-          status: 401,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     // Check if user already has an active habit stack
@@ -219,13 +219,10 @@ serve(async (req) => {
       .single();
 
     if (userProfileError || !userProfile) {
-      return new Response(
-        JSON.stringify({ error: 'User profile not found' }),
-        {
-          status: 404,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
+      return new Response(JSON.stringify({ error: 'User profile not found' }), {
+        status: 404,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     // Map from actual user_profiles schema
@@ -242,10 +239,7 @@ serve(async (req) => {
       },
       {
         energy_pattern: constraints.peak_energy || 'morning',
-        life_constraints: [
-          ...(constraints.obstacles || []),
-          ...(constraints.schedule_type || []),
-        ],
+        life_constraints: [...(constraints.obstacles || []), ...(constraints.schedule_type || [])],
         identity_goal: (userProfile.goals || [])[0] || '',
         past_habits: (userProfile.past_failures || []).map((habit: string) => ({
           habit,
@@ -255,43 +249,33 @@ serve(async (req) => {
       }
     );
 
-    // Call Gemini API
-    const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
-    if (!geminiApiKey) {
-      throw new Error('GEMINI_API_KEY not configured');
+    // Call OpenAI API
+    if (!Deno.env.get('OPENAI_API_KEY')) {
+      throw new Error('OPENAI_API_KEY not configured');
     }
 
+    const openai = new OpenAI({ apiKey: Deno.env.get('OPENAI_API_KEY') });
     const startTime = Date.now();
 
-    const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          system_instruction: {
-            parts: [{ text: 'You are an expert habit designer specializing in personalized, tiny habits that stick. You design habits based on behavioral science and individual failure patterns.' }],
-          },
-          contents: [{ role: 'user', parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 0.8,
-            maxOutputTokens: 1500,
-            responseMimeType: 'application/json',
-          },
-        }),
-      }
-    );
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        {
+          role: 'system',
+          content:
+            'You are an expert habit designer specializing in personalized, tiny habits that stick. You design habits based on behavioral science and individual failure patterns.',
+        },
+        { role: 'user', content: prompt },
+      ],
+      response_format: { type: 'json_object' },
+      temperature: 0.8,
+      max_tokens: 1500,
+    });
 
-    if (!geminiResponse.ok) {
-      const errorData = await geminiResponse.text();
-      throw new Error(`Gemini API error: ${geminiResponse.status} ${errorData}`);
-    }
-
-    const geminiData = await geminiResponse.json();
     const duration = Date.now() - startTime;
 
     // Parse AI response
-    const aiContent = geminiData.candidates[0].content.parts[0].text;
+    const aiContent = completion.choices[0].message.content || '{}';
     const habitsData: GenerateHabitsResponse = JSON.parse(aiContent);
 
     // Validate response
@@ -350,14 +334,13 @@ serve(async (req) => {
         habits: createdHabits,
         cached: false,
         generation_time_ms: duration,
-        tokens_used: geminiData.usageMetadata?.totalTokenCount || 0,
+        tokens_used: completion.usage?.total_tokens || 0,
       }),
       {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     );
-
   } catch (error) {
     console.error('Error in generate-habits function:', error);
 
