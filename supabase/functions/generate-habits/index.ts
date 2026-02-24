@@ -207,17 +207,12 @@ serve(async (req) => {
       );
     }
     // Deactivate any existing active stacks (and habits) before creating a new one
-    await supabaseClient
-      .from('habit_stacks')
-      .update({ is_active: false })
-      .eq('user_id', user.id)
-      .eq('is_active', true);
-
-    await supabaseClient
-      .from('habits')
-      .update({ is_active: false })
-      .eq('user_id', user.id)
-      .eq('is_active', true);
+    const { error: deactivateError } = await supabaseClient.rpc('deactivate_active_stack', {
+      p_user_id: user.id,
+    });
+    if (deactivateError) {
+      throw new Error(`Failed to deactivate active stack: ${deactivateError.message}`);
+    }
 
     // Get user's failure profile
     const { data: failureProfile, error: profileError } = await supabaseClient
