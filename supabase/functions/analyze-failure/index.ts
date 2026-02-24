@@ -109,15 +109,29 @@ serve(async (req) => {
   try {
     // Extract JWT from Authorization header and verify it explicitly.
     // auth.getUser() without a token argument uses storage (unavailable in
-    // Deno), so we pass the JWT directly â€” the recommended edge-function pattern.
-    const jwt = req.headers.get('Authorization')?.replace('Bearer ', '');
+    // Deno), so we pass the JWT directly — the recommended edge-function pattern.
+    const authHeader = req.headers.get('authorization') ?? req.headers.get('Authorization');
+    const jwt = authHeader?.replace('Bearer ', '');
+    if (!jwt) {
+      return new Response(
+        JSON.stringify({
+          error: 'Unauthorized',
+          detail: 'Missing authorization header',
+          received_headers: Array.from(req.headers.keys()),
+        }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
 
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
       {
         global: {
-          headers: { Authorization: req.headers.get('Authorization')! },
+          headers: { Authorization: authHeader! },
         },
       }
     );
@@ -285,3 +299,5 @@ serve(async (req) => {
     );
   }
 });
+
+

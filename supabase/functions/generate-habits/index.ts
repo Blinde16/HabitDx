@@ -147,14 +147,28 @@ serve(async (req) => {
   }
 
   try {
-    const jwt = req.headers.get('Authorization')?.replace('Bearer ', '');
+    const authHeader = req.headers.get('authorization') ?? req.headers.get('Authorization');
+    const jwt = authHeader?.replace('Bearer ', '');
+    if (!jwt) {
+      return new Response(
+        JSON.stringify({
+          error: 'Unauthorized',
+          detail: 'Missing authorization header',
+          received_headers: Array.from(req.headers.keys()),
+        }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
 
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
       {
         global: {
-          headers: { Authorization: req.headers.get('Authorization')! },
+          headers: { Authorization: authHeader! },
         },
       }
     );
@@ -355,3 +369,5 @@ serve(async (req) => {
     );
   }
 });
+
+
