@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  Switch,
-  Alert,
-} from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Switch, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '../../stores/authStore';
 import { useNotificationStore } from '../../stores/notificationStore';
@@ -16,19 +9,15 @@ import { logger } from '../../lib/logger';
 export default function SettingsScreen() {
   const router = useRouter();
   const { user, signOut } = useAuthStore();
-  const { 
-    notificationsEnabled, 
-    updateNotificationSettings,
-    cancelAllReminders,
-  } = useNotificationStore();
-  
+  const { notificationsEnabled, updateNotificationSettings } = useNotificationStore();
+
   const [notifEnabled, setNotifEnabled] = useState(notificationsEnabled);
 
   const handleNotificationToggle = async (value: boolean) => {
     try {
       setNotifEnabled(value);
       await updateNotificationSettings(value);
-      
+
       if (value && user) {
         // Reschedule all notifications
         await NotificationService.scheduleAllHabitReminders(user.id);
@@ -50,21 +39,17 @@ export default function SettingsScreen() {
   };
 
   const handleSignOut = () => {
-    Alert.alert(
-      'Sign Out?',
-      'Are you sure you want to sign out?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Sign Out',
-          style: 'destructive',
-          onPress: async () => {
-            await signOut();
-            router.replace('/(auth)/login');
-          },
+    Alert.alert('Sign Out?', 'Are you sure you want to sign out?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Sign Out',
+        style: 'destructive',
+        onPress: async () => {
+          await signOut();
+          router.replace('/(auth)/login');
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const handleDeleteAccount = () => {
@@ -96,27 +81,52 @@ export default function SettingsScreen() {
         {/* Profile Section */}
         <View className="bg-gray-50 rounded-lg p-4 mb-6">
           <Text className="text-sm text-gray-500 mb-1">Signed in as</Text>
-          <Text className="text-base font-semibold text-gray-900">
-            {user?.email || 'Unknown'}
-          </Text>
+          <Text className="text-base font-semibold text-gray-900">{user?.email || 'Unknown'}</Text>
+        </View>
+
+        {/* Habits Section */}
+        <View className="mb-8">
+          <Text className="text-lg font-semibold text-gray-900 mb-4">My Habits</Text>
+
+          <View className="bg-white border border-gray-200 rounded-lg">
+            <TouchableOpacity
+              className="flex-row items-center justify-between p-4 border-b border-gray-200"
+              onPress={() => router.push('/(onboarding)/failure-profile')}
+            >
+              <View className="flex-1">
+                <Text className="text-base font-medium text-gray-900">View Failure Profile</Text>
+                <Text className="text-sm text-gray-600 mt-1">
+                  See your AI-generated habit analysis
+                </Text>
+              </View>
+              <Text className="text-2xl text-gray-400">→</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="flex-row items-center justify-between p-4"
+              onPress={() => router.push('/(onboarding)/habits')}
+            >
+              <View className="flex-1">
+                <Text className="text-base font-medium text-gray-900">Manage Habits</Text>
+                <Text className="text-sm text-gray-600 mt-1">
+                  View or regenerate your habit stack
+                </Text>
+              </View>
+              <Text className="text-2xl text-gray-400">→</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Notifications Section */}
         <View className="mb-8">
-          <Text className="text-lg font-semibold text-gray-900 mb-4">
-            Notifications
-          </Text>
+          <Text className="text-lg font-semibold text-gray-900 mb-4">Notifications</Text>
 
           <View className="bg-white border border-gray-200 rounded-lg">
             {/* Enable Notifications */}
             <View className="flex-row items-center justify-between p-4 border-b border-gray-200">
               <View className="flex-1">
-                <Text className="text-base font-medium text-gray-900">
-                  Enable Notifications
-                </Text>
-                <Text className="text-sm text-gray-600 mt-1">
-                  Get reminders for your habits
-                </Text>
+                <Text className="text-base font-medium text-gray-900">Enable Notifications</Text>
+                <Text className="text-sm text-gray-600 mt-1">Get reminders for your habits</Text>
               </View>
               <Switch
                 value={notifEnabled}
@@ -132,12 +142,8 @@ export default function SettingsScreen() {
               onPress={handleTestNotification}
             >
               <View className="flex-1">
-                <Text className="text-base font-medium text-gray-900">
-                  Test Notification
-                </Text>
-                <Text className="text-sm text-gray-600 mt-1">
-                  Send a test notification now
-                </Text>
+                <Text className="text-base font-medium text-gray-900">Test Notification</Text>
+                <Text className="text-sm text-gray-600 mt-1">Send a test notification now</Text>
               </View>
               <Text className="text-2xl">→</Text>
             </TouchableOpacity>
@@ -181,29 +187,17 @@ export default function SettingsScreen() {
 
         {/* Danger Zone */}
         <View className="mb-8">
-          <Text className="text-lg font-semibold text-gray-900 mb-4">
-            Account
-          </Text>
+          <Text className="text-lg font-semibold text-gray-900 mb-4">Account</Text>
 
           <View className="bg-white border border-gray-200 rounded-lg">
             {/* Sign Out */}
-            <TouchableOpacity
-              className="p-4 border-b border-gray-200"
-              onPress={handleSignOut}
-            >
-              <Text className="text-base font-medium text-blue-600">
-                Sign Out
-              </Text>
+            <TouchableOpacity className="p-4 border-b border-gray-200" onPress={handleSignOut}>
+              <Text className="text-base font-medium text-blue-600">Sign Out</Text>
             </TouchableOpacity>
 
             {/* Delete Account */}
-            <TouchableOpacity
-              className="p-4"
-              onPress={handleDeleteAccount}
-            >
-              <Text className="text-base font-medium text-red-600">
-                Delete Account
-              </Text>
+            <TouchableOpacity className="p-4" onPress={handleDeleteAccount}>
+              <Text className="text-base font-medium text-red-600">Delete Account</Text>
             </TouchableOpacity>
           </View>
         </View>
