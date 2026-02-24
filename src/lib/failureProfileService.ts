@@ -29,18 +29,10 @@ export class FailureProfileService {
 
       const startTime = Date.now();
 
-      // Get current session to pass auth token explicitly
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      // Call the Edge Function
+      // Call the Edge Function — supabase.functions.invoke attaches the
+      // session token automatically from the client's auth state
       const { data, error } = await supabase.functions.invoke('analyze-failure', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${session?.access_token}`,
-        },
       });
 
       if (error) {
