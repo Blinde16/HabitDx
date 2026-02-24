@@ -1,20 +1,14 @@
-import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { ProtectedRoute } from '../components/ProtectedRoute';
-import { useAuthStore } from '../stores/authStore';
 import { useNotificationResponse } from '../hooks/useNotificationResponse';
 import '../../global.css';
 
 export default function RootLayout() {
-  const { initialize } = useAuthStore();
-
   // Handle notification responses (deep linking)
   useNotificationResponse();
 
-  useEffect(() => {
-    // Initialize auth on app start
-    initialize();
-  }, [initialize]);
+  // Auth initialization is handled by ProtectedRoute — calling initialize()
+  // here too would register a second onAuthStateChange listener.
 
   return (
     <ProtectedRoute>

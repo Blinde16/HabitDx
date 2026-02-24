@@ -67,7 +67,10 @@ export const useAuthStore = create<AuthStore>((set) => ({
       } = await supabase.auth.getSession();
 
       if (error) {
-        logError(new Error(error.message), { context: 'auth.initialize', event: 'get_session_error' });
+        logError(new Error(error.message), {
+          context: 'auth.initialize',
+          event: 'get_session_error',
+        });
         set({ error: error.message, loading: false, initialized: true });
         return;
       }
@@ -79,22 +82,26 @@ export const useAuthStore = create<AuthStore>((set) => ({
         initialized: true,
       });
 
-      // Listen for auth changes
-      supabase.auth.onAuthStateChange(async (event, session) => {
-        logAuth.signOut(session?.user?.id || 'unknown');
+      // Listen for auth changes — only update state when something meaningful
+      // changes (user ID or access token). Supabase re-reads storage every 10s
+      // and fires this callback even when nothing changed, which would cause
+      // the entire subscribed component tree to re-render on every tick.
+      supabase.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_OUT') {
+          logAuth.signOut(get().user?.id || 'unknown');
+          set({ user: null, session: null });
+          return;
+        }
+
+        const currentSession = get().session;
+        const sameUser = currentSession?.user?.id === session?.user?.id;
+        const sameToken = currentSession?.access_token === session?.access_token;
+        if (sameUser && sameToken) return; // nothing changed — skip re-render
 
         set({
           session,
           user: session?.user ?? null,
         });
-
-        // Handle specific events
-        if (event === 'SIGNED_OUT') {
-          if (session?.user?.id) {
-            logAuth.signOut(session.user.id);
-          }
-          set({ user: null, session: null });
-        }
       });
     } catch (error) {
       logError(error as Error, { context: 'auth.initialize' });
