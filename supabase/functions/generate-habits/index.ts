@@ -147,7 +147,8 @@ serve(async (req) => {
   }
 
   try {
-    // Get Supabase client
+    const jwt = req.headers.get('Authorization')?.replace('Bearer ', '');
+
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
@@ -158,14 +159,13 @@ serve(async (req) => {
       }
     );
 
-    // Verify authentication
     const {
       data: { user },
       error: authError,
-    } = await supabaseClient.auth.getUser();
+    } = await supabaseClient.auth.getUser(jwt);
 
     if (authError || !user) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      return new Response(JSON.stringify({ error: 'Unauthorized', detail: authError?.message }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
