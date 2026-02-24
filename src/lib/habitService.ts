@@ -16,6 +16,12 @@ export class HabitService {
     try {
       logInfo('Generating habit stack', { userId, event: 'habits.generate.start' });
 
+      // Ensure we have a fresh session token before calling the edge function
+      const { error: refreshError } = await supabase.auth.refreshSession();
+      if (refreshError) {
+        throw new Error(`Session expired. Please sign in again.`);
+      }
+
       const startTime = Date.now();
 
       const { data, error } = await supabase.functions.invoke('generate-habits', {
@@ -218,11 +224,9 @@ export class HabitService {
       const { error } = await supabase.from('habit_logs').upsert({
         habit_id: habitId,
         user_id: userId,
-        logged_date: today,
+        log_date: today,
         completed,
-        partial: false,
-        obstacle: obstacle || null,
-        obstacle_note: obstacleNote || null,
+        obstacle: obstacle || obstacleNote || null,
       });
 
       if (error) {
@@ -251,8 +255,8 @@ export class HabitService {
         .from('habit_logs')
         .select('*')
         .eq('habit_id', habitId)
-        .gte('logged_date', startDate.toISOString().split('T')[0])
-        .order('logged_date', { ascending: false });
+        .gte('log_date', startDate.toISOString().split('T')[0])
+        .order('log_date', { ascending: false });
 
       if (error) {
         throw error;

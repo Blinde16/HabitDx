@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
-import { logger } from '@/lib/logger';
+import { logInfo, logError } from '@/lib/logger';
 
 interface CompletionStats {
   total_scheduled: number;
@@ -69,7 +69,7 @@ export const useIterationStore = create<IterationState>((set, get) => ({
     try {
       set({ loading: true, error: null });
 
-      logger.info('Generating weekly iteration', { userId });
+      logInfo('Generating weekly iteration', { userId });
 
       const startTime = Date.now();
 
@@ -79,13 +79,13 @@ export const useIterationStore = create<IterationState>((set, get) => ({
       });
 
       if (error) {
-        logger.error('Error generating weekly iteration', { error });
+        logError(error as Error, { context: 'iteration.generate' });
         throw error;
       }
 
       const duration = Date.now() - startTime;
 
-      logger.info('Weekly iteration generated successfully', {
+      logInfo('Weekly iteration generated successfully', {
         userId,
         iterationId: data.iteration_id,
         tokensUsed: data.tokens_used,
@@ -110,7 +110,7 @@ export const useIterationStore = create<IterationState>((set, get) => ({
       return iteration as WeeklyIteration;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      logger.error('Error in generateWeeklyIteration', { error: errorMessage });
+      logError(error as Error, { context: 'iteration.generate' });
       set({
         error: errorMessage,
         loading: false,
@@ -141,13 +141,13 @@ export const useIterationStore = create<IterationState>((set, get) => ({
         loading: false,
       });
 
-      logger.info('Latest iteration loaded', {
+      logInfo('Latest iteration loaded', {
         userId,
         hasIteration: !!data,
       });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      logger.error('Error loading latest iteration', { error: errorMessage });
+      logError(error as Error, { context: 'iteration.loadLatest' });
       set({
         error: errorMessage,
         loading: false,
@@ -172,13 +172,13 @@ export const useIterationStore = create<IterationState>((set, get) => ({
         loading: false,
       });
 
-      logger.info('Iteration history loaded', {
+      logInfo('Iteration history loaded', {
         userId,
         count: data?.length || 0,
       });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      logger.error('Error loading iteration history', { error: errorMessage });
+      logError(error as Error, { context: 'iteration.loadHistory' });
       set({
         error: errorMessage,
         loading: false,
@@ -195,7 +195,7 @@ export const useIterationStore = create<IterationState>((set, get) => ({
         throw new Error('No adjustment to accept');
       }
 
-      logger.info('Accepting adjustment', {
+      logInfo('Accepting adjustment', {
         iterationId,
         adjustmentType: currentIteration.adjustment_recommendation.type,
       });
@@ -262,10 +262,10 @@ export const useIterationStore = create<IterationState>((set, get) => ({
         loading: false,
       });
 
-      logger.info('Adjustment accepted and applied', { iterationId });
+      logInfo('Adjustment accepted and applied', { iterationId });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      logger.error('Error accepting adjustment', { error: errorMessage });
+      logError(error as Error, { context: 'iteration.acceptAdjustment' });
       set({
         error: errorMessage,
         loading: false,
@@ -278,7 +278,7 @@ export const useIterationStore = create<IterationState>((set, get) => ({
     try {
       set({ loading: true, error: null });
 
-      logger.info('Declining adjustment', { iterationId });
+      logInfo('Declining adjustment', { iterationId });
 
       const { error } = await supabase
         .from('weekly_iterations')
@@ -301,10 +301,10 @@ export const useIterationStore = create<IterationState>((set, get) => ({
         });
       }
 
-      logger.info('Adjustment declined', { iterationId });
+      logInfo('Adjustment declined', { iterationId });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      logger.error('Error declining adjustment', { error: errorMessage });
+      logError(error as Error, { context: 'iteration.declineAdjustment' });
       set({
         error: errorMessage,
         loading: false,

@@ -11,9 +11,9 @@ interface HabitLog {
   id: string;
   habit_id: string;
   completed: boolean;
-  obstacle_type: string | null;
-  obstacle_notes: string | null;
-  completed_at: string;
+  obstacle: string | null;
+  log_date: string;
+  checked_in_at: string;
 }
 
 interface Habit {
@@ -64,25 +64,43 @@ serve(async (req) => {
   }
 
   try {
-    // Create Supabase client
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized', detail: 'Missing authorization header' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Use service role to verify the JWT
+    const supabaseAdmin = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+    );
+
+    const jwt = authHeader.replace('Bearer ', '');
+    const {
+      data: { user },
+      error: authError,
+    } = await supabaseAdmin.auth.getUser(jwt);
+
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized', detail: authError?.message }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Client with user's auth for RLS-scoped queries
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
       {
         global: {
-          headers: { Authorization: req.headers.get('Authorization')! },
+          headers: { Authorization: authHeader },
         },
       }
     );
-
-    // Get user
-    const {
-      data: { user },
-    } = await supabaseClient.auth.getUser();
-
-    if (!user) {
-      throw new Error('Not authenticated');
-    }
 
     // Get user's habits
     const { data: habits, error: habitsError } = await supabaseClient
@@ -105,8 +123,8 @@ serve(async (req) => {
       .from('habit_logs')
       .select('*')
       .eq('user_id', user.id)
-      .gte('completed_at', sevenDaysAgo.toISOString())
-      .order('completed_at', { ascending: false });
+      .gte('log_date', sevenDaysAgo.toISOString().split('T')[0])
+      .order('log_date', { ascending: false });
 
     if (logsError) throw logsError;
 
@@ -118,7 +136,7 @@ serve(async (req) => {
       .from('habit_failure_profiles')
       .select('*')
       .eq('user_id', user.id)
-      .order('created_at', { descending: true })
+      .order('created_at', { ascending: false })
       .limit(1)
       .single();
 
@@ -240,7 +258,8 @@ Based on this data, provide ONE specific adjustment recommendation that will hav
     });
   } catch (error) {
     console.error('Error in weekly-iteration:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return new Response(JSON.stringify({ error: errorMessage }), {
       status: 400,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
@@ -290,9 +309,9 @@ function calculateCompletionStats(habits: Habit[], logs: HabitLog[]) {
 
 function getObstacleSummary(logs: HabitLog[]): string {
   const obstacles = logs
-    .filter(log => !log.completed && log.obstacle_type)
+    .filter(log => !log.completed && log.obstacle)
     .reduce((acc, log) => {
-      acc[log.obstacle_type!] = (acc[log.obstacle_type!] || 0) + 1;
+      acc[log.obstacle!] = (acc[log.obstacle!] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
 

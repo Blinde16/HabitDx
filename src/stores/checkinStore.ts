@@ -76,7 +76,7 @@ export const useCheckinStore = create<CheckinStore>((set, get) => ({
 
           // Check if already logged today
           const checkInHistory = await HabitService.getCheckInHistory(habit.id, 1);
-          const todayLog = checkInHistory.find(log => log.logged_date === todayDate);
+          const todayLog = checkInHistory.find(log => log.log_date === todayDate);
 
           if (todayLog) {
             // Calculate streak
@@ -85,9 +85,10 @@ export const useCheckinStore = create<CheckinStore>((set, get) => ({
             return {
               ...habit,
               status: todayLog.completed ? 'completed' as HabitStatus : 'missed' as HabitStatus,
-              checked_in_at: todayLog.logged_at,
+              checked_in_at: todayLog.checked_in_at as string,
               streak,
-              last_obstacle: todayLog.obstacle,
+              last_obstacle:
+                typeof todayLog.obstacle === 'string' ? todayLog.obstacle : undefined,
             };
           }
 
@@ -257,7 +258,7 @@ async function calculateStreak(habitId: string, userId: string): Promise<number>
       checkDate.setDate(checkDate.getDate() - i);
       const dateString = checkDate.toISOString().split('T')[0];
 
-      const log = history.find(h => h.logged_date === dateString);
+      const log = history.find(h => h.log_date === dateString);
 
       if (!log) {
         // No log for this date - check if habit was scheduled

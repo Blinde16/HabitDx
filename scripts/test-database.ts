@@ -78,7 +78,7 @@ async function runTests() {
   // First, create a test user
   const testEmail = `test-db-${Date.now()}@example.com`;
   const testPassword = 'TestPassword123!';
-  let testUserId: string | undefined;
+  let testUserId = '';
   let habitStackId: string | undefined;
   let habitId: string | undefined;
   
@@ -109,16 +109,16 @@ async function runTests() {
       
       const profileData = {
         id: testUserId,
-        display_name: 'Test User',
-        past_habits: [
-          { habit: 'Morning workout', duration: '2 weeks', why_failed: 'Too tired' },
-          { habit: 'Meditation', duration: '1 week', why_failed: 'Forgot' }
-        ],
-        failure_reasons: ['no_time', 'forgot'],
-        energy_pattern: 'evening',
-        life_constraints: ['work', 'commute'],
-        identity_goal: 'I want to be someone who takes care of their health',
-        onboarding_completed_at: new Date().toISOString(),
+        full_name: 'Test User',
+        past_failures: ['Morning workout', 'Meditation'],
+        constraints: {
+          peak_energy: 'evening',
+          schedule_type: ['9-5 job'],
+          obstacles: ['work', 'commute'],
+          failure_description: 'Too tired in the morning',
+        },
+        goals: ['I want to be someone who takes care of their health'],
+        onboarding_completed: true,
       };
       
       const { data, error } = await supabase
@@ -156,9 +156,9 @@ async function runTests() {
       }
       
       logDatabase.querySuccess('user_profiles', 'select', 1);
-      console.log(`  ✓ Profile retrieved: ${data.display_name}`);
-      console.log(`  ✓ Energy pattern: ${data.energy_pattern}`);
-      console.log(`  ✓ Past habits count: ${data.past_habits?.length || 0}`);
+      console.log(`  ✓ Profile retrieved: ${data.full_name}`);
+      console.log(`  ✓ Constraints: ${JSON.stringify(data.constraints)}`);
+      console.log(`  ✓ Past failures count: ${data.past_failures?.length || 0}`);
     });
     
     // Test 3: Create Habit Failure Profile
@@ -234,6 +234,7 @@ async function runTests() {
       const habitData = {
         stack_id: habitStackId,
         user_id: testUserId,
+        title: 'Evening stretch',
         name: 'Evening stretch',
         tiny_version: 'One stretch, 30 seconds',
         anchor: 'After I close my laptop',
@@ -241,6 +242,8 @@ async function runTests() {
         addresses_pattern: 'Morning Energy Mismatch',
         rationale: 'This works for you because it fits your evening energy pattern',
         reminder_enabled: true,
+        reminder_time: '19:00:00',
+        days_of_week: [1, 2, 3, 4, 5],
         is_active: true,
         order_index: 0,
       };
@@ -272,9 +275,8 @@ async function runTests() {
       const logData = {
         habit_id: habitId,
         user_id: testUserId,
-        logged_date: new Date().toISOString().split('T')[0],
+        log_date: new Date().toISOString().split('T')[0],
         completed: true,
-        partial: false,
         obstacle: null,
       };
       
@@ -323,7 +325,7 @@ async function runTests() {
         .from('habit_logs')
         .select('*')
         .eq('user_id', testUserId)
-        .eq('logged_date', today);
+        .eq('log_date', today);
       
       if (error) {
         logDatabase.queryError('habit_logs', 'select', error);

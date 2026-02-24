@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es2020",
+    "paths": {
+      "react-native": ["./react-native-stub.ts"],
+      "@/*": ["../src/*"]
+    }
+  },
+  "include": ["./**/*.ts", "../src/**/*.ts"]
+}

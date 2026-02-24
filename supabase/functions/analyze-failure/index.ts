@@ -107,17 +107,12 @@ serve(async (req) => {
   }
 
   try {
-    // Extract JWT from Authorization header and verify it explicitly.
-    // auth.getUser() without a token argument uses storage (unavailable in
-    // Deno), so we pass the JWT directly � the recommended edge-function pattern.
-    const authHeader = req.headers.get('authorization') ?? req.headers.get('Authorization');
-    const jwt = authHeader?.replace('Bearer ', '');
-    if (!jwt) {
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
       return new Response(
         JSON.stringify({
           error: 'Unauthorized',
           detail: 'Missing authorization header',
-          received_headers: Array.from(req.headers.keys()),
         }),
         {
           status: 401,
@@ -126,20 +121,17 @@ serve(async (req) => {
       );
     }
 
-    const supabaseClient = createClient(
+    // Use service role to verify the JWT (works with ES256 tokens)
+    const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      {
-        global: {
-          headers: { Authorization: authHeader! },
-        },
-      }
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     );
 
+    const jwt = authHeader.replace('Bearer ', '');
     const {
       data: { user },
       error: authError,
-    } = await supabaseClient.auth.getUser(jwt);
+    } = await supabaseAdmin.auth.getUser(jwt);
 
     if (authError || !user) {
       return new Response(JSON.stringify({ error: 'Unauthorized', detail: authError?.message }), {
@@ -147,6 +139,17 @@ serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    // Client with user's auth for RLS-scoped queries
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      {
+        global: {
+          headers: { Authorization: authHeader },
+        },
+      }
+    );
 
     // Get user's onboarding data
     const { data: profile, error: profileError } = await supabaseClient

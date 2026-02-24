@@ -153,7 +153,7 @@ export const getStackHabits = async (stackId: string) => {
     .select('*')
     .eq('stack_id', stackId)
     .eq('is_active', true)
-    .order('display_order', { ascending: true });
+    .order('order_index', { ascending: true });
 
   return { data: data as Habit[] | null, error };
 };

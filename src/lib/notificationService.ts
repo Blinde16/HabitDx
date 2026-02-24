@@ -6,7 +6,7 @@
 
 import * as Notifications from 'expo-notifications';
 import { supabase } from './supabase';
-import { logger } from './logger';
+import { logInfo, logError } from './logger';
 import type { Habit } from '../types/habit';
 
 export class NotificationService {
@@ -15,7 +15,7 @@ export class NotificationService {
    */
   static async scheduleAllHabitReminders(userId: string): Promise<void> {
     try {
-      logger.info('Scheduling all habit reminders', { userId });
+      logInfo('Scheduling all habit reminders', { userId });
 
       // Get user's notification preference
       const { data: profile } = await supabase
@@ -25,7 +25,7 @@ export class NotificationService {
         .single();
 
       if (!profile?.notifications_enabled) {
-        logger.info('Notifications disabled for user', { userId });
+        logInfo('Notifications disabled for user', { userId });
         return;
       }
 
@@ -40,7 +40,7 @@ export class NotificationService {
       if (error) throw error;
 
       if (!habits || habits.length === 0) {
-        logger.info('No habits with reminders enabled', { userId });
+        logInfo('No habits with reminders enabled', { userId });
         return;
       }
 
@@ -49,15 +49,12 @@ export class NotificationService {
         await this.scheduleHabitReminder(habit as Habit);
       }
 
-      logger.info('All habit reminders scheduled', { 
+      logInfo('All habit reminders scheduled', { 
         userId, 
         count: habits.length 
       });
     } catch (error) {
-      logger.error('Error scheduling all habit reminders', { 
-        error,
-        userId 
-      });
+      logError(error as Error, { context: 'notifications.scheduleAll', userId });
       throw error;
     }
   }
@@ -118,7 +115,7 @@ export class NotificationService {
         })
         .eq('id', habit.id);
 
-      logger.info('Habit reminder scheduled', {
+      logInfo('Habit reminder scheduled', {
         habitId: habit.id,
         habitName: habit.name,
         notificationId,
@@ -127,11 +124,7 @@ export class NotificationService {
 
       return notificationId;
     } catch (error) {
-      logger.error('Error scheduling habit reminder', {
-        error,
-        habitId: habit.id,
-        habitName: habit.name,
-      });
+      logError(error as Error, { context: 'notifications.schedule', habitId: habit.id });
       return null;
     }
   }
@@ -160,16 +153,13 @@ export class NotificationService {
           })
           .eq('id', habitId);
 
-        logger.info('Habit reminder cancelled', { 
+        logInfo('Habit reminder cancelled', { 
           habitId,
           notificationId: habit.notification_id 
         });
       }
     } catch (error) {
-      logger.error('Error cancelling habit reminder', {
-        error,
-        habitId,
-      });
+      logError(error as Error, { context: 'notifications.cancel', habitId });
     }
   }
 
@@ -179,9 +169,9 @@ export class NotificationService {
   static async cancelAllReminders(): Promise<void> {
     try {
       await Notifications.cancelAllScheduledNotificationsAsync();
-      logger.info('All reminders cancelled');
+      logInfo('All reminders cancelled');
     } catch (error) {
-      logger.error('Error cancelling all reminders', { error });
+      logError(error as Error, { context: 'notifications.cancelAll' });
     }
   }
 
@@ -196,10 +186,7 @@ export class NotificationService {
         await this.cancelHabitReminder(habit.id);
       }
     } catch (error) {
-      logger.error('Error updating habit reminder', {
-        error,
-        habitId: habit.id,
-      });
+      logError(error as Error, { context: 'notifications.update', habitId: habit.id });
     }
   }
 
@@ -217,9 +204,9 @@ export class NotificationService {
         trigger: null, // Send immediately
       });
 
-      logger.info('Test notification sent');
+      logInfo('Test notification sent');
     } catch (error) {
-      logger.error('Error sending test notification', { error });
+      logError(error as Error, { context: 'notifications.test' });
     }
   }
 
@@ -231,7 +218,7 @@ export class NotificationService {
       const notifications = await Notifications.getAllScheduledNotificationsAsync();
       return notifications.length;
     } catch (error) {
-      logger.error('Error getting scheduled notification count', { error });
+      logError(error as Error, { context: 'notifications.getCount' });
       return 0;
     }
   }
