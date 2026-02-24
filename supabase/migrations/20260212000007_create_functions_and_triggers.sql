@@ -133,24 +133,34 @@ COMMENT ON FUNCTION validate_log_date() IS 'Prevents creating habit logs for fut
 -- ============================================================================
 
 -- Trigger: Auto-update updated_at on user_profiles
+DROP TRIGGER IF EXISTS trigger_user_profiles_updated_at ON user_profiles;
 CREATE TRIGGER trigger_user_profiles_updated_at
   BEFORE UPDATE ON user_profiles
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
 -- Trigger: Auto-create profile after user signup
+DROP TRIGGER IF EXISTS trigger_create_user_profile ON auth.users;
 CREATE TRIGGER trigger_create_user_profile
   AFTER INSERT ON auth.users
   FOR EACH ROW
   EXECUTE FUNCTION create_user_profile();
 
 -- Trigger: Validate habit log dates
+DROP TRIGGER IF EXISTS trigger_validate_log_date ON habit_logs;
 CREATE TRIGGER trigger_validate_log_date
   BEFORE INSERT OR UPDATE ON habit_logs
   FOR EACH ROW
   EXECUTE FUNCTION validate_log_date();
 
--- Add comments on triggers
+-- Add comments on triggers (skip if insufficient privileges on auth.users)
 COMMENT ON TRIGGER trigger_user_profiles_updated_at ON user_profiles IS 'Automatically updates updated_at timestamp';
-COMMENT ON TRIGGER trigger_create_user_profile ON auth.users IS 'Creates user profile automatically on signup';
+DO $$
+BEGIN
+  EXECUTE 'COMMENT ON TRIGGER trigger_create_user_profile ON auth.users IS ''Creates user profile automatically on signup''';
+EXCEPTION
+  WHEN insufficient_privilege THEN
+    NULL;
+END $$;
 COMMENT ON TRIGGER trigger_validate_log_date ON habit_logs IS 'Prevents creating logs for future dates';
+

@@ -18,15 +18,15 @@ CREATE TABLE IF NOT EXISTS habit_stacks (
 );
 
 -- Create unique index to ensure only one active stack per user
-CREATE UNIQUE INDEX idx_habit_stacks_user_active 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_habit_stacks_user_active 
   ON habit_stacks(user_id) 
   WHERE is_active = TRUE;
 
 -- Create index on user_id for queries
-CREATE INDEX idx_habit_stacks_user_id ON habit_stacks(user_id);
+CREATE INDEX IF NOT EXISTS idx_habit_stacks_user_id ON habit_stacks(user_id);
 
 -- Create index on failure_profile_id for joins
-CREATE INDEX idx_habit_stacks_failure_profile_id ON habit_stacks(failure_profile_id) WHERE failure_profile_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_habit_stacks_failure_profile_id ON habit_stacks(failure_profile_id) WHERE failure_profile_id IS NOT NULL;
 
 -- Add comments
 COMMENT ON TABLE habit_stacks IS 'Collection of habits grouped together for a user';
