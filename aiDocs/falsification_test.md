@@ -1,16 +1,14 @@
 # HabitDx Falsification Test
 
 **Date:** February 24, 2026
-**Author role:** Skeptical product researcher
-**Purpose:** Attempt to disprove the core hypothesis before committing further resources.
+**Stage:** Pre-beta / early discovery
+**Purpose:** Try to disprove the core hypothesis before building further.
 
 ---
 
 ## 1. Core Hypothesis
 
-> Users who repeatedly fail at habit-building do so primarily because they lack personalized diagnosis of *why* they fail — not because of motivation or knowledge gaps — and will retain an AI-powered diagnostic app (HabitDx) beyond 4 weeks at a rate of >20%, meaningfully above the ~5–10% industry baseline for habit apps.
-
-This is falsifiable: it makes a specific causal claim (diagnosis is the bottleneck) and a specific behavioral prediction (>20% 4-week retention).
+> "Users aren't failing because of weak willpower. They're failing because their system is poorly designed for their life."
 
 ---
 
@@ -18,138 +16,109 @@ This is falsifiable: it makes a specific causal claim (diagnosis is the bottlene
 
 The hypothesis only holds if all of the following are true:
 
-1. **The failure cause is diagnosable.** The reason users fail is a fixable pattern (wrong timing, over-stacking, poor environment) — not a structural life problem (unsustainable workload, burnout, situational chaos) that no app can resolve.
-2. **AI output feels personalized, not generic.** Five minutes of onboarding intake produces enough signal for the AI to generate insights users experience as specific to them — not boilerplate advice repackaged.
-3. **Users will return to act on adjustments.** Receiving one good diagnosis is not enough; users must repeatedly engage with the weekly iteration loop, which requires them to trust the process and have enough slack in their life to act on it.
-4. **The target user is reachable at scale.** "Knowledge workers 28–38 who've tried 3+ habit apps" is a real, findable segment with sufficient density to build a product on — not a narrow fringe.
+1. **The target user exists as described.** Knowledge workers 28–38 who've tried 3+ habit apps and are still actively looking for a better solution are a real, findable segment — not a fringe group who've already given up on habit apps entirely (aiDocs/prd.md).
+2. **System redesign is the bottleneck, not something else.** The primary reason habits don't stick is fixable through better personalization and weekly iteration — not structural life constraints (overwork, burnout, caregiving) that no app can redesign around.
+3. **Users will accept the reframe.** The target user will engage with "your system is broken" as an actionable, non-obvious insight — rather than treating it as obvious, dismissing it as jargon, or preferring the simpler explanation ("I just need to try harder").
+4. **Diagnosis drives behavior change.** Understanding *why* they failed will cause users to act differently. There is a meaningful gap between receiving a diagnosis and actually changing behavior that we are claiming to close.
 
 ---
 
-## 3. "We're Wrong If…" Criteria
+## 3. We're Wrong If…
 
-We should treat the hypothesis as falsified or in serious doubt if any of the following are observed after 4 weeks with ≥50 active users:
+Conditions observable through discovery interviews and prototype tests this week:
 
 | Condition | Falsification Threshold |
 |---|---|
-| 4-week retention | < 20% of users active at day 28 |
-| Onboarding completion | < 50% of signups complete the intake flow |
-| Failure Profile perceived as generic | > 40% of users rate profile as "not specific to me" in feedback |
-| Weekly insight open rate | < 30% of users open weekly insight notification |
-| Iteration acceptance | < 25% of users accept or act on any weekly adjustment |
-| Qualitative signal | Majority of churned users say "it just wasn't useful" rather than "life got in the way" |
-
-Any single threshold breach is a serious signal. Two or more simultaneous breaches constitute falsification.
+| Target persona can't be reached | Fewer than 5 qualifying strangers (28–38, knowledge worker, quit 2+ habit apps) respond to cold outreach within one week |
+| Problem framing rejected | Fewer than 3 of 5 interviewees spontaneously describe their failure as a design/fit problem rather than a motivation/willpower problem |
+| Reframe dismissed as obvious | 3 or more say "yeah I already knew that" when presented with a system-design diagnosis — no surprise, no new insight |
+| Diagnosis doesn't produce action intent | 3 or more interviewees look at the Failure Profile mockup and cannot describe what they would do differently |
+| Existing solutions rated "good enough" | 3 or more say a current tool (any app, a notes system, a coach) already meets their need well enough that they're not actively seeking a replacement |
 
 ---
 
 ## 4. Disconfirming Signals
 
-These are the top 5 things we would observe or hear if we're wrong:
+Top 5 things we would observe or hear if we're wrong:
 
-1. **"I get it, but I'm not opening it."** Users complete onboarding, read their Failure Profile, and don't return — indicating the diagnosis is intellectually interesting but not motivating enough to drive repeated behavior. One-time insight ≠ retention loop.
+1. **"I just need more discipline."** The target user consistently frames their failure as a personal deficiency — not a systems problem. If they're not looking for a diagnosis and don't believe one would help, the product's core premise doesn't land.
 
-2. **"It told me what I already knew."** Users describe the AI's output in their own words and it matches generic productivity advice ("try doing it in the morning," "start smaller"). If users cannot articulate something specific to their situation that surprised them, the personalization is failing.
+2. **"I've already figured out why I fail — I just can't fix it."** Users accurately diagnose themselves but don't act on it. If self-awareness of failure patterns is already high but doesn't translate to change, adding an AI diagnosis doesn't move the needle. Diagnosis ≠ behavior change.
 
-3. **"The real problem is my schedule."** Users acknowledge the insight is accurate but attribute their failure to structural constraints the app cannot change — two jobs, a chaotic business, a newborn. If the root cause is objectively unsustainable life circumstances, diagnosis without structural change is inert.
+3. **"My life is just too chaotic right now."** Users attribute failure to a period of structural overload — a demanding job, a young child, a business crisis — with no openness to system redesign as a solution. If the root cause is genuinely unfixable by better habit design, we're targeting the wrong moment in their life, not the wrong product (aiDocs/prd.md lists "Overwhelmed New Parent" as a secondary persona for this reason).
 
-4. **Users keep running another app alongside HabitDx.** If users use HabitDx for the diagnosis but continue using Noom, Streaks, or a plain notes app for daily tracking, it means we've built a feature, not a product. HabitDx is not replacing anything — it's just a novelty add-on.
+4. **"Streaks / Notion / a spreadsheet works fine for me."** The competition turns out to be good enough. The target user has already self-solved with a simpler tool and doesn't feel the gap we're designing for. The PRD acknowledges this risk by explicitly excluding "casual users wanting a simple checkbox" — but we haven't verified that this segment is small (aiDocs/prd.md).
 
-5. **WTP evaporates after trial.** Users who expressed interest in paying (~$10/week in the Shawna interview) decline to convert or cancel immediately once a payment wall appears. This means perceived value doesn't survive contact with the commitment decision, which falsifies the "it genuinely works" part of the hypothesis.
+5. **"A 5-minute onboarding sounds like a lot."** The target user's stated #1 obstacle is no time (aiDocs/prd.md). If the minimum viable intake required for personalization exceeds their tolerance — even at the promise of better output — they churn before the product can help them. The PRD identifies onboarding completion <50% as a pivot trigger but we have no baseline for what to expect (aiDocs/prd.md).
 
 ---
 
 ## 5. Test Method
 
-### Evidence Used
+**Who qualifies:** Knowledge workers, age 28–38, who have downloaded and stopped using at least 2 habit apps. Salaried employees preferred over business owners to match the PRD primary persona (aiDocs/prd.md). Recruited cold from r/productivity, r/habits, or Notion/Obsidian communities — not from the founder's network.
 
-| Source | Type | Relevance |
-|---|---|---|
-| Shawna customer interview (Feb 24, 2026) | 1 structured written interview | Only formal primary data; real user with prior app experience and articulated needs |
-| 8 informal colleague interviews (undated) | Unstructured conversations | Pre-build problem validation; no recording, no independent verification |
-| App store review analysis (300 reviews across Streaks, Habitica, Loop, Coach.me) | Secondary research | Indicates failure modes of existing apps; not evidence HabitDx's approach works |
-| Academic papers (Fogg 2009, Lally 2010, Clear 2018) | Literature | Supports habit formation theory; does not validate this specific product |
-| PRD internal falsifiability section | Self-authored | Founder-written; useful for identifying stated assumptions, not for independently testing them |
+**What we do:**
+1. Open-ended: *"Tell me about the last time you tried to build a habit and stopped. What happened?"* No framing, no product mention.
+2. Probe: *"Did you ever figure out why it fell apart? What did you tell yourself?"* Listen for whether they name a design/fit cause vs. willpower/structural cause.
+3. Reframe test: Say *"Some people describe that as a system design problem rather than a motivation problem. Does that framing resonate?"* Watch for genuine recognition vs. polite agreement.
+4. Mockup: At the end only, show the Failure Profile screen. Ask: *"What would you do next if you saw this?"*
 
-### Why These Sources Are Relevant
-
-Shawna is the only independent voice in this dataset. She has direct experience with the exact failure mode HabitDx targets (stress-driven habit collapse, over-stacking, knowledge-application gap) and has used comparable apps. Her responses provide the most honest signal available.
-
-The remaining evidence is either self-generated (PRD analysis, informal interviews the founder conducted) or secondary (reviews, literature). These can inform hypothesis formation but cannot validate it.
+**How we avoid bias:** Do not describe HabitDx or the hypothesis before step 4. Record sessions or take verbatim notes. Do not count polite agreement as confirmation — count only spontaneous or unprompted alignment.
 
 ---
 
 ## 6. Evidence Summary
 
-### Supporting Evidence
+### Supporting
 
-- **Shawna explicitly names the diagnostic gap:** "A lot of them just track. They don't help me understand why I keep falling off." This is a direct statement of the problem HabitDx claims to solve.
-- **Shawna describes the ideal product in terms that match our feature set:** Pattern recognition over time, one adjustment at a time, adaptive to schedule changes, non-judgmental framing. She described HabitDx without being shown it.
-- **She independently validates habit stacking:** Without prompting, she identified that stacking onto an existing anchor is what works for her — validating our habit stack generation approach.
-- **Willingness to pay stated:** ~$10/week if she "could genuinely feel it working." This is a meaningful signal, though conditional.
-- **App store data surfaces the same complaint:** 73/300 reviews explicitly cite "doesn't help me understand why" as the primary failure — this is a real, recurring user complaint, not a constructed problem.
+- The PRD's target persona description — "shame from repeated failure, no diagnosis of root causes, rigid systems that break" — is a coherent framing of the problem, built on the team's prior research (aiDocs/prd.md). Whether it accurately describes real users at scale is untested.
+- One external interview (Shawna, a fitness studio owner) independently named the diagnostic gap: she wanted the app to help her understand why she kept falling off, not just log it (ai/notes/customer_interviews/shawna.md). This is one aligned data point, not a pattern.
+- The PRD cites app store complaints and informal colleague interviews as further supporting evidence, but these are not independently documented in this repo and should not be weighted heavily (aiDocs/prd.md).
 
-### Threatening Evidence
+### Threatening
 
-- **Shawna's root cause may be structural, not diagnostic.** She runs two fitness studios, manages staff, and operates in a chronically unpredictable environment. She says: "When things get chaotic with the studios, I fall back." An AI diagnosis of "you fail when stress spikes" does not reduce studio cancellations or management load. If the root cause is workload, diagnosis is accurate but insufficient.
-- **She still uses Noom.** Despite its simplicity and lack of diagnosis features, Noom has retained Shawna for food tracking. This suggests that for sufficiently bounded domains, simple trackers *do* work. HabitDx may be solving a problem that only exists in broad-domain habit building, not all habit building.
-- **WTP is conditional, not committed.** "If I could genuinely feel it working" is a usage retention condition, not a purchase signal. If the app doesn't produce visible progress quickly, she won't pay. This raises the bar: we need demonstrable results within the free trial window.
-- **The 8 informal interviews have no independent integrity.** They were conducted by the founder, undated, unrecorded, and reported as a table in the PRD. There are no quotes, no follow-up, no adversarial probing. The 7/8 figure for "wish it could tell me what's wrong" may reflect social desirability bias in conversations with a founder.
+- **Wrong persona tested.** The only formal interview conducted (Shawna) is a business owner running two studios — not a salaried knowledge worker 28–38. Her failure mode is driven by unpredictable external business events, which may differ structurally from the target persona's failure mode. We have not yet interviewed the persona we're building for (ai/notes/customer_interviews/shawna.md, aiDocs/prd.md).
+- **No behavioral evidence exists.** Every data point is attitudinal ("I would want," "I wish it could"). No one has used HabitDx, returned after a failure, or changed a habit because of a weekly AI insight. Attitude-behavior gaps are common.
+- **What evidence we still lack:** (1) Interviews with salaried knowledge workers 28–38 who match the PRD primary persona. (2) A test of whether users accept the "system design" reframe or dismiss it. (3) Any evidence that receiving a diagnosis changes what a user does next. These are the three most critical gaps before building further.
 
 ---
 
-## 7. Bias and Limitations
+## 7. Bias / Limitations
 
-**Founder-conducted interviews.** Both the 8 informal conversations and the Shawna interview were conducted by the same person building the product. Founders asking "would you use something that helps you understand why you fail?" to people who like them will get confirmation. There is no adversarial or independent interviewer in this dataset.
-
-**Survey/written format for Shawna.** The interview was written/survey-style, not exploratory. This format tends to elicit answers that match the question framing. We don't know what Shawna would have said if asked open-ended questions with no product context ("tell me about the last time a habit fell apart" vs. "would you want an app that showed you patterns?").
-
-**Selection bias in app store reviews.** People who leave reviews are not representative of all users. The 73/300 "doesn't help me understand why" finding may overrepresent users who are highly self-reflective — exactly the kind of user who would also be most disappointed if HabitDx's AI outputs are generic.
-
-**No behavioral data exists.** Every data point in this test is attitudinal ("I would want," "I wish it could"). There is zero behavioral evidence — no one has used HabitDx and returned, accepted a weekly adjustment, or paid for anything. Attitude-behavior gaps are well-documented in product research. People say they want diagnosis; they may not engage with it when it requires effort.
-
-**Sample size.** One formal interview plus eight informal conversations with the founder's colleagues is not a sufficient basis for a product hypothesis. It is sufficient for generating hypotheses. We have not yet tested them.
-
-**Shawna may not be the target persona.** The PRD targets knowledge workers 28–38. Shawna is a business owner running two fitness studios. Her failure mode (unpredictable external disruption from her business) may be structurally different from a salaried knowledge worker whose schedule is more predictable. If we are pattern-matching on surface similarity ("tried apps, read Atomic Habits, wants something better"), we may be missing a crucial difference in root cause.
+- **Founder-defined persona.** The target user description in the PRD was written by the team building the product. It may describe the ideal customer rather than the most findable one.
+- **Circular reasoning risk.** The PRD uses its own conclusions ("the bottleneck isn't motivation — it's personalized design") as evidence for the product premise. This is a hypothesis stated as a finding, not a tested claim (aiDocs/prd.md).
+- **Confirmation-prone research methods.** Survey-style written interviews with a sympathetic respondent, informal conversations within the founder's network, and self-assessed app store review themes all have strong confirmation bias potential. None involved an adversarial or independent researcher.
+- **All evidence is pre-product.** There is no retention data, no click data, no evidence of anyone returning to a diagnostic app after a failure. The entire evidence base is discovery-stage hypothesis material.
 
 ---
 
-## 8. Decision + Implication
+## 8. Decision
 
-**Verdict: Inconclusive**
+**Inconclusive.**
 
-The hypothesis has not been falsified, but it has also not been meaningfully tested. We have one aligned interview with a potentially non-representative user, informal conversations with the founder's social network, and secondary data that establishes the problem exists but not that our solution works.
+The hypothesis is plausible and the problem framing is coherent. But we have not tested it against the actual target persona, we have no behavioral evidence, and the one external data point (Shawna) may not generalize. The PRD's self-described due diligence is hypothesis formation, not hypothesis testing.
 
-**What this means:**
-
-- We should not treat the Shawna interview as validation. It is a well-aligned data point that sharpens the hypothesis. It is not confirmation.
-- The three threatening signals from Shawna (structural root cause, conditional WTP, residual Noom usage) are more informative than her confirmatory statements. Confirmatory statements from a sympathetic user are expected. Threatening signals from the same user deserve more weight.
-- The hypothesis remains plausible. We should not pivot. But we should run the cheapest possible falsification test before building further features.
+Do not treat current evidence as validation. Do not pivot. Run the next test before adding features.
 
 ---
 
 ## 9. Next Cheapest Falsification Test
 
-**Test:** Intercept-style prototype test with 5 strangers, no product demo, no founder present.
+**5 cold intercept interviews with salaried knowledge workers. This week. No product shown until the end.**
 
-**Exact method:**
-1. Find 5 people who match the target persona (28–38, knowledge worker, tried and quit ≥2 habit apps) from a source *other than* the founder's network. Use r/productivity, r/habits, or a cold DM outreach to the James Clear newsletter community. Do not recruit friends.
-2. Do NOT show them the app or describe HabitDx. Ask only: "Tell me about the last time you tried to build a habit and stopped. What did you do when you noticed you were slipping? Did you ever figure out why it fell apart?"
-3. After their unprompted response, ask: "If you had known that specific reason at the time, do you think it would have changed anything?" Listen for whether diagnosis is perceived as actionable or irrelevant.
-4. At the end only, show them the Failure Profile screen (static mockup, no full app). Ask: "What would you do next with this?" Watch for whether they describe action or express confusion/skepticism.
+**Exact steps:**
+1. Post in r/productivity or r/habits: *"Quick question for anyone who's tried and quit a habit app — happy to chat for 20 min."* DM 10 people who respond and match the persona (28–38, knowledge worker). Do not mention HabitDx.
+2. Run the interview protocol in Section 5 above.
+3. After all 5 sessions, tally: How many spontaneously described a design/fit failure (vs. willpower)? How many were surprised by the system-design reframe (vs. dismissing it as obvious or unfamiliar)? How many described a next action after seeing the Failure Profile?
 
-**Data to collect:**
-- Verbatim transcript or recording for each session
-- Whether they spontaneously name "not knowing why" as a factor in their failure (unprompted)
-- Whether they describe a structural cause (life circumstance) vs. a systemic cause (wrong approach)
-- Whether they describe a next action after seeing the Failure Profile, or don't
+**Pass conditions (continue building):**
+- 3+ of 5 spontaneously name a design/fit cause without prompting
+- 3+ show genuine recognition (not just polite agreement) when the reframe is offered
+- 3+ describe a concrete next action after seeing the mockup
 
-**What would falsify us:**
-- Fewer than 3 of 5 participants spontaneously mention "not understanding why" as a reason they quit — suggests the diagnosis gap is not primary
-- 3 or more participants describe structural/life causes that no app could address — suggests we're solving the wrong layer of the problem
-- 3 or more participants look at the Failure Profile and cannot describe a next action — suggests the AI output does not translate into behavior change intent
+**Fail conditions (revisit hypothesis):**
+- Fewer than 3 of 5 spontaneously name system design as a cause
+- Majority describe structural causes an app cannot address
+- Majority look at the Failure Profile and don't know what to do with it
 
-**Cost:** ~5 hours total. No code required. No product demo required. Can be done this week.
-
-**What happens if we pass:** The diagnosis gap is real and unprompted. We continue building. We recruit these 5 users for beta access.
-
-**What happens if we fail:** We update the hypothesis. We consider whether HabitDx is a coach-replacement product (structural support) rather than a diagnostic product, and whether that changes the feature set materially.
+**Cost:** ~5 hours. No code. No product demo. Can be completed this week.
