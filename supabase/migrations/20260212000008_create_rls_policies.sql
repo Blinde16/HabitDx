@@ -18,18 +18,21 @@ ALTER TABLE weekly_iterations ENABLE ROW LEVEL SECURITY;
 -- ============================================================================
 
 -- Users can view their own profile
+DROP POLICY IF EXISTS "Users can view own profile" ON user_profiles;
 CREATE POLICY "Users can view own profile"
   ON user_profiles
   FOR SELECT
   USING (auth.uid() = id);
 
 -- Users can update their own profile
+DROP POLICY IF EXISTS "Users can update own profile" ON user_profiles;
 CREATE POLICY "Users can update own profile"
   ON user_profiles
   FOR UPDATE
   USING (auth.uid() = id);
 
 -- Users can insert their own profile (for manual creation if needed)
+DROP POLICY IF EXISTS "Users can insert own profile" ON user_profiles;
 CREATE POLICY "Users can insert own profile"
   ON user_profiles
   FOR INSERT
@@ -40,30 +43,35 @@ CREATE POLICY "Users can insert own profile"
 -- ============================================================================
 
 -- Users can view their own failure profiles
+DROP POLICY IF EXISTS "Users can view own failure profiles" ON habit_failure_profiles;
 CREATE POLICY "Users can view own failure profiles"
   ON habit_failure_profiles
   FOR SELECT
   USING (user_id = auth.uid());
 
 -- Users can insert their own failure profiles
+DROP POLICY IF EXISTS "Users can insert own failure profiles" ON habit_failure_profiles;
 CREATE POLICY "Users can insert own failure profiles"
   ON habit_failure_profiles
   FOR INSERT
   WITH CHECK (user_id = auth.uid());
 
 -- Users can update their own failure profiles
+DROP POLICY IF EXISTS "Users can update own failure profiles" ON habit_failure_profiles;
 CREATE POLICY "Users can update own failure profiles"
   ON habit_failure_profiles
   FOR UPDATE
   USING (user_id = auth.uid());
 
 -- Users can delete their own failure profiles
+DROP POLICY IF EXISTS "Users can delete own failure profiles" ON habit_failure_profiles;
 CREATE POLICY "Users can delete own failure profiles"
   ON habit_failure_profiles
   FOR DELETE
   USING (user_id = auth.uid());
 
 -- Public can view shared failure profiles (via share_token)
+DROP POLICY IF EXISTS "Public can view shared failure profiles" ON habit_failure_profiles;
 CREATE POLICY "Public can view shared failure profiles"
   ON habit_failure_profiles
   FOR SELECT
@@ -74,24 +82,28 @@ CREATE POLICY "Public can view shared failure profiles"
 -- ============================================================================
 
 -- Users can view their own habit stacks
+DROP POLICY IF EXISTS "Users can view own habit stacks" ON habit_stacks;
 CREATE POLICY "Users can view own habit stacks"
   ON habit_stacks
   FOR SELECT
   USING (user_id = auth.uid());
 
 -- Users can insert their own habit stacks
+DROP POLICY IF EXISTS "Users can insert own habit stacks" ON habit_stacks;
 CREATE POLICY "Users can insert own habit stacks"
   ON habit_stacks
   FOR INSERT
   WITH CHECK (user_id = auth.uid());
 
 -- Users can update their own habit stacks
+DROP POLICY IF EXISTS "Users can update own habit stacks" ON habit_stacks;
 CREATE POLICY "Users can update own habit stacks"
   ON habit_stacks
   FOR UPDATE
   USING (user_id = auth.uid());
 
 -- Users can delete their own habit stacks
+DROP POLICY IF EXISTS "Users can delete own habit stacks" ON habit_stacks;
 CREATE POLICY "Users can delete own habit stacks"
   ON habit_stacks
   FOR DELETE
@@ -102,6 +114,7 @@ CREATE POLICY "Users can delete own habit stacks"
 -- ============================================================================
 
 -- Users can view their own habits (via stack ownership)
+DROP POLICY IF EXISTS "Users can view own habits" ON habits;
 CREATE POLICY "Users can view own habits"
   ON habits
   FOR SELECT
@@ -114,6 +127,7 @@ CREATE POLICY "Users can view own habits"
   );
 
 -- Users can insert habits into their own stacks
+DROP POLICY IF EXISTS "Users can insert own habits" ON habits;
 CREATE POLICY "Users can insert own habits"
   ON habits
   FOR INSERT
@@ -126,6 +140,7 @@ CREATE POLICY "Users can insert own habits"
   );
 
 -- Users can update their own habits
+DROP POLICY IF EXISTS "Users can update own habits" ON habits;
 CREATE POLICY "Users can update own habits"
   ON habits
   FOR UPDATE
@@ -138,6 +153,7 @@ CREATE POLICY "Users can update own habits"
   );
 
 -- Users can delete their own habits
+DROP POLICY IF EXISTS "Users can delete own habits" ON habits;
 CREATE POLICY "Users can delete own habits"
   ON habits
   FOR DELETE
@@ -154,24 +170,28 @@ CREATE POLICY "Users can delete own habits"
 -- ============================================================================
 
 -- Users can view their own habit logs
+DROP POLICY IF EXISTS "Users can view own habit logs" ON habit_logs;
 CREATE POLICY "Users can view own habit logs"
   ON habit_logs
   FOR SELECT
   USING (user_id = auth.uid());
 
 -- Users can insert their own habit logs
+DROP POLICY IF EXISTS "Users can insert own habit logs" ON habit_logs;
 CREATE POLICY "Users can insert own habit logs"
   ON habit_logs
   FOR INSERT
   WITH CHECK (user_id = auth.uid());
 
 -- Users can update their own habit logs
+DROP POLICY IF EXISTS "Users can update own habit logs" ON habit_logs;
 CREATE POLICY "Users can update own habit logs"
   ON habit_logs
   FOR UPDATE
   USING (user_id = auth.uid());
 
 -- Users can delete their own habit logs
+DROP POLICY IF EXISTS "Users can delete own habit logs" ON habit_logs;
 CREATE POLICY "Users can delete own habit logs"
   ON habit_logs
   FOR DELETE
@@ -182,24 +202,28 @@ CREATE POLICY "Users can delete own habit logs"
 -- ============================================================================
 
 -- Users can view their own weekly iterations
+DROP POLICY IF EXISTS "Users can view own weekly iterations" ON weekly_iterations;
 CREATE POLICY "Users can view own weekly iterations"
   ON weekly_iterations
   FOR SELECT
   USING (user_id = auth.uid());
 
 -- Users can insert their own weekly iterations
+DROP POLICY IF EXISTS "Users can insert own weekly iterations" ON weekly_iterations;
 CREATE POLICY "Users can insert own weekly iterations"
   ON weekly_iterations
   FOR INSERT
   WITH CHECK (user_id = auth.uid());
 
 -- Users can update their own weekly iterations
+DROP POLICY IF EXISTS "Users can update own weekly iterations" ON weekly_iterations;
 CREATE POLICY "Users can update own weekly iterations"
   ON weekly_iterations
   FOR UPDATE
   USING (user_id = auth.uid());
 
 -- Users can delete their own weekly iterations
+DROP POLICY IF EXISTS "Users can delete own weekly iterations" ON weekly_iterations;
 CREATE POLICY "Users can delete own weekly iterations"
   ON weekly_iterations
   FOR DELETE
@@ -212,3 +236,5 @@ CREATE POLICY "Users can delete own weekly iterations"
 COMMENT ON POLICY "Users can view own profile" ON user_profiles IS 'Users can only view their own profile data';
 COMMENT ON POLICY "Public can view shared failure profiles" ON habit_failure_profiles IS 'Allows public access to failure profiles via share token';
 COMMENT ON POLICY "Users can view own habits" ON habits IS 'Users can view habits that belong to their stacks';
+
+

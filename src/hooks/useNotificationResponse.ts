@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useRouter } from 'expo-router';
 import * as Notifications from 'expo-notifications';
-import { logger } from '@/lib/logger';
+import { logInfo } from '@/lib/logger';
 
 export function useNotificationResponse() {
   const router = useRouter();
@@ -12,7 +12,7 @@ export function useNotificationResponse() {
     // Listen for notifications received while app is foregrounded
     notificationListener.current = Notifications.addNotificationReceivedListener(
       (notification) => {
-        logger.info('Notification received', {
+        logInfo('Notification received', {
           title: notification.request.content.title,
           body: notification.request.content.body,
           data: notification.request.content.data,
@@ -24,7 +24,7 @@ export function useNotificationResponse() {
     responseListener.current = Notifications.addNotificationResponseReceivedListener(
       (response) => {
         const { data } = response.notification.request.content;
-        logger.info('Notification tapped', { data });
+        logInfo('Notification tapped', { data });
 
         // Handle different notification types
         if (data?.type === 'habit_reminder') {
@@ -33,9 +33,9 @@ export function useNotificationResponse() {
         } else if (data?.type === 'weekly_insight') {
           // Navigate to insights screen
           router.push('/(tabs)/insights');
-        } else if (data?.screen) {
+        } else if (typeof data?.screen === 'string') {
           // Navigate to specified screen
-          router.push(data.screen as any);
+          router.push(data.screen as never);
         }
       }
     );

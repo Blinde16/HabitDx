@@ -20,19 +20,20 @@ CREATE TABLE IF NOT EXISTS habit_logs (
   UNIQUE(habit_id, log_date)
 );
 
--- Create unique index on habit_id and log_date
-CREATE UNIQUE INDEX idx_habit_logs_habit_date ON habit_logs(habit_id, log_date);
+-- CREATE UNIQUE INDEX IF NOT EXISTS on habit_id and log_date
+CREATE UNIQUE INDEX IF NOT EXISTS idx_habit_logs_habit_date ON habit_logs(habit_id, log_date);
 
--- Create index on user_id and log_date for user queries
-CREATE INDEX idx_habit_logs_user_date ON habit_logs(user_id, log_date DESC);
+-- CREATE INDEX IF NOT EXISTS on user_id and log_date for user queries
+CREATE INDEX IF NOT EXISTS idx_habit_logs_user_date ON habit_logs(user_id, log_date DESC);
 
--- Create index on habit_id for habit-specific queries
-CREATE INDEX idx_habit_logs_habit_id ON habit_logs(habit_id);
+-- CREATE INDEX IF NOT EXISTS on habit_id for habit-specific queries
+CREATE INDEX IF NOT EXISTS idx_habit_logs_habit_id ON habit_logs(habit_id);
 
--- Create index on log_date for date range queries
-CREATE INDEX idx_habit_logs_date ON habit_logs(log_date DESC);
+-- CREATE INDEX IF NOT EXISTS on log_date for date range queries
+CREATE INDEX IF NOT EXISTS idx_habit_logs_date ON habit_logs(log_date DESC);
 
 -- Add comments
 COMMENT ON TABLE habit_logs IS 'Daily check-in records tracking habit completion';
 COMMENT ON COLUMN habit_logs.obstacle IS 'User-provided reason for not completing the habit';
 COMMENT ON COLUMN habit_logs.checked_in_via IS 'Source of the check-in (app, notification, widget)';
+

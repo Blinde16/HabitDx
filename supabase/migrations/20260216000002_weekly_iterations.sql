@@ -15,25 +15,44 @@ CREATE TABLE IF NOT EXISTS weekly_iterations (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Ensure columns exist for legacy deployments
+ALTER TABLE weekly_iterations ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'pending';
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'weekly_iterations_status_check'
+      AND conrelid = 'weekly_iterations'::regclass
+  ) THEN
+    ALTER TABLE weekly_iterations
+      ADD CONSTRAINT weekly_iterations_status_check
+      CHECK (status IN ('pending', 'accepted', 'declined'));
+  END IF;
+END $$;
+
 -- Add indexes
-CREATE INDEX idx_weekly_iterations_user_id ON weekly_iterations(user_id);
-CREATE INDEX idx_weekly_iterations_created_at ON weekly_iterations(created_at DESC);
-CREATE INDEX idx_weekly_iterations_status ON weekly_iterations(status);
+CREATE INDEX IF NOT EXISTS idx_weekly_iterations_user_id ON weekly_iterations(user_id);
+CREATE INDEX IF NOT EXISTS idx_weekly_iterations_created_at ON weekly_iterations(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_weekly_iterations_status ON weekly_iterations(status);
 
 -- Enable RLS
 ALTER TABLE weekly_iterations ENABLE ROW LEVEL SECURITY;
 
 -- RLS policies
+DROP POLICY IF EXISTS "Users can view their own iterations" ON weekly_iterations;
 CREATE POLICY "Users can view their own iterations"
   ON weekly_iterations
   FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert their own iterations" ON weekly_iterations;
 CREATE POLICY "Users can insert their own iterations"
   ON weekly_iterations
   FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update their own iterations" ON weekly_iterations;
 CREATE POLICY "Users can update their own iterations"
   ON weekly_iterations
   FOR UPDATE
@@ -53,7 +72,9 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Create trigger for weekly_iterations
+DROP TRIGGER IF EXISTS update_weekly_iterations_updated_at ON weekly_iterations;
 CREATE TRIGGER update_weekly_iterations_updated_at
   BEFORE UPDATE ON weekly_iterations
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
+

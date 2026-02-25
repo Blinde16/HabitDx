@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { useAuthStore } from '../../stores/authStore';
 import { useIterationStore, type WeeklyIteration } from '../../stores/iterationStore';
-import { logger } from '../../lib/logger';
+import { logError } from '../../lib/logger';
 
 export default function InsightsScreen() {
   const { user } = useAuthStore();
@@ -42,7 +42,7 @@ export default function InsightsScreen() {
       await generateWeeklyIteration(user.id);
     } catch (err) {
       Alert.alert('Error', 'Failed to generate weekly insight');
-      logger.error('Error generating insight', { error: err });
+      logError(err as Error, { context: 'insights.generate' });
     } finally {
       setGenerating(false);
     }
@@ -67,7 +67,7 @@ export default function InsightsScreen() {
               );
             } catch (err) {
               Alert.alert('Error', 'Failed to apply adjustment');
-              logger.error('Error accepting adjustment', { error: err });
+              logError(err as Error, { context: 'insights.acceptAdjustment' });
             }
           },
         },
@@ -90,7 +90,7 @@ export default function InsightsScreen() {
               await declineAdjustment(currentIteration.id);
             } catch (err) {
               Alert.alert('Error', 'Failed to decline adjustment');
-              logger.error('Error declining adjustment', { error: err });
+              logError(err as Error, { context: 'insights.declineAdjustment' });
             }
           },
         },
@@ -173,7 +173,7 @@ export default function InsightsScreen() {
                     You Decide
                   </Text>
                   <Text className="text-sm text-gray-600">
-                    Accept or decline the adjustment—you're in control
+                    Accept or decline the adjustment—you&apos;re in control
                   </Text>
                 </View>
               </View>
@@ -186,7 +186,7 @@ export default function InsightsScreen() {
             onPress={handleGenerate}
           >
             <Text className="text-white font-bold text-lg">
-              Generate This Week's Insight
+              Generate This Week&apos;s Insight
             </Text>
           </TouchableOpacity>
 
@@ -233,7 +233,7 @@ export default function InsightsScreen() {
         {/* Completion Stats */}
         <View className="bg-purple-50 rounded-lg p-6 mb-6 border border-purple-200">
           <Text className="text-lg font-semibold text-purple-900 mb-4">
-            📊 This Week's Performance
+            📊 This Week&apos;s Performance
           </Text>
           
           <View className="flex-row items-center justify-between mb-4">

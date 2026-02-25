@@ -12,10 +12,12 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "type-check": "tsc --noEmit",
-    "test:supabase": "ts-node scripts/test-supabase.ts",
-    "test:auth": "ts-node scripts/test-auth.ts",
-    "test:database": "ts-node scripts/test-database.ts",
-    "test:all": "npm run test:auth && npm run test:database",
+    "test:supabase": "ts-node --transpile-only -P scripts/tsconfig.json -r tsconfig-paths/register scripts/test-supabase.ts",
+    "test:auth": "ts-node --transpile-only -P scripts/tsconfig.json -r tsconfig-paths/register scripts/test-auth.ts",
+    "test:database": "ts-node --transpile-only -P scripts/tsconfig.json -r tsconfig-paths/register scripts/test-database.ts",
+    "test:habits": "ts-node --transpile-only -P scripts/tsconfig.json -r tsconfig-paths/register scripts/test-habits.ts",
+    "test:edge-functions": "ts-node --transpile-only -P scripts/tsconfig.json -r tsconfig-paths/register scripts/test-edge-functions.ts",
+    "test:all": "npm run test:auth && npm run test:database && npm run test:habits && npm run test:edge-functions",
     "prepare": "husky install || true"
   },
   "dependencies": {

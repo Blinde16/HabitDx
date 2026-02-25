@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { useAuthStore } from '../../stores/authStore';
 import { useNotificationStore } from '../../stores/notificationStore';
 import NotificationService from '../../lib/notificationService';
-import { logger } from '../../lib/logger';
+import { logError } from '../../lib/logger';
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -23,7 +23,7 @@ export default function SettingsScreen() {
         await NotificationService.scheduleAllHabitReminders(user.id);
       }
     } catch (error) {
-      logger.error('Error toggling notifications', { error });
+      logError(error as Error, { context: 'settings.toggleNotifications' });
       Alert.alert('Error', 'Failed to update notification settings');
       setNotifEnabled(!value); // Revert on error
     }

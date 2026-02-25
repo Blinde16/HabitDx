@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useNotificationStore } from '@/stores/notificationStore';
 import { OnboardingContainer } from '@/components/onboarding/OnboardingContainer';
-import { logger } from '@/lib/logger';
+import { logInfo, logError } from '@/lib/logger';
 
 export default function NotificationPermissionScreen() {
   const router = useRouter();
@@ -17,13 +17,13 @@ export default function NotificationPermissionScreen() {
       const granted = await requestPermissions();
       if (granted) {
         await registerForPushNotifications();
-        logger.info('Notifications enabled during onboarding');
+        logInfo('Notifications enabled during onboarding');
       }
       
       // Continue to next screen regardless of permission result
       router.push('/(tabs)/home');
     } catch (error) {
-      logger.error('Error enabling notifications', { error });
+      logError(error as Error, { context: 'notifications.enable' });
       // Still continue to home
       router.push('/(tabs)/home');
     } finally {
@@ -32,12 +32,17 @@ export default function NotificationPermissionScreen() {
   };
 
   const handleSkip = () => {
-    logger.info('Notifications skipped during onboarding');
+    logInfo('Notifications skipped during onboarding');
     router.push('/(tabs)/home');
   };
 
   return (
-    <OnboardingContainer>
+    <OnboardingContainer
+      currentScreen={5}
+      totalScreens={5}
+      title="Stay on Track"
+      subtitle="Get timely reminders and weekly insights"
+    >
       <View className="flex-1 justify-center px-6">
         {/* Icon */}
         <View className="items-center mb-8">
@@ -54,7 +59,7 @@ export default function NotificationPermissionScreen() {
         {/* Description */}
         <Text className="text-base text-gray-600 text-center mb-8 leading-relaxed">
           Get gentle reminders at the right time to complete your habits.{'\n\n'}
-          We'll only send notifications when you need them—no spam, just support.
+          We&apos;ll only send notifications when you need them—no spam, just support.
         </Text>
 
         {/* Benefits */}

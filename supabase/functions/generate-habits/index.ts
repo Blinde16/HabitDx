@@ -147,29 +147,53 @@ serve(async (req) => {
   }
 
   try {
-    const jwt = req.headers.get('Authorization')?.replace('Bearer ', '');
+    const authHeader = req.headers.get('Authorization') ?? req.headers.get('authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({
+          error: 'Unauthorized',
+          detail: 'Missing authorization header',
+        }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
 
+    // Use service role to verify the JWT
+    const supabaseAdmin = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+    );
+
+    const jwt = authHeader.replace('Bearer ', '');
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabaseAdmin.auth.getUser(jwt);
+
+    if (authError || !user) {
+      return new Response(JSON.stringify({
+        error: 'Unauthorized',
+        detail: authError?.message,
+      }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Client with user's auth for RLS-scoped queries
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
       {
         global: {
-          headers: { Authorization: req.headers.get('Authorization')! },
+          headers: { Authorization: authHeader },
         },
       }
     );
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabaseClient.auth.getUser(jwt);
-
-    if (authError || !user) {
-      return new Response(JSON.stringify({ error: 'Unauthorized', detail: authError?.message }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
 
     // Check if user already has an active habit stack
     const { data: existingStack } = await supabaseClient
@@ -191,6 +215,26 @@ serve(async (req) => {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         }
       );
+    }
+    // Deactivate any existing active stacks (and habits) before creating a new one
+    const { error: deactivateStackError } = await supabaseClient
+      .from('habit_stacks')
+      .update({ is_active: false })
+      .eq('user_id', user.id)
+      .eq('is_active', true);
+
+    if (deactivateStackError) {
+      throw new Error(`Failed to deactivate active stacks: ${deactivateStackError.message}`);
+    }
+
+    const { error: deactivateHabitsError } = await supabaseClient
+      .from('habits')
+      .update({ is_active: false })
+      .eq('user_id', user.id)
+      .eq('is_active', true);
+
+    if (deactivateHabitsError) {
+      throw new Error(`Failed to deactivate active habits: ${deactivateHabitsError.message}`);
     }
 
     // Get user's failure profile
@@ -300,19 +344,33 @@ serve(async (req) => {
       throw new Error(`Failed to create habit stack: ${stackError.message}`);
     }
 
+    // Sanitize reminder_time: must be a valid HH:MM or HH:MM:SS format
+    function sanitizeTime(value: string | undefined): string {
+      if (!value) return '09:00:00';
+      const match = value.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
+      if (!match) return '09:00:00';
+      const h = parseInt(match[1]);
+      const m = parseInt(match[2]);
+      if (h < 0 || h > 23 || m < 0 || m > 59) return '09:00:00';
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00`;
+    }
+
     // Create habits
     const habitsToInsert = habitsData.habits.map((habit, index) => ({
       stack_id: newStack.id,
       user_id: user.id,
       name: habit.name,
+      title: habit.name,
       tiny_version: habit.tiny_version,
       anchor: habit.anchor,
       celebration: habit.celebration,
       addresses_pattern: habit.addresses_pattern,
       rationale: habit.rationale,
-      reminder_time: habit.reminder_time || '09:00:00',
+      reminder_time: sanitizeTime(habit.reminder_time),
       reminder_enabled: true,
-      days_of_week: habit.days_of_week || [1, 2, 3, 4, 5, 6, 7],
+      days_of_week: Array.isArray(habit.days_of_week) ? habit.days_of_week : [1, 2, 3, 4, 5, 6, 7],
+      frequency_type: 'daily',
+      frequency_days: Array.isArray(habit.days_of_week) ? habit.days_of_week : [1, 2, 3, 4, 5, 6, 7],
       is_active: true,
       order_index: index,
     }));
@@ -323,6 +381,11 @@ serve(async (req) => {
       .select();
 
     if (habitsError) {
+      // Clean up orphaned stack to prevent future unique constraint violations
+      await supabaseClient
+        .from('habit_stacks')
+        .delete()
+        .eq('id', newStack.id);
       throw new Error(`Failed to create habits: ${habitsError.message}`);
     }
 
@@ -355,3 +418,5 @@ serve(async (req) => {
     );
   }
 });
+
+

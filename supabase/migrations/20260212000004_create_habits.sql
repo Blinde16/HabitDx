@@ -26,13 +26,13 @@ CREATE TABLE IF NOT EXISTS habits (
 );
 
 -- Create index on stack_id and is_active for queries
-CREATE INDEX idx_habits_stack_active ON habits(stack_id, is_active) WHERE is_active = TRUE;
+CREATE INDEX IF NOT EXISTS idx_habits_stack_active ON habits(stack_id, is_active) WHERE is_active = TRUE;
 
 -- Create index on stack_id for all habits
-CREATE INDEX idx_habits_stack_id ON habits(stack_id);
+CREATE INDEX IF NOT EXISTS idx_habits_stack_id ON habits(stack_id);
 
 -- Create index on display_order for sorting
-CREATE INDEX idx_habits_display_order ON habits(stack_id, display_order);
+CREATE INDEX IF NOT EXISTS idx_habits_display_order ON habits(stack_id, display_order);
 
 -- Add comments
 COMMENT ON TABLE habits IS 'Individual habit definitions within a habit stack';

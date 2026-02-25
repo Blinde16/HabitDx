@@ -27,17 +27,18 @@ CREATE TABLE IF NOT EXISTS weekly_iterations (
   implementation_notes TEXT
 );
 
--- Create index on user_id and week_start_date for queries
-CREATE INDEX idx_weekly_iterations_user_week ON weekly_iterations(user_id, week_start_date DESC);
+-- CREATE INDEX IF NOT EXISTS on user_id and week_start_date for queries
+CREATE INDEX IF NOT EXISTS idx_weekly_iterations_user_week ON weekly_iterations(user_id, week_start_date DESC);
 
--- Create index on user_id for user-specific queries
-CREATE INDEX idx_weekly_iterations_user_id ON weekly_iterations(user_id);
+-- CREATE INDEX IF NOT EXISTS on user_id for user-specific queries
+CREATE INDEX IF NOT EXISTS idx_weekly_iterations_user_id ON weekly_iterations(user_id);
 
--- Create index on stack_id for stack-specific queries
-CREATE INDEX idx_weekly_iterations_stack_id ON weekly_iterations(stack_id) WHERE stack_id IS NOT NULL;
+-- CREATE INDEX IF NOT EXISTS on stack_id for stack-specific queries
+CREATE INDEX IF NOT EXISTS idx_weekly_iterations_stack_id ON weekly_iterations(stack_id) WHERE stack_id IS NOT NULL;
 
 -- Add comments
 COMMENT ON TABLE weekly_iterations IS 'AI-generated weekly insights and habit adjustment suggestions';
 COMMENT ON COLUMN weekly_iterations.adjustment_suggestion IS 'The single most important adjustment suggested by AI';
 COMMENT ON COLUMN weekly_iterations.user_response IS 'User decision on whether to accept the suggested adjustment';
 COMMENT ON COLUMN weekly_iterations.implemented IS 'Whether the adjustment was actually implemented';
+

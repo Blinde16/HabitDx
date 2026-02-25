@@ -3,7 +3,7 @@ import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
 import { supabase } from '@/lib/supabase';
-import { logger } from '@/lib/logger';
+import { logInfo, logWarning, logError } from '@/lib/logger';
 
 // Configure notification behavior
 Notifications.setNotificationHandler({
@@ -47,7 +47,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
 
       // Check if physical device
       if (!Device.isDevice) {
-        logger.warn('Push notifications do not work on simulator/emulator');
+        logWarning('Push notifications do not work on simulator/emulator');
         set({ 
           permissionStatus: 'denied', 
           isLoading: false,
@@ -66,7 +66,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       }
 
       if (finalStatus !== 'granted') {
-        logger.warn('Notification permissions denied');
+        logWarning('Notification permissions denied');
         set({ 
           permissionStatus: 'denied', 
           isLoading: false,
@@ -92,11 +92,11 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
         isLoading: false 
       });
 
-      logger.info('Notification permissions granted');
+      logInfo('Notification permissions granted');
       return true;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      logger.error('Error requesting notification permissions', { error: errorMessage });
+      logError(error as Error, { context: 'notifications.requestPermissions' });
       set({ 
         error: errorMessage, 
         isLoading: false 
@@ -119,7 +119,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
         projectId: 'your-project-id', // TODO: Replace with actual Expo project ID
       });
 
-      logger.info('Expo push token obtained', { token: token.data });
+      logInfo('Expo push token obtained', { token: token.data });
 
       // Save token to database
       const { data: { user } } = await supabase.auth.getUser();
@@ -134,7 +134,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
           .eq('id', user.id);
 
         if (error) {
-          logger.error('Error saving push token', { error });
+          logError(error as Error, { context: 'notifications.savePushToken' });
           throw error;
         }
       }
@@ -145,10 +145,10 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
         isLoading: false 
       });
 
-      logger.info('Push notifications registered successfully');
+      logInfo('Push notifications registered successfully');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      logger.error('Error registering for push notifications', { error: errorMessage });
+      logError(error as Error, { context: 'notifications.register' });
       set({ 
         error: errorMessage, 
         isLoading: false 
@@ -165,7 +165,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       const { permissionStatus } = get();
       
       if (permissionStatus !== 'granted') {
-        logger.warn('Cannot schedule reminder: permissions not granted');
+        logWarning('Cannot schedule reminder: permissions not granted');
         return null;
       }
 
@@ -200,7 +200,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
         },
       });
 
-      logger.info('Habit reminder scheduled', { 
+      logInfo('Habit reminder scheduled', { 
         habitId, 
         habitName,
         notificationId,
@@ -210,11 +210,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       return notificationId;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      logger.error('Error scheduling habit reminder', { 
-        error: errorMessage,
-        habitId,
-        habitName 
-      });
+      logError(error as Error, { context: 'notifications.scheduleReminder', habitId, habitName });
       return null;
     }
   },
@@ -222,23 +218,20 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   cancelHabitReminder: async (notificationId: string) => {
     try {
       await Notifications.cancelScheduledNotificationAsync(notificationId);
-      logger.info('Habit reminder cancelled', { notificationId });
+      logInfo('Habit reminder cancelled', { notificationId });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      logger.error('Error cancelling habit reminder', { 
-        error: errorMessage,
-        notificationId 
-      });
+      logError(error as Error, { context: 'notifications.cancelReminder', notificationId });
     }
   },
 
   cancelAllReminders: async () => {
     try {
       await Notifications.cancelAllScheduledNotificationsAsync();
-      logger.info('All habit reminders cancelled');
+      logInfo('All habit reminders cancelled');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      logger.error('Error cancelling all reminders', { error: errorMessage });
+      logError(error as Error, { context: 'notifications.cancelAll' });
     }
   },
 
@@ -272,10 +265,10 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
         isLoading: false 
       });
 
-      logger.info('Notification settings updated', { enabled });
+      logInfo('Notification settings updated', { enabled });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      logger.error('Error updating notification settings', { error: errorMessage });
+      logError(error as Error, { context: 'notifications.updateSettings' });
       set({ 
         error: errorMessage, 
         isLoading: false 

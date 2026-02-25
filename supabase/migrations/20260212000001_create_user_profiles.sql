@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS user_profiles (
 );
 
 -- Create index on created_at for sorting
-CREATE INDEX idx_user_profiles_created_at ON user_profiles(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_user_profiles_created_at ON user_profiles(created_at DESC);
 
 -- Add comment for documentation
 COMMENT ON TABLE user_profiles IS 'Extended user profile data beyond auth.users';
