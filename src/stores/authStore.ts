@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 import { logAuth, logError } from '../lib/logger';
+import { identifyUser, resetAnalyticsIdentity, track } from '../lib/analytics';
 
 // Secure storage adapter for Supabase auth
 const SecureStoreAdapter = {
@@ -82,6 +83,10 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         initialized: true,
       });
 
+      if (session?.user?.id) {
+        await identifyUser(session.user.id);
+      }
+
       // Listen for auth changes — only update state when something meaningful
       // changes (user ID or access token). Supabase re-reads storage every 10s
       // and fires this callback even when nothing changed, which would cause
@@ -89,6 +94,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       supabase.auth.onAuthStateChange((event, session) => {
         if (event === 'SIGNED_OUT') {
           logAuth.signOut(get().user?.id || 'unknown');
+          void resetAnalyticsIdentity();
           set({ user: null, session: null });
           return;
         }
@@ -102,6 +108,10 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           session,
           user: session?.user ?? null,
         });
+
+        if (session?.user?.id) {
+          void identifyUser(session.user.id);
+        }
       });
     } catch (error) {
       logError(error as Error, { context: 'auth.initialize' });
@@ -142,6 +152,13 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
       if (data.user) {
         logAuth.signUpSuccess(data.user.id, email);
+        await identifyUser(data.user.id, {
+          authMethod: 'password',
+        });
+        await track('auth_signed_up', {
+          authMethod: 'password',
+          emailConfirmedImmediately: !!data.session,
+        });
       }
 
       set({
@@ -175,6 +192,12 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       }
 
       logAuth.signInSuccess(data.user.id, email);
+      await identifyUser(data.user.id, {
+        authMethod: 'password',
+      });
+      await track('auth_signed_in', {
+        authMethod: 'password',
+      });
 
       set({
         user: data.user,
@@ -236,7 +259,10 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
       if (session?.user?.id) {
         logAuth.signOut(session.user.id);
+        await track('auth_signed_out', {});
       }
+
+      await resetAnalyticsIdentity();
 
       set({
         user: null,

@@ -5,6 +5,8 @@ import { useAuthStore } from '../../stores/authStore';
 import { useNotificationStore } from '../../stores/notificationStore';
 import NotificationService from '../../lib/notificationService';
 import { logError } from '../../lib/logger';
+import appConfig from '../../lib/appConfig';
+import { openExternalUrl, openSupportEmail } from '../../lib/externalLinks';
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -70,6 +72,30 @@ export default function SettingsScreen() {
         },
       ]
     );
+  };
+
+  const handleOpenLink = async (url: string | undefined, fallbackTitle: string, fallbackBody: string) => {
+    if (!url) {
+      Alert.alert(fallbackTitle, fallbackBody);
+      return;
+    }
+
+    const opened = await openExternalUrl(url);
+    if (!opened) {
+      Alert.alert('Unable to Open Link', 'Please try again on a device with browser access.');
+    }
+  };
+
+  const handleContactSupport = async () => {
+    if (!appConfig.supportEmail) {
+      Alert.alert('Support Email Needed', 'Add EXPO_PUBLIC_SUPPORT_EMAIL to enable support links.');
+      return;
+    }
+
+    const opened = await openSupportEmail(appConfig.supportEmail, 'HabitDx Support');
+    if (!opened) {
+      Alert.alert('Unable to Open Email', `Please contact ${appConfig.supportEmail} manually.`);
+    }
   };
 
   return (
@@ -150,6 +176,70 @@ export default function SettingsScreen() {
           </View>
         </View>
 
+        {/* Beta Feedback */}
+        <View className="mb-8">
+          <Text className="text-lg font-semibold text-gray-900 mb-4">Beta Feedback</Text>
+
+          <View className="bg-white border border-gray-200 rounded-lg">
+            <TouchableOpacity
+              className="flex-row items-center justify-between p-4 border-b border-gray-200"
+              onPress={() =>
+                handleOpenLink(
+                  appConfig.betaFeedbackUrl,
+                  'Feedback Form Not Configured',
+                  'Add EXPO_PUBLIC_BETA_FEEDBACK_URL to send testers to your feedback form.'
+                )
+              }
+            >
+              <View className="flex-1">
+                <Text className="text-base font-medium text-gray-900">Share Beta Feedback</Text>
+                <Text className="text-sm text-gray-600 mt-1">
+                  Capture onboarding friction, bugs, and ideas
+                </Text>
+              </View>
+              <Text className="text-2xl text-gray-400">→</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="flex-row items-center justify-between p-4 border-b border-gray-200"
+              onPress={() =>
+                handleOpenLink(
+                  appConfig.betaCommunityUrl,
+                  'Community Link Not Configured',
+                  'Add EXPO_PUBLIC_BETA_COMMUNITY_URL to open your Discord or Slack invite.'
+                )
+              }
+            >
+              <View className="flex-1">
+                <Text className="text-base font-medium text-gray-900">Join Tester Community</Text>
+                <Text className="text-sm text-gray-600 mt-1">
+                  Keep beta testers in one shared support channel
+                </Text>
+              </View>
+              <Text className="text-2xl text-gray-400">→</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="flex-row items-center justify-between p-4"
+              onPress={() =>
+                handleOpenLink(
+                  appConfig.betaExitSurveyUrl,
+                  'Exit Survey Not Configured',
+                  'Add EXPO_PUBLIC_BETA_EXIT_SURVEY_URL to collect churn and drop-off reasons.'
+                )
+              }
+            >
+              <View className="flex-1">
+                <Text className="text-base font-medium text-gray-900">Take Exit Survey</Text>
+                <Text className="text-sm text-gray-600 mt-1">
+                  Learn why users stop returning before launch
+                </Text>
+              </View>
+              <Text className="text-2xl text-gray-400">→</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
         {/* About Section */}
         <View className="mb-8">
           <Text className="text-lg font-semibold text-gray-900 mb-4">About</Text>
@@ -164,9 +254,13 @@ export default function SettingsScreen() {
             {/* Privacy Policy */}
             <TouchableOpacity
               className="flex-row items-center justify-between p-4 border-b border-gray-200"
-              onPress={() => {
-                Alert.alert('Coming Soon', 'Privacy policy will be available soon');
-              }}
+              onPress={() =>
+                handleOpenLink(
+                  appConfig.privacyPolicyUrl,
+                  'Privacy Policy Not Configured',
+                  'Add EXPO_PUBLIC_PRIVACY_POLICY_URL after you publish the policy.'
+                )
+              }
             >
               <Text className="text-base text-gray-900">Privacy Policy</Text>
               <Text className="text-2xl text-gray-400">→</Text>
@@ -175,11 +269,35 @@ export default function SettingsScreen() {
             {/* Terms of Service */}
             <TouchableOpacity
               className="flex-row items-center justify-between p-4"
-              onPress={() => {
-                Alert.alert('Coming Soon', 'Terms of service will be available soon');
-              }}
+              onPress={() =>
+                handleOpenLink(
+                  appConfig.termsUrl,
+                  'Terms Not Configured',
+                  'Add EXPO_PUBLIC_TERMS_URL after you publish the terms.'
+                )
+              }
             >
               <Text className="text-base text-gray-900">Terms of Service</Text>
+              <Text className="text-2xl text-gray-400">→</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Support */}
+        <View className="mb-8">
+          <Text className="text-lg font-semibold text-gray-900 mb-4">Support</Text>
+
+          <View className="bg-white border border-gray-200 rounded-lg">
+            <TouchableOpacity
+              className="flex-row items-center justify-between p-4"
+              onPress={handleContactSupport}
+            >
+              <View className="flex-1">
+                <Text className="text-base font-medium text-gray-900">Email Support</Text>
+                <Text className="text-sm text-gray-600 mt-1">
+                  {appConfig.supportEmail || 'Configure EXPO_PUBLIC_SUPPORT_EMAIL'}
+                </Text>
+              </View>
               <Text className="text-2xl text-gray-400">→</Text>
             </TouchableOpacity>
           </View>

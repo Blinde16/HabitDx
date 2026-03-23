@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
 import { logInfo, logError } from '@/lib/logger';
+import { track } from '@/lib/analytics';
 
 interface CompletionStats {
   total_scheduled: number;
@@ -105,6 +106,13 @@ export const useIterationStore = create<IterationState>((set, get) => ({
       set({
         currentIteration: iteration as WeeklyIteration,
         loading: false,
+      });
+
+      await track('weekly_iteration_generated', {
+        iterationId: data.iteration_id,
+        hasAdjustment: !!data.adjustment_recommendation,
+        completionRate: Math.round((iteration as WeeklyIteration).completion_stats.completion_rate * 100),
+        tokensUsed: data.tokens_used,
       });
 
       return iteration as WeeklyIteration;
@@ -262,6 +270,12 @@ export const useIterationStore = create<IterationState>((set, get) => ({
         loading: false,
       });
 
+      await track('weekly_iteration_adjustment_accepted', {
+        iterationId,
+        adjustmentType: adjustment.type,
+        habitId: adjustment.habit_id,
+      });
+
       logInfo('Adjustment accepted and applied', { iterationId });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -300,6 +314,10 @@ export const useIterationStore = create<IterationState>((set, get) => ({
           loading: false,
         });
       }
+
+      await track('weekly_iteration_adjustment_declined', {
+        iterationId,
+      });
 
       logInfo('Adjustment declined', { iterationId });
     } catch (error) {

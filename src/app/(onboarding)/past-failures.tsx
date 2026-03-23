@@ -65,11 +65,16 @@ export default function PastFailuresScreen() {
     <OnboardingContainer
       currentScreen={2}
       totalScreens={5}
-      title="Let's start with your history"
-      subtitle="What habits have you tried before?"
+      title="Tell me about the habits that keep slipping."
+      subtitle="Start with the ones you’ve genuinely tried, even if they only lasted a few days."
+      tip="Pick the habits that feel emotionally familiar, then describe the pattern in your own words."
     >
-      <View className="mb-8">
-        <Text className="text-base font-semibold text-gray-700 mb-3">Select all that apply:</Text>
+      <View className="bg-white border border-gray-200 rounded-[28px] p-5 mb-6">
+        <Text className="text-base font-semibold text-gray-800 mb-2">What have you tried?</Text>
+        <Text className="text-sm text-gray-500 leading-6 mb-4">
+          Choose every habit you’ve started and struggled to keep going.
+        </Text>
+
         <View className="flex-row flex-wrap">
           {HABIT_OPTIONS.map((habit) => (
             <MultiSelectChip
@@ -90,6 +95,12 @@ export default function PastFailuresScreen() {
               />
             ))}
         </View>
+
+        {data.pastFailures.length > 0 && (
+          <Text className="text-sm text-blue-700 mt-3 font-medium">
+            {data.pastFailures.length} habit{data.pastFailures.length === 1 ? '' : 's'} selected
+          </Text>
+        )}
 
         {!showCustomInput ? (
           <TouchableOpacity className="mt-2 py-2" onPress={() => setShowCustomInput(true)}>
@@ -127,20 +138,20 @@ export default function PastFailuresScreen() {
         )}
       </View>
 
-      <View className="mb-8">
+      <View className="bg-white border border-gray-200 rounded-[28px] p-5 mb-8">
         <CharacterCounter
           value={data.failureDescription}
           onChangeText={(text) => updateData('failureDescription', text)}
           minLength={20}
           maxLength={500}
-          label="Why did these fail?"
-          placeholder="Be honest... What got in the way? What patterns do you notice?"
+          label="What usually happens when these habits fall apart?"
+          placeholder="Example: I start strong, then miss one day, feel behind, and stop opening the app."
         />
       </View>
 
       <View className="mt-8 gap-3">
         {!canProceed(2) && (
-          <Text className="text-xs text-center text-gray-400">
+          <Text className="text-xs text-center text-gray-500">
             {data.pastFailures.length === 0
               ? 'Select at least one habit above'
               : data.failureDescription.length < 20
@@ -149,9 +160,14 @@ export default function PastFailuresScreen() {
           </Text>
         )}
         <TouchableOpacity className="py-3 items-center" onPress={handleBack}>
-          <Text className="text-base text-blue-500 font-semibold">← Back</Text>
+          <Text className="text-base text-blue-600 font-semibold">← Back</Text>
         </TouchableOpacity>
-        <AuthButton title="Next" onPress={handleNext} variant="primary" disabled={!canProceed(2)} />
+        <AuthButton
+          title={canProceed(2) ? 'That sounds right' : 'Answer to continue'}
+          onPress={handleNext}
+          variant="primary"
+          disabled={!canProceed(2)}
+        />
       </View>
     </OnboardingContainer>
   );

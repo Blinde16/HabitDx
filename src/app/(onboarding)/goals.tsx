@@ -48,10 +48,16 @@ export default function GoalsScreen() {
     <OnboardingContainer
       currentScreen={4}
       totalScreens={5}
-      title="What are you working toward?"
-      subtitle="Select up to 3 goals"
+      title="What do you want these habits to unlock?"
+      subtitle="Choose up to three outcomes that would make this feel genuinely worth it."
+      tip="Good habits stick better when the payoff feels personal and immediate."
     >
-      <View className="mb-8">
+      <View className="bg-white border border-gray-200 rounded-[28px] p-5 mb-6">
+        <Text className="text-base font-semibold text-gray-800 mb-2">What matters most right now?</Text>
+        <Text className="text-sm text-gray-500 leading-6 mb-4">
+          You can pick up to three goals. Focus beats ambition here.
+        </Text>
+
         <View className="flex-row flex-wrap gap-3">
           {GOAL_OPTIONS.map((goal) => {
             const isSelected = data.goals.includes(goal.value);
@@ -60,10 +66,10 @@ export default function GoalsScreen() {
             return (
               <TouchableOpacity
                 key={goal.value}
-                className={`w-[48%] aspect-[1.2] p-4 rounded-xl border-2 items-center justify-center relative ${
+                className={`w-[48%] aspect-[1.2] p-4 rounded-[24px] border items-center justify-center relative ${
                   isSelected
-                    ? 'bg-blue-100 border-blue-500'
-                    : 'bg-gray-100 border-gray-200'
+                    ? 'bg-blue-600 border-blue-600'
+                    : 'bg-gray-50 border-gray-200'
                 } ${isDisabled ? 'opacity-50' : ''}`}
                 onPress={() => handleToggleGoal(goal.value)}
                 disabled={isDisabled}
@@ -71,14 +77,14 @@ export default function GoalsScreen() {
                 <Text className="text-4xl mb-2">{goal.icon}</Text>
                 <Text
                   className={`text-sm font-semibold text-center ${
-                    isSelected ? 'text-blue-800' : 'text-gray-500'
+                    isSelected ? 'text-white' : 'text-gray-600'
                   }`}
                 >
                   {goal.value}
                 </Text>
                 {isSelected && (
-                  <View className="absolute top-2 right-2 w-6 h-6 rounded-full bg-blue-500 items-center justify-center">
-                    <Text className="text-white text-sm font-bold">✓</Text>
+                  <View className="absolute top-2 right-2 w-6 h-6 rounded-full bg-white items-center justify-center">
+                    <Text className="text-blue-600 text-sm font-bold">✓</Text>
                   </View>
                 )}
               </TouchableOpacity>
@@ -93,22 +99,32 @@ export default function GoalsScreen() {
         )}
       </View>
 
-      <View className="mb-8">
+      <View className="bg-white border border-gray-200 rounded-[28px] p-5 mb-8">
         <CharacterCounter
           value={data.motivation}
           onChangeText={(text) => updateData('motivation', text)}
           minLength={20}
           maxLength={300}
-          label="Why does this matter to you?"
-          placeholder="What would achieving these goals mean for your life?"
+          label="Why does this matter right now?"
+          placeholder="Example: If I had more energy and a steadier routine, I’d feel less behind every day."
         />
       </View>
 
       <View className="mt-8 gap-3">
+        {!canProceed(4) && (
+          <Text className="text-xs text-center text-gray-500">
+            Choose at least one goal and add a little context about why it matters.
+          </Text>
+        )}
         <TouchableOpacity className="py-3 items-center" onPress={handleBack}>
-          <Text className="text-base text-blue-500 font-semibold">← Back</Text>
+          <Text className="text-base text-blue-600 font-semibold">← Back</Text>
         </TouchableOpacity>
-        <AuthButton title="Next" onPress={handleNext} variant="primary" disabled={!canProceed(4)} />
+        <AuthButton
+          title={canProceed(4) ? 'Review my plan' : 'Answer to continue'}
+          onPress={handleNext}
+          variant="primary"
+          disabled={!canProceed(4)}
+        />
       </View>
     </OnboardingContainer>
   );

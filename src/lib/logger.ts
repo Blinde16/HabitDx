@@ -1,7 +1,5 @@
-import { Platform } from 'react-native';
-
-// Web-safe logger: uses console on web/browser, winston on native/Node
-// Winston's File transport requires Node.js `fs` which is unavailable in browsers.
+// Uses console in all environments. Winston (Node-only) is not used in the app
+// because React Native runtimes (iOS/Android) do not include Node's standard library (os, fs, etc.).
 
 type LogMeta = Record<string, any>;
 
@@ -26,43 +24,7 @@ function createConsoleLogger(): Logger {
   };
 }
 
-function createWinstonLogger(): Logger {
-  // Dynamically required so Metro doesn't try to bundle it for web
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const winston = require('winston');
-  const { combine, timestamp, json, printf, colorize, errors } = winston.format;
-
-  const consoleFormat = printf(({ level, message, timestamp, ...metadata }: any) => {
-    let msg = `${timestamp} [${level}]: ${message}`;
-    if (Object.keys(metadata).length > 0) msg += ` ${JSON.stringify(metadata)}`;
-    return msg;
-  });
-
-  const instance = winston.createLogger({
-    level: process.env.LOG_LEVEL || 'info',
-    format: combine(errors({ stack: true }), timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), json()),
-    defaultMeta: { service: 'habitdx-app', environment: process.env.NODE_ENV || 'development' },
-    transports: [
-      new winston.transports.File({ filename: 'logs/combined.log', maxsize: 5242880, maxFiles: 5 }),
-      new winston.transports.File({ filename: 'logs/error.log', level: 'error', maxsize: 5242880, maxFiles: 5 }),
-    ],
-  });
-
-  if (process.env.NODE_ENV !== 'production') {
-    instance.add(new winston.transports.Console({
-      format: combine(colorize(), timestamp({ format: 'HH:mm:ss' }), consoleFormat),
-    }));
-  }
-
-  return {
-    error: (msg, meta) => instance.error(msg, meta),
-    warn: (msg, meta) => instance.warn(msg, meta),
-    info: (msg, meta) => instance.info(msg, meta),
-    debug: (msg, meta) => instance.debug(msg, meta),
-  };
-}
-
-const logger: Logger = Platform.OS === 'web' ? createConsoleLogger() : createWinstonLogger();
+const logger: Logger = createConsoleLogger();
 
 // Helper functions for common logging patterns
 

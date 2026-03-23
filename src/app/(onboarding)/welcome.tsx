@@ -29,44 +29,80 @@ export default function WelcomeScreen() {
   };
 
   return (
-    <View className="flex-1 bg-white">
-      <View className="flex-1 px-6 pt-20 pb-10 justify-between">
-        <Text className="text-6xl text-center mb-6">🎯</Text>
-        <Text className="text-3xl font-bold text-gray-900 text-center mb-12 leading-10">
-          Finally understand why your habits fail
-        </Text>
-
-        <View className="mb-12">
-          <View className="flex-row items-center mb-6 px-4">
-            <Text className="text-3xl mr-4">🎯</Text>
-            <Text className="flex-1 text-lg text-gray-700 leading-7">
-              Get your personal Habit Failure Profile
+    <View className="flex-1 bg-[#F5F8FF]">
+      <View className="flex-1 px-6 pt-16 pb-10 justify-between">
+        <View>
+          <View className="self-start bg-blue-600 rounded-full px-4 py-2 mb-4">
+            <Text className="text-xs font-semibold uppercase tracking-[1px] text-white">
+              HabitDx guide
             </Text>
           </View>
 
-          <View className="flex-row items-center mb-6 px-4">
-            <Text className="text-3xl mr-4">🧠</Text>
-            <Text className="flex-1 text-lg text-gray-700 leading-7">
-              Habits designed around your constraints
+          <View className="bg-slate-900 rounded-[30px] rounded-tl-md px-6 py-6 mb-6">
+            <Text className="text-4xl font-bold text-white leading-[44px] mb-3">
+              Let&apos;s build your first plan like a conversation, not a quiz.
+            </Text>
+            <Text className="text-base text-slate-200 leading-7">
+              I&apos;ll ask a few short questions about what you&apos;ve tried, what gets in the
+              way, and what matters most.
             </Text>
           </View>
 
-          <View className="flex-row items-center mb-6 px-4">
-            <Text className="text-3xl mr-4">📈</Text>
-            <Text className="flex-1 text-lg text-gray-700 leading-7">
-              Weekly insights that actually work
+          <View className="bg-white rounded-[28px] px-5 py-5 border border-blue-100 mb-8">
+            <Text className="text-sm font-semibold text-blue-700 uppercase tracking-[1px] mb-4">
+              What you&apos;ll get
             </Text>
+
+            <View className="flex-row items-start mb-5">
+              <Text className="text-2xl mr-4">🎯</Text>
+              <View className="flex-1">
+                <Text className="text-base font-semibold text-slate-900 mb-1">
+                  A personalized failure profile
+                </Text>
+                <Text className="text-sm text-slate-600 leading-6">
+                  We&apos;ll look for patterns, not blame.
+                </Text>
+              </View>
+            </View>
+
+            <View className="flex-row items-start mb-5">
+              <Text className="text-2xl mr-4">🧠</Text>
+              <View className="flex-1">
+                <Text className="text-base font-semibold text-slate-900 mb-1">
+                  Habits matched to your real constraints
+                </Text>
+                <Text className="text-sm text-slate-600 leading-6">
+                  Smaller, more realistic actions are easier to keep.
+                </Text>
+              </View>
+            </View>
+
+            <View className="flex-row items-start">
+              <Text className="text-2xl mr-4">📈</Text>
+              <View className="flex-1">
+                <Text className="text-base font-semibold text-slate-900 mb-1">
+                  Weekly course-corrections
+                </Text>
+                <Text className="text-sm text-slate-600 leading-6">
+                  One useful adjustment at a time, based on your behavior.
+                </Text>
+              </View>
+            </View>
           </View>
         </View>
 
-        <View className="mb-4">
+        <View>
+          <View className="bg-blue-50 border border-blue-100 rounded-2xl px-4 py-4 mb-5">
+            <Text className="text-sm text-slate-700 leading-6">
+              Most people finish in about 5 minutes. You can revise answers as we go.
+            </Text>
+          </View>
+
           <AuthButton title="Get Started" onPress={handleGetStarted} variant="primary" />
-          <Text className="text-sm text-gray-500 text-center mt-3">This takes ~5 minutes</Text>
+          <TouchableOpacity onPress={handleSkip} className="p-3 items-center">
+            <Text className="text-base text-gray-500">Skip for now</Text>
+          </TouchableOpacity>
         </View>
-
-        <TouchableOpacity onPress={handleSkip} className="p-3 items-center">
-          <Text className="text-base text-gray-400">Skip for now</Text>
-        </TouchableOpacity>
       </View>
     </View>
   );
