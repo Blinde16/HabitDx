@@ -82,21 +82,25 @@ export default function ConstraintsScreen() {
     <OnboardingContainer
       currentScreen={3}
       totalScreens={5}
-      title="Help us understand your life"
-      subtitle="This helps us design habits that actually fit your schedule"
+      title="Now let’s make this fit your life."
+      subtitle="I’m looking for constraints, energy patterns, and the things that usually knock you off track."
+      tip="This step matters because a good plan should survive your real week, not your perfect one."
     >
-      <View className="mb-8">
+      <View className="bg-white border border-gray-200 rounded-[28px] p-5 mb-6">
         <Text className="text-base font-semibold text-gray-700 mb-3">
           When do you have the most energy?
+        </Text>
+        <Text className="text-sm text-gray-500 leading-6 mb-4">
+          We’ll lean on your easiest window instead of demanding willpower at the wrong time.
         </Text>
         <View className="flex-row gap-3">
           {ENERGY_OPTIONS.map((option) => (
             <TouchableOpacity
               key={option.value}
-              className={`flex-1 py-4 items-center rounded-xl border-2 ${
+              className={`flex-1 py-4 items-center rounded-2xl border ${
                 data.constraints.peak_energy === option.value
-                  ? 'bg-blue-100 border-blue-500'
-                  : 'bg-gray-100 border-gray-200'
+                  ? 'bg-blue-600 border-blue-600'
+                  : 'bg-gray-50 border-gray-200'
               }`}
               onPress={() =>
                 updateData('constraints', {
@@ -108,7 +112,7 @@ export default function ConstraintsScreen() {
               <Text className="text-3xl mb-2">{option.icon}</Text>
               <Text
                 className={`text-sm font-semibold ${
-                  data.constraints.peak_energy === option.value ? 'text-blue-800' : 'text-gray-500'
+                  data.constraints.peak_energy === option.value ? 'text-white' : 'text-gray-600'
                 }`}
               >
                 {option.label}
@@ -118,9 +122,12 @@ export default function ConstraintsScreen() {
         </View>
       </View>
 
-      <View className="mb-8">
+      <View className="bg-white border border-gray-200 rounded-[28px] p-5 mb-6">
         <Text className="text-base font-semibold text-gray-700 mb-3">
           What&apos;s your daily schedule like?
+        </Text>
+        <Text className="text-sm text-gray-500 leading-6 mb-4">
+          Choose the patterns that shape when habits do or don’t happen.
         </Text>
         <View className="flex-row flex-wrap">
           {SCHEDULE_OPTIONS.map((schedule) => (
@@ -134,9 +141,12 @@ export default function ConstraintsScreen() {
         </View>
       </View>
 
-      <View className="mb-8">
+      <View className="bg-white border border-gray-200 rounded-[28px] p-5 mb-8">
         <Text className="text-base font-semibold text-gray-700 mb-3">
           What makes habits hard for you?
+        </Text>
+        <Text className="text-sm text-gray-500 leading-6 mb-4">
+          Pick the friction points that show up most often.
         </Text>
         <View className="flex-row flex-wrap">
           {OBSTACLE_OPTIONS.map((obstacle) => (
@@ -151,10 +161,20 @@ export default function ConstraintsScreen() {
       </View>
 
       <View className="mt-8 gap-3">
+        {!canProceed(3) && (
+          <Text className="text-xs text-center text-gray-500">
+            Choose your energy window, one schedule pattern, and one common obstacle.
+          </Text>
+        )}
         <TouchableOpacity className="py-3 items-center" onPress={handleBack}>
-          <Text className="text-base text-blue-500 font-semibold">← Back</Text>
+          <Text className="text-base text-blue-600 font-semibold">← Back</Text>
         </TouchableOpacity>
-        <AuthButton title="Next" onPress={handleNext} variant="primary" disabled={!canProceed(3)} />
+        <AuthButton
+          title={canProceed(3) ? 'Keep going' : 'Answer to continue'}
+          onPress={handleNext}
+          variant="primary"
+          disabled={!canProceed(3)}
+        />
       </View>
     </OnboardingContainer>
   );

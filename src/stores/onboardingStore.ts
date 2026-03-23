@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { updateProfile } from '../lib/db';
+import { track } from '../lib/analytics';
 
 const ONBOARDING_STORAGE_KEY = '@habitdx_onboarding_progress';
 
@@ -73,6 +74,9 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
   nextScreen: () => {
     const { currentScreen } = get();
     if (currentScreen < 5) {
+      void track('onboarding_screen_completed', {
+        screenNumber: currentScreen,
+      });
       set({ currentScreen: currentScreen + 1 });
       get().saveProgress();
     }
@@ -160,6 +164,11 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
 
       // Clear progress after successful submission
       await get().clearProgress();
+      await track('onboarding_completed', {
+        pastFailureCount: data.pastFailures.length,
+        goalCount: data.goals.length,
+        notificationsEnabled: data.notificationsEnabled,
+      });
 
       set({ loading: false });
     } catch (error) {

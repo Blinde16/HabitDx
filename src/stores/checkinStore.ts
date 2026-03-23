@@ -8,6 +8,7 @@ import { create } from 'zustand';
 import HabitService from '../lib/habitService';
 import type { Habit } from '../types/habit';
 import { logHabit, logError, logInfo } from '../lib/logger';
+import { track } from '../lib/analytics';
 
 export type HabitStatus = 'not_done' | 'completed' | 'missed' | 'not_scheduled';
 
@@ -149,6 +150,7 @@ export const useCheckinStore = create<CheckinStore>((set, get) => ({
 
       // Save to database
       await HabitService.logCheckIn(habitId, userId, true);
+      await track('habit_checked_in', { habitId });
 
       logInfo('Habit checked in successfully', { habitId, userId, event: 'checkin.complete' });
     } catch (error) {
@@ -182,6 +184,7 @@ export const useCheckinStore = create<CheckinStore>((set, get) => ({
       // Note: HabitService would need deleteCheckIn method
       // For now, log as not completed
       await HabitService.logCheckIn(habitId, userId, false);
+      await track('habit_checkin_undone', { habitId });
 
       logInfo('Habit check-in undone', { habitId, userId, event: 'checkin.undo' });
     } catch (error) {
@@ -212,6 +215,11 @@ export const useCheckinStore = create<CheckinStore>((set, get) => ({
 
       // Save to database
       await HabitService.logCheckIn(habitId, userId, false, obstacle, note);
+      await track('habit_obstacle_logged', {
+        habitId,
+        obstacle,
+        hasNote: !!note,
+      });
 
       logInfo('Obstacle logged', { habitId, userId, obstacle, event: 'checkin.obstacle' });
     } catch (error) {

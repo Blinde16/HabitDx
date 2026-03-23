@@ -43,7 +43,9 @@ export default function ConfirmationScreen() {
     <OnboardingContainer
       currentScreen={5}
       totalScreens={5}
-      title="Perfect! Here's what happens next:"
+      title="Here’s the plan I’ll build from your answers."
+      subtitle="You’re about to turn your responses into a diagnosis, a starter habit stack, and a weekly feedback loop."
+      tip="If something feels off, go back now. Small accuracy improvements here make the output feel much more personal."
     >
       {error && (
         <View className="bg-red-100 rounded-lg p-3 mb-4 border-l-4 border-red-500">
@@ -51,9 +53,10 @@ export default function ConfirmationScreen() {
         </View>
       )}
 
-      <View className="mb-8">
+      <View className="bg-white border border-gray-200 rounded-[28px] p-5 mb-6">
+        <Text className="text-base font-semibold text-gray-900 mb-4">What happens next</Text>
         <View className="flex-row mb-5">
-          <View className="w-12 h-12 rounded-full bg-gray-100 items-center justify-center mr-4">
+          <View className="w-12 h-12 rounded-full bg-blue-50 items-center justify-center mr-4">
             <Text className="text-2xl">✅</Text>
           </View>
           <View className="flex-1 justify-center">
@@ -65,7 +68,7 @@ export default function ConfirmationScreen() {
         </View>
 
         <View className="flex-row mb-5">
-          <View className="w-12 h-12 rounded-full bg-gray-100 items-center justify-center mr-4">
+          <View className="w-12 h-12 rounded-full bg-blue-50 items-center justify-center mr-4">
             <Text className="text-2xl">🎯</Text>
           </View>
           <View className="flex-1 justify-center">
@@ -77,7 +80,7 @@ export default function ConfirmationScreen() {
         </View>
 
         <View className="flex-row mb-5">
-          <View className="w-12 h-12 rounded-full bg-gray-100 items-center justify-center mr-4">
+          <View className="w-12 h-12 rounded-full bg-blue-50 items-center justify-center mr-4">
             <Text className="text-2xl">📋</Text>
           </View>
           <View className="flex-1 justify-center">
@@ -89,7 +92,7 @@ export default function ConfirmationScreen() {
         </View>
 
         <View className="flex-row mb-5">
-          <View className="w-12 h-12 rounded-full bg-gray-100 items-center justify-center mr-4">
+          <View className="w-12 h-12 rounded-full bg-blue-50 items-center justify-center mr-4">
             <Text className="text-2xl">📱</Text>
           </View>
           <View className="flex-1 justify-center">
@@ -101,7 +104,7 @@ export default function ConfirmationScreen() {
         </View>
 
         <View className="flex-row mb-5">
-          <View className="w-12 h-12 rounded-full bg-gray-100 items-center justify-center mr-4">
+          <View className="w-12 h-12 rounded-full bg-blue-50 items-center justify-center mr-4">
             <Text className="text-2xl">💡</Text>
           </View>
           <View className="flex-1 justify-center">
@@ -113,7 +116,7 @@ export default function ConfirmationScreen() {
         </View>
       </View>
 
-      <View className="mb-6 p-4 bg-gray-50 rounded-xl">
+      <View className="bg-white border border-gray-200 rounded-[28px] p-5 mb-6">
         <Text className="text-base font-semibold text-gray-900 mb-3">
           Can we send helpful reminders?
         </Text>
@@ -140,7 +143,7 @@ export default function ConfirmationScreen() {
         <Text className="text-xs text-gray-400">You can change this anytime in settings</Text>
       </View>
 
-      <View className="p-3 bg-green-50 rounded-lg mb-6">
+      <View className="p-4 bg-green-50 rounded-2xl mb-6 border border-green-100">
         <Text className="text-sm text-green-800 text-center">
           🔒 Your data is private and never shared
         </Text>
@@ -152,10 +155,10 @@ export default function ConfirmationScreen() {
           onPress={handleBack}
           disabled={submitting}
         >
-          <Text className="text-base text-blue-500 font-semibold">← Back</Text>
+          <Text className="text-base text-blue-600 font-semibold">← Back</Text>
         </TouchableOpacity>
         <AuthButton
-          title={submitting ? 'Analyzing...' : 'Analyze My Data'}
+          title={submitting ? 'Analyzing...' : 'Build My Habit Plan'}
           onPress={handleSubmit}
           variant="primary"
           loading={submitting || loading}

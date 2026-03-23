@@ -31,11 +31,12 @@ export const CharacterCounter: React.FC<CharacterCounterProps> = ({
     <View className="mb-4">
       <Text className="text-sm font-semibold text-gray-800 mb-2">{label}</Text>
       <TextInput
-        className={`min-h-[100px] border rounded-lg px-3 py-3 text-base text-gray-900 ${getBorderColor()}`}
+        className={`min-h-[116px] border rounded-2xl px-4 py-4 text-base text-gray-900 bg-white ${getBorderColor()}`}
         style={{ textAlignVertical: 'top' }}
         value={value}
         multiline
         maxLength={maxLength}
+        placeholderTextColor="#94A3B8"
         {...props}
       />
       <View className="flex-row justify-between items-center mt-1">
