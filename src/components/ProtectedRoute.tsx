@@ -21,7 +21,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   useEffect(() => {
     // Never navigate until the root navigator is mounted.
-    if (!rootNavigationState?.key || !initialized || loading) {
+    if (!rootNavigationState?.key || !initialized || loading || segments.length === 0) {
       return;
     }
 

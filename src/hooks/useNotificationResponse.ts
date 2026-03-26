@@ -1,10 +1,11 @@
 import { useEffect, useRef } from 'react';
-import { useRouter } from 'expo-router';
+import { useRouter, useRootNavigationState } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 import { logInfo } from '@/lib/logger';
 
 export function useNotificationResponse() {
   const router = useRouter();
+  const rootNavigationState = useRootNavigationState();
   const notificationListener = useRef<Notifications.Subscription>();
   const responseListener = useRef<Notifications.Subscription>();
 
@@ -23,6 +24,10 @@ export function useNotificationResponse() {
     // Listen for notification responses (user tapped on notification)
     responseListener.current = Notifications.addNotificationResponseReceivedListener(
       (response) => {
+        if (!rootNavigationState?.key) {
+          return;
+        }
+
         const { data } = response.notification.request.content;
         logInfo('Notification tapped', { data });
 
@@ -48,5 +53,5 @@ export function useNotificationResponse() {
         Notifications.removeNotificationSubscription(responseListener.current);
       }
     };
-  }, [router]);
+  }, [router, rootNavigationState?.key]);
 }

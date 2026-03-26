@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useRouter, useLocalSearchParams, useRootNavigationState } from 'expo-router';
 import { LoadingSpinner } from '../../components/auth';
 
 /**
@@ -10,8 +10,13 @@ import { LoadingSpinner } from '../../components/auth';
 export default function AuthCallbackScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
+  const rootNavigationState = useRootNavigationState();
 
   useEffect(() => {
+    if (!rootNavigationState?.key) {
+      return;
+    }
+
     // The Supabase client will automatically handle the OAuth callback
     // and update the session. We just need to redirect to the home screen.
     console.log('Auth callback params:', params);
@@ -22,7 +27,7 @@ export default function AuthCallbackScreen() {
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [params, router]);
+  }, [params, router, rootNavigationState?.key]);
 
   return (
     <View style={styles.container}>

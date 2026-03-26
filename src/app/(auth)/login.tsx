@@ -51,11 +51,9 @@ export default function LoginScreen() {
 
     try {
       await signIn(email, password);
-      // Navigation will be handled by the auth state change
-      router.replace('/');
-    } catch (err) {
-      // Error is handled in the store
-      console.error('Login error:', err);
+      // Navigation is handled by auth state + route guards.
+    } catch {
+      // Error is handled in the store and displayed via <ErrorMessage>.
     }
   };
 

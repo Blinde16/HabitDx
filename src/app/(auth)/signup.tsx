@@ -91,12 +91,10 @@ export default function SignupScreen() {
 
     try {
       await signUp(email, password, { name });
-      // Navigation will be handled by the auth state change
-      // Or show email verification message
-      router.replace('/');
-    } catch (err) {
-      // Error is handled in the store
-      console.error('Signup error:', err);
+      // Navigation is handled by auth state + route guards.
+      // If email confirmation is required, the store sets a message and we stay here.
+    } catch {
+      // Error is handled in the store and displayed via <ErrorMessage>.
     }
   };
 

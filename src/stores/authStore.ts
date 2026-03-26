@@ -207,8 +207,11 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     } catch (error) {
       const authError = error as AuthError;
       logAuth.signInError(email, authError);
+      const isEmailUnconfirmed = authError.message.toLowerCase().includes('email not confirmed');
       set({
-        error: authError.message || 'Failed to sign in',
+        error: isEmailUnconfirmed
+          ? 'Please verify your email before signing in. Check your inbox for the confirmation link.'
+          : authError.message || 'Failed to sign in',
         loading: false,
       });
       throw error;
