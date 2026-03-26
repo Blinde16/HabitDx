@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useRouter, useSegments } from 'expo-router';
+import { useRouter, useSegments, useRootNavigationState } from 'expo-router';
 import { useAuthStore } from '../stores/authStore';
 import { LoadingSpinner } from './auth';
 
@@ -11,6 +11,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { user, initialized, loading, initialize } = useAuthStore();
   const segments = useSegments();
   const router = useRouter();
+  const rootNavigationState = useRootNavigationState();
 
   useEffect(() => {
     if (!initialized) {
@@ -19,7 +20,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }, [initialized, initialize]);
 
   useEffect(() => {
-    if (!initialized || loading) {
+    // Never navigate until the root navigator is mounted.
+    if (!rootNavigationState?.key || !initialized || loading) {
       return;
     }
 
@@ -34,12 +36,13 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
       // index.tsx will handle routing to onboarding vs tabs
       router.replace('/');
     }
-  }, [user, initialized, loading, segments, router]);
+  }, [user, initialized, loading, segments, router, rootNavigationState?.key]);
 
-  // Show loading spinner while initializing
-  if (!initialized || loading) {
-    return <LoadingSpinner message="Loading..." />;
-  }
-
-  return <>{children}</>;
+  // Keep the navigator mounted on first render; show loading as an overlay.
+  return (
+    <>
+      {children}
+      {(!initialized || loading) && <LoadingSpinner message="Loading..." />}
+    </>
+  );
 };
