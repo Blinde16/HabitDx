@@ -227,7 +227,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         options: {
           redirectTo:
             Platform.OS === 'web'
-              ? `${window.location.origin}/callback`
+              ? `${window.location.origin}/auth/callback`
               : 'habitdx://auth/callback',
         },
       });

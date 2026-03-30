@@ -26,9 +26,11 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     }
 
     const inAuthGroup = segments[0] === '(auth)';
+    /** `/auth/callback` is outside the `(auth)` group; session may not be in store until after hash is processed. */
+    const onOAuthWebCallback = segments[0] === 'auth' && segments[1] === 'callback';
     const inPublicGroup = segments[0] === 'share';
 
-    if (!user && !inAuthGroup && !inPublicGroup) {
+    if (!user && !inAuthGroup && !inPublicGroup && !onOAuthWebCallback) {
       // Redirect to login if not authenticated
       router.replace('/(auth)/login');
     } else if (user && inAuthGroup) {
