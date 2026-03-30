@@ -12,19 +12,16 @@ export default function RootLayout() {
 
   return (
     <ProtectedRoute>
+      {/*
+        Do not enumerate Stack.Screen here. On web, a manual list can omit nested
+        routes (e.g. auth/callback) from the linking config and cause "Unmatched Route".
+        File-based routes register automatically on the root Stack.
+      */}
       <Stack
         screenOptions={{
           headerShown: false,
         }}
-      >
-        <Stack.Screen name="index" />
-        <Stack.Screen name="auth" />
-        <Stack.Screen name="(auth)" />
-        <Stack.Screen name="(onboarding)" />
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="share/[token]" />
-        <Stack.Screen name="profile" />
-      </Stack>
+      />
     </ProtectedRoute>
   );
 }
