@@ -227,7 +227,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         options: {
           redirectTo:
             Platform.OS === 'web'
-              ? `${window.location.origin}/auth/callback`
+              ? `${window.location.origin}/callback`
               : 'habitdx://auth/callback',
         },
       });
@@ -290,7 +290,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo:
           Platform.OS === 'web'
-            ? `${window.location.origin}/auth/reset-password`
+            ? `${window.location.origin}/reset-password`
             : 'habitdx://auth/reset-password',
       });
 
