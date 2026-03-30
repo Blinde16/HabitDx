@@ -30,7 +30,8 @@ export default function IndexScreen() {
       if (data) {
         router.replace('/(tabs)/home');
       } else {
-        router.replace('/(onboarding)/welcome');
+        // Route exists at `app/(onboarding)/chat.tsx`; cast until typed routes refresh (`npx expo start`).
+        router.replace('/(onboarding)/chat' as never);
       }
     };
 

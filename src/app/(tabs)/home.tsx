@@ -224,7 +224,7 @@ export default function HomeScreen() {
               </Text>
               <TouchableOpacity
                 className="bg-purple-600 px-6 py-3 rounded-lg"
-                onPress={() => router.push('/(onboarding)/welcome')}
+                onPress={() => router.push('/(onboarding)/chat' as never)}
               >
                 <Text className="text-white font-semibold">Start Onboarding</Text>
               </TouchableOpacity>

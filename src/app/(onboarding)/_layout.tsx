@@ -9,6 +9,7 @@ export default function OnboardingLayout() {
         animation: 'slide_from_right',
       }}
     >
+      <Stack.Screen name="chat" />
       <Stack.Screen name="welcome" />
       <Stack.Screen name="past-failures" />
       <Stack.Screen name="constraints" />

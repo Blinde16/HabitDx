@@ -8,19 +8,7 @@ import {
   CharacterCounter,
 } from '../../components/onboarding';
 import { AuthButton } from '../../components/auth';
-
-const HABIT_OPTIONS = [
-  'Morning routine',
-  'Exercise',
-  'Meditation',
-  'Reading',
-  'Journaling',
-  'Healthy eating',
-  'Sleep schedule',
-  'Drinking water',
-  'Yoga',
-  'Running',
-];
+import { HABIT_OPTIONS } from '../../constants/onboardingIntake';
 
 export default function PastFailuresScreen() {
   const router = useRouter();
@@ -85,7 +73,7 @@ export default function PastFailuresScreen() {
             />
           ))}
           {data.pastFailures
-            .filter((h) => !HABIT_OPTIONS.includes(h))
+            .filter((h) => !(HABIT_OPTIONS as readonly string[]).includes(h))
             .map((habit) => (
               <MultiSelectChip
                 key={habit}

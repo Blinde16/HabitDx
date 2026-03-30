@@ -4,17 +4,7 @@ import { useRouter } from 'expo-router';
 import { useOnboardingStore } from '../../stores/onboardingStore';
 import { OnboardingContainer, CharacterCounter } from '../../components/onboarding';
 import { AuthButton } from '../../components/auth';
-
-const GOAL_OPTIONS = [
-  { value: 'Better health', icon: '💪' },
-  { value: 'More energy', icon: '⚡' },
-  { value: 'Career growth', icon: '📈' },
-  { value: 'Mental clarity', icon: '🧠' },
-  { value: 'Better sleep', icon: '😴' },
-  { value: 'Personal growth', icon: '🌱' },
-  { value: 'Reduce stress', icon: '🧘' },
-  { value: 'Build confidence', icon: '💎' },
-];
+import { GOAL_OPTIONS } from '../../constants/onboardingIntake';
 
 export default function GoalsScreen() {
   const router = useRouter();

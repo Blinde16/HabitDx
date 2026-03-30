@@ -4,33 +4,7 @@ import { useRouter } from 'expo-router';
 import { useOnboardingStore } from '../../stores/onboardingStore';
 import { OnboardingContainer, MultiSelectChip } from '../../components/onboarding';
 import { AuthButton } from '../../components/auth';
-
-const ENERGY_OPTIONS = [
-  { value: 'morning', label: 'Morning', icon: '🌅' },
-  { value: 'afternoon', label: 'Afternoon', icon: '☀️' },
-  { value: 'evening', label: 'Evening', icon: '🌙' },
-  { value: 'varies', label: 'Varies', icon: '🔄' },
-] as const;
-
-const SCHEDULE_OPTIONS = [
-  '9-5 job',
-  'Shift work',
-  'Freelance/irregular',
-  'Stay-at-home parent',
-  'Student',
-  'Retired',
-];
-
-const OBSTACLE_OPTIONS = [
-  'Lack of time',
-  'Inconsistent schedule',
-  'Low energy',
-  'Forgetfulness',
-  'No accountability',
-  'Perfectionism',
-  'Overwhelm',
-  'Lack of motivation',
-];
+import { ENERGY_OPTIONS, OBSTACLE_OPTIONS, SCHEDULE_OPTIONS } from '../../constants/onboardingIntake';
 
 export default function ConstraintsScreen() {
   const router = useRouter();
