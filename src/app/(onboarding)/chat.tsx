@@ -1,5 +1,5 @@
-import { OnboardingChat } from '../../components/onboarding/OnboardingChat';
+import { OnboardingAiChat } from '../../components/onboarding/OnboardingAiChat';
 
 export default function OnboardingChatScreen() {
-  return <OnboardingChat />;
+  return <OnboardingAiChat />;
 }

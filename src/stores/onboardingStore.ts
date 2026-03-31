@@ -11,7 +11,7 @@ interface ConstraintsData {
   obstacles: string[];
 }
 
-interface OnboardingData {
+export interface OnboardingData {
   pastFailures: string[];
   failureDescription: string;
   constraints: ConstraintsData;
@@ -33,6 +33,8 @@ interface OnboardingStore {
 
   // Data management
   updateData: <K extends keyof OnboardingData>(key: K, value: OnboardingData[K]) => void;
+  /** Replace full intake payload (e.g. AI extraction). */
+  applyAiExtracted: (data: OnboardingData) => void;
   resetData: () => void;
 
   // Persistence
@@ -96,6 +98,11 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
         [key]: value,
       },
     }));
+    get().saveProgress();
+  },
+
+  applyAiExtracted: (data: OnboardingData) => {
+    set({ data, error: null });
     get().saveProgress();
   },
 
