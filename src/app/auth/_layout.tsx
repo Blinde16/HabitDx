@@ -8,6 +8,9 @@ export default function AuthSegmentLayout() {
         headerShown: false,
         contentStyle: { backgroundColor: '#fff' },
       }}
-    />
+    >
+      {/** Explicit screen so `/auth/callback` is registered in web linking (avoids Unmatched Route). */}
+      <Stack.Screen name="callback" />
+    </Stack>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useRouter, useSegments, useRootNavigationState } from 'expo-router';
+import { useRouter, useSegments, usePathname, useRootNavigationState } from 'expo-router';
 import { useAuthStore } from '../stores/authStore';
 import { LoadingSpinner } from './auth';
 
@@ -10,6 +10,7 @@ interface ProtectedRouteProps {
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { user, initialized, loading, initialize } = useAuthStore();
   const segments = useSegments();
+  const pathname = usePathname();
   const router = useRouter();
   const rootNavigationState = useRootNavigationState();
 
@@ -26,8 +27,11 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     }
 
     const inAuthGroup = segments[0] === '(auth)';
-    /** `/auth/callback` is outside the `(auth)` group; session may not be in store until after hash is processed. */
-    const onOAuthWebCallback = segments[0] === 'auth' && segments[1] === 'callback';
+    /** OAuth return URLs: `/callback` (group `(auth)/callback`) or `/auth/callback` (`app/auth/callback`). */
+    const onOAuthWebCallback =
+      (segments[0] === 'auth' && segments[1] === 'callback') ||
+      pathname === '/callback' ||
+      pathname === '/auth/callback';
     const inPublicGroup = segments[0] === 'share';
 
     if (!user && !inAuthGroup && !inPublicGroup && !onOAuthWebCallback) {
@@ -38,7 +42,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
       // index.tsx will handle routing to onboarding vs tabs
       router.replace('/');
     }
-  }, [user, initialized, loading, segments, router, rootNavigationState?.key]);
+  }, [user, initialized, loading, segments, pathname, router, rootNavigationState?.key]);
 
   // Keep the navigator mounted on first render; show loading as an overlay.
   return (
