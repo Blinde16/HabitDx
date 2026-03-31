@@ -20,11 +20,11 @@ export class NotificationService {
       // Get user's notification preference
       const { data: profile } = await supabase
         .from('user_profiles')
-        .select('notifications_enabled')
+        .select('notification_enabled')
         .eq('id', userId)
         .single();
 
-      if (!profile?.notifications_enabled) {
+      if (!profile?.notification_enabled) {
         logInfo('Notifications disabled for user', { userId });
         return;
       }

@@ -126,10 +126,9 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       if (user) {
         const { error } = await supabase
           .from('user_profiles')
-          .update({ 
-            expo_push_token: token.data,
-            notifications_enabled: true,
-            updated_at: new Date().toISOString()
+          .update({
+            notification_enabled: true,
+            updated_at: new Date().toISOString(),
           })
           .eq('id', user.id);
 
@@ -247,9 +246,9 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       // Update database
       const { error } = await supabase
         .from('user_profiles')
-        .update({ 
-          notifications_enabled: enabled,
-          updated_at: new Date().toISOString()
+        .update({
+          notification_enabled: enabled,
+          updated_at: new Date().toISOString(),
         })
         .eq('id', user.id);
 

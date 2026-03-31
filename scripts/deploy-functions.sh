@@ -46,11 +46,17 @@ echo "✅ Authenticated with Supabase"
 echo "📤 Deploying analyze-failure function..."
 supabase functions deploy analyze-failure --no-verify-jwt
 
+echo "📤 Deploying onboarding-chat function..."
+supabase functions deploy onboarding-chat --no-verify-jwt
+
 echo "📤 Deploying generate-habits function..."
 supabase functions deploy generate-habits --no-verify-jwt
 
 echo "📤 Deploying weekly-iteration function..."
 supabase functions deploy weekly-iteration --no-verify-jwt
+
+echo "📤 Deploying delete-account function..."
+supabase functions deploy delete-account
 
 echo "🔐 Setting OPENAI_API_KEY secret..."
 supabase secrets set OPENAI_API_KEY="$OPENAI_API_KEY"

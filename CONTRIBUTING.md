@@ -89,6 +89,16 @@ docs/api-documentation-sarah
 - ❌ **Never commit secrets or API keys**
 - ❌ **Never leave TODO comments** without creating an issue
 
+### Team Collaboration & Preventing Conflicts
+
+When multiple team members are coding simultaneously, follow these practices to avoid merge conflicts:
+
+1. **Communicate Before Starting:** Announce your task in the team chat so two people don't edit the same component or store simultaneously.
+2. **Use Strictly Isolated Branches:** Always branch off `main` and use your uniquely named branch (`<type>/<description>-<your-name>`). Do not push to another team member's branch.
+3. **Sync with `main` Frequently:** Merge or rebase `main` into your feature branch daily (`git pull origin main`). This helps you catch and resolve small conflicts early before opening a PR.
+4. **Scope Your Changes:** Only modify files strictly relevant to your feature. Avoid generic or "drive-by" refactoring in unrelated files, as it frequently causes conflicts for others working on those files.
+5. **Coordinate Complex Files:** If two features must touch the same central file (like `app.json` or `authStore.ts`), coordinate your PR merges. Once the first PR merges, the second person should immediately pull `main` to resolve conflicts locally.
+
 ## Coding Standards
 
 ### TypeScript

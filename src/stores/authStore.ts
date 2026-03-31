@@ -44,6 +44,8 @@ interface AuthStore {
   signIn: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
+  /** Permanently deletes the auth user and cascades app data (via Edge Function). */
+  deleteAccount: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   updatePassword: (newPassword: string) => Promise<void>;
   setError: (error: string | null) => void;
@@ -278,6 +280,73 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       logError(authError, { context: 'auth.signOut' });
       set({
         error: authError.message || 'Failed to sign out',
+        loading: false,
+      });
+      throw error;
+    }
+  },
+
+  deleteAccount: async () => {
+    const { session } = get();
+    if (!session?.access_token) {
+      set({ error: 'Not signed in' });
+      throw new Error('Not signed in');
+    }
+
+    try {
+      set({ loading: true, error: null });
+
+      const { data, error: fnError } = await supabase.functions.invoke('delete-account', {
+        method: 'POST',
+        body: {},
+      });
+
+      if (fnError) {
+        let detail = fnError.message;
+        const ctx = fnError as { context?: { json?: () => Promise<unknown> } };
+        if (ctx.context?.json) {
+          try {
+            const body = (await ctx.context.json()) as { error?: string; message?: string };
+            detail = body?.error || body?.message || detail;
+          } catch {
+            /* ignore */
+          }
+        }
+        throw new Error(detail || 'Failed to delete account');
+      }
+
+      const payload = data as { error?: string; success?: boolean } | null;
+      if (payload?.error) {
+        throw new Error(payload.error);
+      }
+      if (!payload?.success) {
+        throw new Error('Unexpected response from delete-account');
+      }
+
+      if (session.user?.id) {
+        await track('account_deleted', {});
+      }
+
+      await resetAnalyticsIdentity();
+
+      try {
+        await supabase.auth.signOut();
+      } catch {
+        /* Session may already be invalid after admin delete */
+      }
+
+      set({
+        user: null,
+        session: null,
+        loading: false,
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to delete account';
+      logError(error instanceof Error ? error : new Error(message), {
+        context: 'auth.deleteAccount',
+      });
+      set({
+        error: message,
         loading: false,
       });
       throw error;

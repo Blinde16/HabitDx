@@ -51,11 +51,17 @@ Write-Host "If not linked yet, run: supabase link --project-ref wfslsrknguculwup
 Write-Host "Deploying analyze-failure function..." -ForegroundColor Cyan
 supabase functions deploy analyze-failure --no-verify-jwt
 
+Write-Host "Deploying onboarding-chat function..." -ForegroundColor Cyan
+supabase functions deploy onboarding-chat --no-verify-jwt
+
 Write-Host "Deploying generate-habits function..." -ForegroundColor Cyan
 supabase functions deploy generate-habits --no-verify-jwt
 
 Write-Host "Deploying weekly-iteration function..." -ForegroundColor Cyan
 supabase functions deploy weekly-iteration --no-verify-jwt
+
+Write-Host "Deploying delete-account function..." -ForegroundColor Cyan
+supabase functions deploy delete-account
 
 Write-Host "Setting OPENAI_API_KEY secret..." -ForegroundColor Cyan
 supabase secrets set OPENAI_API_KEY="$env:OPENAI_API_KEY"

@@ -10,10 +10,11 @@ import { openExternalUrl, openSupportEmail } from '../../lib/externalLinks';
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const { user, signOut } = useAuthStore();
+  const { user, signOut, deleteAccount } = useAuthStore();
   const { notificationsEnabled, updateNotificationSettings } = useNotificationStore();
 
   const [notifEnabled, setNotifEnabled] = useState(notificationsEnabled);
+  const [deletingAccount, setDeletingAccount] = useState(false);
 
   const handleNotificationToggle = async (value: boolean) => {
     try {
@@ -57,17 +58,26 @@ export default function SettingsScreen() {
   const handleDeleteAccount = () => {
     Alert.alert(
       'Delete Account?',
-      'This will permanently delete all your data. This action cannot be undone.',
+      'This will permanently delete your account and all habit data. You can sign up again with the same email. This cannot be undone.',
       [
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Delete',
           style: 'destructive',
-          onPress: () => {
-            Alert.alert(
-              'Feature Coming Soon',
-              'Account deletion will be available in a future update. For now, please contact support.'
-            );
+          onPress: async () => {
+            setDeletingAccount(true);
+            try {
+              await deleteAccount();
+              await NotificationService.cancelAllReminders();
+              router.replace('/(auth)/login');
+            } catch (error) {
+              logError(error as Error, { context: 'settings.deleteAccount' });
+              const message =
+                error instanceof Error ? error.message : 'Could not delete your account. Try again or contact support.';
+              Alert.alert('Could Not Delete Account', message);
+            } finally {
+              setDeletingAccount(false);
+            }
           },
         },
       ]
@@ -314,8 +324,14 @@ export default function SettingsScreen() {
             </TouchableOpacity>
 
             {/* Delete Account */}
-            <TouchableOpacity className="p-4" onPress={handleDeleteAccount}>
-              <Text className="text-base font-medium text-red-600">Delete Account</Text>
+            <TouchableOpacity
+              className="p-4"
+              onPress={handleDeleteAccount}
+              disabled={deletingAccount}
+            >
+              <Text className="text-base font-medium text-red-600">
+                {deletingAccount ? 'Deleting…' : 'Delete Account'}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
