@@ -49,14 +49,15 @@ const AuthStorage = {
 };
 
 // Create and export the Supabase client
-// Browser OAuth should use PKCE (matches current GoTrue behavior); native keeps implicit by default.
+// Web uses implicit OAuth (tokens in URL hash). PKCE needs a stable code_verifier in localStorage
+// across the Google redirect; www/apex splits and strict storage often break that on Expo web.
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     storage: AuthStorage,
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: Platform.OS === 'web',
-    ...(Platform.OS === 'web' ? { flowType: 'pkce' as const } : {}),
+    flowType: 'implicit',
   },
 });
 
