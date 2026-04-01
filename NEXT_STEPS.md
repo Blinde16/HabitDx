@@ -1,8 +1,12 @@
 # HabitDx - Next Steps & Information Needed
 
-**Date:** February 16, 2026  
+**Date:** February 16, 2026 (engineering log updated April 1, 2026)  
 **Status:** MVP Complete - Awaiting Launch Configuration  
 **Project:** HabitDx v1.0.0
+
+### Engineering log (web / deployment)
+
+- **2026-04-01:** Web auth routing refactored to stop React error #185 (maximum update depth) on Vercel and local web: layout-level `<Redirect />` instead of root `useEffect` navigation. Documented in [`CHANGELOG.md`](CHANGELOG.md) (commits `95aae9f`, `3234552`). Aligns with [`aiDocs/web_beta_launch_plan.md`](aiDocs/web_beta_launch_plan.md) §3.2.
 
 ---
 

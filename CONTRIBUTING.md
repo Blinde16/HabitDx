@@ -9,6 +9,7 @@ Thank you for contributing to HabitDx! This document outlines our development wo
 - [Coding Standards](#coding-standards)
 - [Project Structure](#project-structure)
 - [Commit Message Format](#commit-message-format)
+- [Changelog](#changelog)
 - [Pull Request Process](#pull-request-process)
 - [Code Review Guidelines](#code-review-guidelines)
 
@@ -325,6 +326,10 @@ asdf
 - **Use bullet points** for multiple changes
 - **Reference issues** if applicable (`Fixes #123`, `Closes #456`)
 - **Mention breaking changes** with `BREAKING CHANGE:` in footer
+
+## Changelog
+
+For **user-visible fixes and features** (especially web beta, auth, and deployment), add a short entry under **`[Unreleased]`** in [`CHANGELOG.md`](CHANGELOG.md) in the same PR or immediately after merge to `main`. That keeps release notes aligned with [`NEXT_STEPS.md`](NEXT_STEPS.md) and [`aiDocs/web_beta_launch_plan.md`](aiDocs/web_beta_launch_plan.md) when the change affects launch or hosting.
 
 ## Pull Request Process
 

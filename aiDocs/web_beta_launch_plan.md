@@ -1,6 +1,6 @@
 # HabitDx — Web Beta Launch Plan
 
-**Last updated:** March 30, 2026  
+**Last updated:** April 1, 2026  
 **Scope:** Public beta as a **responsive web app** (desktop + mobile browsers). **No** Apple App Store or Google Play submission in this phase.
 
 **Assumptions (confirmed):** Production Supabase is live, hosting and environment are configured, and the app ships as **Expo Web** (see `vercel.json`: `expo export --platform web` → `dist`).
@@ -39,6 +39,7 @@ Use this before inviting testers at scale.
 
 ### 3.2 Web UX and quality bar
 
+- [x] **Auth / navigation stability (Apr 2026):** Root `ProtectedRoute` no longer performs `router.replace` in effects (avoids React “maximum update depth” / error #185 with Expo Router on web). Auth redirects use `<Redirect />` in `(auth)`, `(tabs)`, and `(onboarding)` layouts; see [`CHANGELOG.md`](../CHANGELOG.md) and commits `95aae9f`, `3234552`.
 - [ ] **Responsive layouts:** Critical flows (auth, onboarding, home, check-in, settings) usable from ~360px width up to desktop.
 - [ ] **Input modes:** Tap targets and spacing work on touch; keyboard navigation acceptable on desktop where applicable.
 - [ ] **Scroll / keyboard:** Long forms and onboarding avoid clipping behind mobile keyboards (`KeyboardAvoidingView` patterns already differ on web in places — verify onboarding and auth screens).

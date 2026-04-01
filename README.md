@@ -225,6 +225,8 @@ npm run type-check
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed contribution guidelines, coding standards, and git workflow.
 
+**Release notes:** Notable changes are summarized in [CHANGELOG.md](CHANGELOG.md).
+
 ## Project Roadmap
 
 This project follows a phased development approach:

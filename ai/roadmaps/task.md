@@ -45,6 +45,7 @@ Before writing any code, confirm these are ready:
 
 - [x] Install and configure Expo Router (file-based routing)
 - [x] Create root layout (`src/app/_layout.tsx`) with auth gate logic
+  - **2026-04:** Web: auth redirects moved to group layouts + `<Redirect />` (see `CHANGELOG.md`); root `ProtectedRoute` = init + loading overlay only.
 - [x] Create `(auth)` route group — login, signup, forgot-password placeholders
 - [x] Create `(onboarding)` route group — 5 screen placeholders
 - [x] Create `(tabs)` route group — home, insights, settings tabs
