@@ -8,7 +8,7 @@ import {
   TextInput,
   ActivityIndicator,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { useAuthStore } from '../stores/authStore';
 import { getProfile, updateProfile } from '../lib/db';
 import type { UserProfile, UserProfileUpdate } from '../types/database';
@@ -16,7 +16,7 @@ import { AuthButton } from '../components/auth';
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const { user, signOut } = useAuthStore();
+  const { user, signOut, initialized, loading: authLoading } = useAuthStore();
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -107,6 +107,18 @@ export default function ProfileScreen() {
       console.error('Sign out error:', err);
     }
   };
+
+  if (!initialized || authLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#3b82f6" />
+      </View>
+    );
+  }
+
+  if (!user) {
+    return <Redirect href="/(auth)/login" />;
+  }
 
   if (loading) {
     return (

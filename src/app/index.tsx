@@ -1,26 +1,18 @@
 import { useEffect, useRef } from 'react';
 import { View, ActivityIndicator } from 'react-native';
-import { useRouter, useRootNavigationState } from 'expo-router';
+import { Redirect, useRouter, useRootNavigationState } from 'expo-router';
 import { useAuthStore } from '../stores/authStore';
 import { supabase } from '../lib/supabase';
 
 export default function IndexScreen() {
   const router = useRouter();
-  const { user } = useAuthStore();
+  const { user, initialized, loading } = useAuthStore();
   const rootNavigationState = useRootNavigationState();
-  // Boolean only: `rootNavigationState?.key` changes after every navigation; putting the key in the
-  // dependency array re-ran this effect after each `router.replace`, causing "Maximum update depth"
-  // (React minified error #185) in production.
   const navReady = Boolean(rootNavigationState?.key);
-  /** Dedupes overlapping effect runs while the habit_stack query is in flight (React #185). */
   const routeInFlightRef = useRef(false);
 
   useEffect(() => {
-    // Wait until the root navigator is mounted before navigating
-    if (!navReady) return;
-
-    if (!user?.id) {
-      router.replace('/(auth)/login');
+    if (!navReady || !initialized || loading || !user?.id) {
       return;
     }
 
@@ -33,7 +25,6 @@ export default function IndexScreen() {
 
     const routeUser = async () => {
       try {
-        // Check if user has completed onboarding (has an active habit stack)
         const { data } = await supabase
           .from('habit_stacks')
           .select('id')
@@ -43,13 +34,22 @@ export default function IndexScreen() {
 
         if (cancelled) return;
 
-        if (data) {
-          router.replace('/(tabs)/home');
-        } else {
-          // Route exists at `app/(onboarding)/chat.tsx`; cast until typed routes refresh (`npx expo start`).
-          router.replace('/(onboarding)/chat' as never);
-        }
-      } finally {
+        setTimeout(() => {
+          if (cancelled) {
+            routeInFlightRef.current = false;
+            return;
+          }
+          try {
+            if (data) {
+              router.replace('/(tabs)/home');
+            } else {
+              router.replace('/(onboarding)/chat' as never);
+            }
+          } finally {
+            routeInFlightRef.current = false;
+          }
+        }, 0);
+      } catch {
         routeInFlightRef.current = false;
       }
     };
@@ -57,8 +57,21 @@ export default function IndexScreen() {
     void routeUser();
     return () => {
       cancelled = true;
+      routeInFlightRef.current = false;
     };
-  }, [navReady, user?.id, router]);
+  }, [navReady, initialized, loading, user?.id, router]);
+
+  if (!initialized || loading) {
+    return (
+      <View className="flex-1 items-center justify-center bg-white">
+        <ActivityIndicator size="large" color="#8B5CF6" />
+      </View>
+    );
+  }
+
+  if (!user?.id) {
+    return <Redirect href="/(auth)/login" />;
+  }
 
   return (
     <View className="flex-1 items-center justify-center bg-white">

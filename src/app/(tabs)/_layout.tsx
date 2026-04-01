@@ -1,7 +1,18 @@
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 import { Text } from 'react-native';
+import { useAuthStore } from '../../stores/authStore';
 
 export default function TabLayout() {
+  const { user, initialized, loading } = useAuthStore();
+
+  if (!initialized || loading) {
+    return null;
+  }
+
+  if (!user) {
+    return <Redirect href="/(auth)/login" />;
+  }
+
   return (
     <Tabs
       screenOptions={{
@@ -26,7 +37,7 @@ export default function TabLayout() {
         name="home"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ color: _color, focused }) => (
             <Text style={{ fontSize: 24 }}>{focused ? '🏠' : '🏡'}</Text>
           ),
         }}
@@ -35,7 +46,7 @@ export default function TabLayout() {
         name="insights"
         options={{
           title: 'Insights',
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ color: _color, focused }) => (
             <Text style={{ fontSize: 24 }}>{focused ? '📊' : '📈'}</Text>
           ),
         }}
@@ -44,7 +55,7 @@ export default function TabLayout() {
         name="settings"
         options={{
           title: 'Settings',
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ color: _color, focused }) => (
             <Text style={{ fontSize: 24 }}>{focused ? '⚙️' : '⚙'}</Text>
           ),
         }}

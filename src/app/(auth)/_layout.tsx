@@ -1,6 +1,25 @@
-import { Stack } from 'expo-router';
+import { Redirect, Stack, useSegments } from 'expo-router';
+import { useAuthStore } from '../../stores/authStore';
 
 export default function AuthLayout() {
+  const { user, initialized, loading } = useAuthStore();
+  const segments = useSegments();
+
+  if (!initialized || loading) {
+    return null;
+  }
+
+  const leaf = segments[1];
+  const onAuthForm =
+    leaf === 'login' ||
+    leaf === 'signup' ||
+    leaf === 'forgot-password' ||
+    leaf === 'reset-password';
+
+  if (user && onAuthForm) {
+    return <Redirect href="/" />;
+  }
+
   return (
     <Stack
       screenOptions={{
