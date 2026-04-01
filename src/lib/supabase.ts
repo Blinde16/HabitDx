@@ -49,12 +49,14 @@ const AuthStorage = {
 };
 
 // Create and export the Supabase client
+// Browser OAuth should use PKCE (matches current GoTrue behavior); native keeps implicit by default.
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     storage: AuthStorage,
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: Platform.OS === 'web',
+    ...(Platform.OS === 'web' ? { flowType: 'pkce' as const } : {}),
   },
 });
 

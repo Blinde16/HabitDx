@@ -10,6 +10,73 @@ function stripAuthFragmentFromUrl() {
   window.history.replaceState(window.history.state, '', `${pathname}${search}`);
 }
 
+function safeDecodeOAuthMessage(value: string) {
+  try {
+    return decodeURIComponent(value.replace(/\+/g, ' '));
+  } catch {
+    return value;
+  }
+}
+
+type WebRedirectRecovery = 'proceed' | 'finished' | { kind: 'error'; message: string };
+
+/**
+ * GoTrue runs initialize() once when the client is created. If that pass did not
+ * persist a session (race, fragment handled late, etc.), recover from the URL here.
+ */
+async function recoverSessionFromWebRedirectUrl(): Promise<WebRedirectRecovery> {
+  if (Platform.OS !== 'web' || typeof window === 'undefined') {
+    return 'proceed';
+  }
+
+  const url = new URL(window.location.href);
+  const hashParams = new URLSearchParams(
+    url.hash.startsWith('#') ? url.hash.slice(1) : url.hash
+  );
+
+  const oauthError =
+    hashParams.get('error') ||
+    url.searchParams.get('error') ||
+    url.searchParams.get('error_code');
+  const oauthErrorDescription =
+    hashParams.get('error_description') || url.searchParams.get('error_description');
+  if (oauthError) {
+    const msg = oauthErrorDescription
+      ? safeDecodeOAuthMessage(oauthErrorDescription)
+      : oauthError;
+    stripAuthFragmentFromUrl();
+    url.searchParams.delete('error');
+    url.searchParams.delete('error_description');
+    url.searchParams.delete('error_code');
+    window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}`);
+    return { kind: 'error', message: msg };
+  }
+
+  const code = url.searchParams.get('code');
+  if (code) {
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    url.searchParams.delete('code');
+    window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
+    if (error) {
+      return { kind: 'error', message: error.message };
+    }
+    return 'finished';
+  }
+
+  const access_token = hashParams.get('access_token');
+  const refresh_token = hashParams.get('refresh_token');
+  if (access_token && refresh_token) {
+    const { error } = await supabase.auth.setSession({ access_token, refresh_token });
+    stripAuthFragmentFromUrl();
+    if (error) {
+      return { kind: 'error', message: error.message };
+    }
+    return 'finished';
+  }
+
+  return 'proceed';
+}
+
 /**
  * OAuth callback handler (Google, etc.)
  *
@@ -44,6 +111,17 @@ export function OAuthCallbackScreen() {
       if (urlAuthError) {
         setInitError(urlAuthError.message);
         stripAuthFragmentFromUrl();
+        return;
+      }
+
+      const recovery = await recoverSessionFromWebRedirectUrl();
+      if (cancelled) return;
+      if (typeof recovery === 'object' && recovery.kind === 'error') {
+        setInitError(recovery.message);
+        return;
+      }
+      if (recovery === 'finished') {
+        finish();
         return;
       }
 
