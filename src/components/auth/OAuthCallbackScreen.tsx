@@ -13,9 +13,10 @@ import { supabase } from '../../lib/supabase';
 export function OAuthCallbackScreen() {
   const router = useRouter();
   const rootNavigationState = useRootNavigationState();
+  const navReady = Boolean(rootNavigationState?.key);
 
   useEffect(() => {
-    if (!rootNavigationState?.key) {
+    if (!navReady) {
       return;
     }
 
@@ -65,7 +66,7 @@ export function OAuthCallbackScreen() {
       if (timeoutId) clearTimeout(timeoutId);
       subscription?.unsubscribe();
     };
-  }, [router, rootNavigationState?.key]);
+  }, [router, navReady]);
 
   return (
     <View style={styles.container}>

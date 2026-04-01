@@ -7,6 +7,8 @@ import { isExpoWeb } from '@/lib/runtime';
 export function useNotificationResponse() {
   const router = useRouter();
   const rootNavigationState = useRootNavigationState();
+  const navReadyRef = useRef(false);
+  navReadyRef.current = Boolean(rootNavigationState?.key);
   const notificationListener = useRef<Notifications.Subscription>();
   const responseListener = useRef<Notifications.Subscription>();
 
@@ -29,7 +31,7 @@ export function useNotificationResponse() {
     // Listen for notification responses (user tapped on notification)
     responseListener.current = Notifications.addNotificationResponseReceivedListener(
       (response) => {
-        if (!rootNavigationState?.key) {
+        if (!navReadyRef.current) {
           return;
         }
 
@@ -58,5 +60,5 @@ export function useNotificationResponse() {
         Notifications.removeNotificationSubscription(responseListener.current);
       }
     };
-  }, [router, rootNavigationState?.key]);
+  }, [router]);
 }
