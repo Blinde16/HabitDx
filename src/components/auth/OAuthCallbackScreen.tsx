@@ -58,7 +58,10 @@ async function recoverSessionFromWebRedirectUrl(): Promise<WebRedirectRecovery> 
     url.searchParams.delete('code');
     window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
     if (error) {
-      return { kind: 'error', message: error.message };
+      const msg = error.message?.includes('PKCE code verifier')
+        ? `${error.message}\n\nTip: finish sign-in on the same site URL you started from (www vs non-www must match). Add every origin you use under Supabase → Authentication → URL Configuration → Redirect URLs.`
+        : error.message;
+      return { kind: 'error', message: msg };
     }
     return 'finished';
   }
@@ -152,9 +155,15 @@ export function OAuthCallbackScreen() {
 
       timeoutId = setTimeout(() => {
         subscription?.unsubscribe();
+        const stillHasCode =
+          Platform.OS === 'web' &&
+          typeof window !== 'undefined' &&
+          Boolean(new URL(window.location.href).searchParams.get('code'));
         stripAuthFragmentFromUrl();
         setInitError(
-          'Could not finish sign-in. Check that this deployment uses the same Supabase URL and anon key as your project, then try again.'
+          stillHasCode
+            ? 'OAuth returned a code but the session never saved. Common causes: (1) www vs non-www mismatch—use one canonical URL and add it under Supabase Redirect URLs; (2) storage blocked (private mode); (3) opening the login link in another browser. Env vars can still be correct—this is usually origin/storage for PKCE.'
+            : 'Could not finish sign-in. If you use Google, confirm Supabase Google provider Client ID/secret match Google Cloud, and redirect URI there is https://<YOUR_PROJECT_REF>.supabase.co/auth/v1/callback only.'
         );
       }, 12000);
     })();
