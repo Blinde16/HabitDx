@@ -1,19 +1,27 @@
-import React, { useEffect } from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, Platform, Text, Pressable } from 'react-native';
 import { useRouter, useRootNavigationState } from 'expo-router';
 import { LoadingSpinner } from './LoadingSpinner';
 import { supabase } from '../../lib/supabase';
 
+function stripAuthFragmentFromUrl() {
+  if (Platform.OS !== 'web' || typeof window === 'undefined') return;
+  const { pathname, search } = window.location;
+  window.history.replaceState(window.history.state, '', `${pathname}${search}`);
+}
+
 /**
  * OAuth callback handler (Google, etc.)
  *
- * On web, tokens arrive in the URL hash; Supabase parses them asynchronously.
- * Wait for a real session before navigating — a fixed delay is unreliable.
+ * On web, tokens arrive in the URL hash; GoTrue parses them on initialize().
+ * Always await initialize() so redirect errors (e.g. PKCE/implicit mismatch,
+ * invalid JWT for user lookup) surface instead of leaving tokens in the address bar.
  */
 export function OAuthCallbackScreen() {
   const router = useRouter();
   const rootNavigationState = useRootNavigationState();
   const navReady = Boolean(rootNavigationState?.key);
+  const [initError, setInitError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!navReady) {
@@ -30,6 +38,15 @@ export function OAuthCallbackScreen() {
     };
 
     void (async () => {
+      const { error: urlAuthError } = await supabase.auth.initialize();
+      if (cancelled) return;
+
+      if (urlAuthError) {
+        setInitError(urlAuthError.message);
+        stripAuthFragmentFromUrl();
+        return;
+      }
+
       const waitForSession = async (): Promise<boolean> => {
         const attempts = Platform.OS === 'web' ? 12 : 4;
         for (let i = 0; i < attempts; i++) {
@@ -57,7 +74,10 @@ export function OAuthCallbackScreen() {
 
       timeoutId = setTimeout(() => {
         subscription?.unsubscribe();
-        finish();
+        stripAuthFragmentFromUrl();
+        setInitError(
+          'Could not finish sign-in. Check that this deployment uses the same Supabase URL and anon key as your project, then try again.'
+        );
       }, 12000);
     })();
 
@@ -67,6 +87,22 @@ export function OAuthCallbackScreen() {
       subscription?.unsubscribe();
     };
   }, [router, navReady]);
+
+  if (initError) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.errorTitle}>Sign-in incomplete</Text>
+        <Text style={styles.errorBody}>{initError}</Text>
+        <Pressable
+          style={styles.button}
+          onPress={() => router.replace('/(auth)/login')}
+          accessibilityRole="button"
+        >
+          <Text style={styles.buttonText}>Back to sign in</Text>
+        </Pressable>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -79,5 +115,31 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    padding: 24,
+    justifyContent: 'center',
+  },
+  errorTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 12,
+  },
+  errorBody: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: '#4b5563',
+    marginBottom: 24,
+  },
+  button: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#8B5CF6',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
