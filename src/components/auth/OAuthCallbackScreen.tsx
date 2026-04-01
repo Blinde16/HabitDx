@@ -2,7 +2,33 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Platform, Text, Pressable } from 'react-native';
 import { useRouter, useRootNavigationState } from 'expo-router';
 import { LoadingSpinner } from './LoadingSpinner';
-import { supabase } from '../../lib/supabase';
+import { supabase, supabaseUrl } from '../../lib/supabase';
+
+function supabaseAuthCallbackUri(): string {
+  try {
+    const u = new URL(supabaseUrl);
+    return `${u.origin}/auth/v1/callback`;
+  } catch {
+    return 'https://<your-project-ref>.supabase.co/auth/v1/callback';
+  }
+}
+
+function buildTimeoutMessage(stillHasCode: boolean): string {
+  const callbackUri = supabaseAuthCallbackUri();
+  if (stillHasCode) {
+    return [
+      'OAuth returned a code but the session never saved.',
+      'If you still use PKCE (code in the URL), use one canonical site URL (www vs non-www), add it under Supabase → Redirect URLs, and avoid private mode or split browsers.',
+    ].join(' ');
+  }
+  return [
+    'The app never received a usable session after redirect.',
+    `In Google Cloud → OAuth client, Authorized redirect URIs must include exactly: ${callbackUri}`,
+    'In Supabase → Authentication → Providers → Google, use that same Google client’s Client ID and Client secret.',
+    'In Supabase → URL Configuration, add this app origin with /callback (e.g. https://habitdx.vercel.app/callback).',
+    'Redeploy after changing Vercel env EXPO_PUBLIC_SUPABASE_URL / EXPO_PUBLIC_SUPABASE_ANON_KEY so they match this Supabase project.',
+  ].join('\n\n');
+}
 
 function stripAuthFragmentFromUrl() {
   if (Platform.OS !== 'web' || typeof window === 'undefined') return;
@@ -145,6 +171,30 @@ export function OAuthCallbackScreen() {
         return;
       }
 
+      // Late fragment / storage: retry recovery a few times before listening + timeout.
+      if (Platform.OS === 'web') {
+        for (let r = 0; r < 5; r++) {
+          await new Promise((resolve) => setTimeout(resolve, 350));
+          if (cancelled) return;
+          const late = await recoverSessionFromWebRedirectUrl();
+          if (late === 'finished') {
+            finish();
+            return;
+          }
+          if (typeof late === 'object' && late.kind === 'error') {
+            setInitError(late.message);
+            return;
+          }
+          const {
+            data: { session: s },
+          } = await supabase.auth.getSession();
+          if (s) {
+            finish();
+            return;
+          }
+        }
+      }
+
       const { data } = supabase.auth.onAuthStateChange((_event, session) => {
         if (session) {
           data.subscription.unsubscribe();
@@ -154,17 +204,38 @@ export function OAuthCallbackScreen() {
       subscription = data.subscription;
 
       timeoutId = setTimeout(() => {
-        subscription?.unsubscribe();
-        const stillHasCode =
-          Platform.OS === 'web' &&
-          typeof window !== 'undefined' &&
-          Boolean(new URL(window.location.href).searchParams.get('code'));
-        stripAuthFragmentFromUrl();
-        setInitError(
-          stillHasCode
-            ? 'OAuth returned a code but the session never saved. Common causes: (1) www vs non-www mismatch—use one canonical URL and add it under Supabase Redirect URLs; (2) storage blocked (private mode); (3) opening the login link in another browser. Env vars can still be correct—this is usually origin/storage for PKCE.'
-            : 'Could not finish sign-in. If you use Google, confirm Supabase Google provider Client ID/secret match Google Cloud, and redirect URI there is https://<YOUR_PROJECT_REF>.supabase.co/auth/v1/callback only.'
-        );
+        void (async () => {
+          subscription?.unsubscribe();
+          if (cancelled) return;
+
+          const stillHasCode =
+            Platform.OS === 'web' &&
+            typeof window !== 'undefined' &&
+            Boolean(new URL(window.location.href).searchParams.get('code'));
+
+          const last = await recoverSessionFromWebRedirectUrl();
+          if (!cancelled && last === 'finished') {
+            finish();
+            return;
+          }
+          if (!cancelled && typeof last === 'object' && last.kind === 'error') {
+            setInitError(last.message);
+            return;
+          }
+
+          const {
+            data: { session: finalSession },
+          } = await supabase.auth.getSession();
+          if (!cancelled && finalSession) {
+            finish();
+            return;
+          }
+
+          stripAuthFragmentFromUrl();
+          if (!cancelled) {
+            setInitError(buildTimeoutMessage(stillHasCode));
+          }
+        })();
       }, 12000);
     })();
 
