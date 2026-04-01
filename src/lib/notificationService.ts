@@ -7,6 +7,7 @@
 import * as Notifications from 'expo-notifications';
 import { supabase } from './supabase';
 import { logInfo, logError } from './logger';
+import { isExpoWeb } from './runtime';
 import type { Habit } from '../types/habit';
 
 export class NotificationService {
@@ -14,6 +15,10 @@ export class NotificationService {
    * Schedule notifications for all active habits
    */
   static async scheduleAllHabitReminders(userId: string): Promise<void> {
+    if (isExpoWeb) {
+      logInfo('Skipping habit reminders on web (not supported in browser)', { userId });
+      return;
+    }
     try {
       logInfo('Scheduling all habit reminders', { userId });
 
@@ -63,6 +68,9 @@ export class NotificationService {
    * Schedule notification for a single habit
    */
   static async scheduleHabitReminder(habit: Habit): Promise<string | null> {
+    if (isExpoWeb) {
+      return null;
+    }
     try {
       if (!habit.reminder_enabled || !habit.reminder_time) {
         return null;
@@ -133,6 +141,9 @@ export class NotificationService {
    * Cancel notification for a single habit
    */
   static async cancelHabitReminder(habitId: string): Promise<void> {
+    if (isExpoWeb) {
+      return;
+    }
     try {
       // Get habit's notification ID
       const { data: habit } = await supabase
@@ -167,6 +178,9 @@ export class NotificationService {
    * Cancel all scheduled notifications
    */
   static async cancelAllReminders(): Promise<void> {
+    if (isExpoWeb) {
+      return;
+    }
     try {
       await Notifications.cancelAllScheduledNotificationsAsync();
       logInfo('All reminders cancelled');
@@ -194,6 +208,9 @@ export class NotificationService {
    * Send a test notification
    */
   static async sendTestNotification(): Promise<void> {
+    if (isExpoWeb) {
+      throw new Error('Test notifications are not available in the browser. Use the mobile app.');
+    }
     try {
       await Notifications.scheduleNotificationAsync({
         content: {

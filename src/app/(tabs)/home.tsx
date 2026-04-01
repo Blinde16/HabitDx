@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   RefreshControl,
   Alert,
+  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '../../stores/authStore';
@@ -44,8 +45,9 @@ export default function HomeScreen() {
   useEffect(() => {
     if (user) {
       initialize(user.id);
-      // Schedule notifications for all habits
-      NotificationService.scheduleAllHabitReminders(user.id);
+      if (Platform.OS !== 'web') {
+        NotificationService.scheduleAllHabitReminders(user.id);
+      }
     }
   }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 

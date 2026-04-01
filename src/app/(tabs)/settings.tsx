@@ -7,6 +7,7 @@ import NotificationService from '../../lib/notificationService';
 import { logError } from '../../lib/logger';
 import appConfig from '../../lib/appConfig';
 import { openExternalUrl, openSupportEmail } from '../../lib/externalLinks';
+import { isExpoWeb } from '../../lib/runtime';
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -37,7 +38,9 @@ export default function SettingsScreen() {
       await NotificationService.sendTestNotification();
       Alert.alert('Test Sent', 'Check your notifications!');
     } catch (error) {
-      Alert.alert('Error', 'Failed to send test notification');
+      const message =
+        error instanceof Error ? error.message : 'Failed to send test notification';
+      Alert.alert('Test notification', message);
     }
   };
 
@@ -153,36 +156,47 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        {/* Notifications Section */}
+        {/* Notifications — not available in browser (beta is web-first); native apps get full support */}
         <View className="mb-8">
           <Text className="text-lg font-semibold text-gray-900 mb-4">Notifications</Text>
 
           <View className="bg-white border border-gray-200 rounded-lg">
-            {/* Enable Notifications */}
-            <View className="flex-row items-center justify-between p-4 border-b border-gray-200">
-              <View className="flex-1">
-                <Text className="text-base font-medium text-gray-900">Enable Notifications</Text>
-                <Text className="text-sm text-gray-600 mt-1">Get reminders for your habits</Text>
+            {isExpoWeb ? (
+              <View className="p-4">
+                <Text className="text-base font-medium text-gray-900">Reminders (mobile only)</Text>
+                <Text className="text-sm text-gray-600 mt-2 leading-5">
+                  Habit reminders and test notifications are not available in the browser. You can
+                  fully test the rest of the beta here; install the iOS or Android build when you
+                  want to try push reminders.
+                </Text>
               </View>
-              <Switch
-                value={notifEnabled}
-                onValueChange={handleNotificationToggle}
-                trackColor={{ false: '#D1D5DB', true: '#4A90E2' }}
-                thumbColor="#FFFFFF"
-              />
-            </View>
+            ) : (
+              <>
+                <View className="flex-row items-center justify-between p-4 border-b border-gray-200">
+                  <View className="flex-1">
+                    <Text className="text-base font-medium text-gray-900">Enable Notifications</Text>
+                    <Text className="text-sm text-gray-600 mt-1">Get reminders for your habits</Text>
+                  </View>
+                  <Switch
+                    value={notifEnabled}
+                    onValueChange={handleNotificationToggle}
+                    trackColor={{ false: '#D1D5DB', true: '#4A90E2' }}
+                    thumbColor="#FFFFFF"
+                  />
+                </View>
 
-            {/* Test Notification */}
-            <TouchableOpacity
-              className="flex-row items-center justify-between p-4"
-              onPress={handleTestNotification}
-            >
-              <View className="flex-1">
-                <Text className="text-base font-medium text-gray-900">Test Notification</Text>
-                <Text className="text-sm text-gray-600 mt-1">Send a test notification now</Text>
-              </View>
-              <Text className="text-2xl">→</Text>
-            </TouchableOpacity>
+                <TouchableOpacity
+                  className="flex-row items-center justify-between p-4"
+                  onPress={handleTestNotification}
+                >
+                  <View className="flex-1">
+                    <Text className="text-base font-medium text-gray-900">Test Notification</Text>
+                    <Text className="text-sm text-gray-600 mt-1">Send a test notification now</Text>
+                  </View>
+                  <Text className="text-2xl">→</Text>
+                </TouchableOpacity>
+              </>
+            )}
           </View>
         </View>
 

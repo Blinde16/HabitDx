@@ -1,18 +1,23 @@
 import { Linking } from 'react-native';
 import { logError, logInfo } from './logger';
 
+/**
+ * Opens a URL in the system browser or handler (mailto:, https:, etc.).
+ * Uses openURL directly — pre-checking with canOpenURL often returns false on iOS
+ * for valid https URLs, which blocked Settings beta links for testers.
+ */
 export async function openExternalUrl(url: string): Promise<boolean> {
-  try {
-    const supported = await Linking.canOpenURL(url);
-    if (!supported) {
-      return false;
-    }
+  const trimmed = url.trim();
+  if (!trimmed) {
+    return false;
+  }
 
-    await Linking.openURL(url);
-    logInfo('Opened external URL', { url });
+  try {
+    await Linking.openURL(trimmed);
+    logInfo('Opened external URL', { url: trimmed });
     return true;
   } catch (error) {
-    logError(error as Error, { context: 'externalLinks.openUrl', url });
+    logError(error as Error, { context: 'externalLinks.openUrl', url: trimmed });
     return false;
   }
 }

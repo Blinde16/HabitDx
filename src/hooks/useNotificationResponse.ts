@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useRouter, useRootNavigationState } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 import { logInfo } from '@/lib/logger';
+import { isExpoWeb } from '@/lib/runtime';
 
 export function useNotificationResponse() {
   const router = useRouter();
@@ -10,6 +11,10 @@ export function useNotificationResponse() {
   const responseListener = useRef<Notifications.Subscription>();
 
   useEffect(() => {
+    if (isExpoWeb) {
+      return;
+    }
+
     // Listen for notifications received while app is foregrounded
     notificationListener.current = Notifications.addNotificationReceivedListener(
       (notification) => {
