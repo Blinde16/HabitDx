@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  ActivityIndicator,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import FailureProfileService from '../../lib/failureProfileService';
 import type { HabitFailureProfile } from '../../types/failure-profile';
@@ -43,34 +51,40 @@ export default function SharedProfileScreen() {
   };
 
   const handleGetApp = () => {
-    // Navigate to auth/signup or show download options
     router.push('/(auth)/signup');
   };
 
   if (loading) {
     return (
-      <View className="flex-1 bg-gray-50 items-center justify-center">
-        <ActivityIndicator size="large" color="#8B5CF6" />
-        <Text className="mt-4 text-gray-600">Loading profile...</Text>
+      <View className="flex-1 bg-surface items-center justify-center">
+        <ActivityIndicator size="large" color="#191c1e" />
+        <Text className="mt-4 font-public text-on_surface_variant">Loading profile…</Text>
       </View>
     );
   }
 
   if (error || !profile) {
     return (
-      <View className="flex-1 bg-gray-50 items-center justify-center px-6">
-        <Text className="text-6xl mb-4">🔍</Text>
-        <Text className="text-xl font-semibold text-gray-900 mb-2">
+      <View className="flex-1 bg-surface items-center justify-center px-7">
+        <Text className="text-xl font-manrope text-on_surface mb-2 text-center">
           {error || 'Profile Not Found'}
         </Text>
-        <Text className="text-gray-600 text-center mb-6">
-          This profile may have been deleted or the link is invalid.
+        <Text className="font-public text-on_surface_variant text-center mb-8 leading-6">
+          This link may be expired or the profile was removed.
         </Text>
         <TouchableOpacity
-          className="bg-purple-600 px-6 py-3 rounded-lg"
+          activeOpacity={0.92}
           onPress={handleGetApp}
+          className="rounded-full overflow-hidden w-full max-w-sm"
         >
-          <Text className="text-white font-semibold">Get HabitDx</Text>
+          <LinearGradient
+            colors={['#000000', '#131b2e']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.cta}
+          >
+            <Text className="text-white font-public-sb text-lg">Open HabitDx</Text>
+          </LinearGradient>
         </TouchableOpacity>
       </View>
     );
@@ -81,99 +95,101 @@ export default function SharedProfileScreen() {
   );
 
   return (
-    <ScrollView className="flex-1 bg-gray-50">
-      <View className="px-6 py-8">
-        {/* Header with Branding */}
-        <View className="mb-6">
-          <Text className="text-sm text-purple-600 font-semibold mb-2">HABITDX</Text>
-          <Text className="text-3xl font-bold text-gray-900 mb-2">
-            🎯 Habit Profile
+    <ScrollView className="flex-1 bg-surface">
+      <View className="px-7 py-10">
+        <View className="mb-8">
+          <Text className="text-xs font-public-sb text-on_surface_variant uppercase tracking-[3px] mb-3">
+            HabitDx
           </Text>
-          <Text className="text-gray-600">
-            Someone shared their personalized habit analysis with you
+          <Text className="font-manrope text-display-lg text-on_surface mb-2">
+            Shared Habit Profile
+          </Text>
+          <Text className="font-public text-on_surface_variant leading-6">
+            A diagnostic readout someone chose to share with you
           </Text>
         </View>
 
-        {/* Failure Patterns */}
-        <View className="bg-white rounded-lg p-6 mb-4 shadow-sm">
-          <Text className="text-xl font-bold text-gray-900 mb-4">
-            Patterns Identified
-          </Text>
+        <View className="bg-surface_container_lowest rounded-xl p-6 mb-5">
+          <Text className="font-manrope-md text-lg text-on_surface mb-4">Patterns Identified</Text>
           {profile.failure_patterns.map((pattern, index) => (
-            <View key={index} className="flex-row mb-3">
-              <Text className="text-purple-600 mr-2">•</Text>
-              <Text className="flex-1 text-gray-800">{pattern}</Text>
+            <View key={index} className="flex-row mb-4">
+              <Text className="text-tertiary_fixed_dim mr-2">·</Text>
+              <Text className="flex-1 font-public text-on_surface leading-6">{pattern}</Text>
             </View>
           ))}
         </View>
 
-        {/* Root Causes */}
-        <View className="bg-white rounded-lg p-6 mb-4 shadow-sm">
-          <Text className="text-xl font-bold text-gray-900 mb-4">Root Causes</Text>
+        <View className="bg-surface_container_lowest rounded-xl p-6 mb-5">
+          <Text className="font-manrope-md text-lg text-on_surface mb-4">Root Causes</Text>
           {profile.root_causes.map((cause, index) => (
-            <View key={index} className="flex-row mb-3">
-              <Text className="text-gray-500 mr-3 font-semibold">{index + 1}.</Text>
-              <Text className="flex-1 text-gray-800">{cause}</Text>
+            <View key={index} className="flex-row mb-4">
+              <Text className="text-on_surface_variant mr-3 font-public-sb w-6">{index + 1}.</Text>
+              <Text className="flex-1 font-public text-on_surface leading-6">{cause}</Text>
             </View>
           ))}
         </View>
 
-        {/* Personality Insights */}
-        <View className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg p-6 mb-4 border-2 border-purple-200">
-          <Text className="text-xl font-bold text-purple-900 mb-4">
-            Personality Type
-          </Text>
-          <Text className="text-lg font-semibold text-purple-700 mb-2">
+        <View className="bg-growth_muted rounded-xl p-6 mb-5">
+          <Text className="font-manrope-md text-lg text-on_surface mb-3">Working Style</Text>
+          <Text className="text-lg font-public-sb text-on_surface mb-2">
             {personalityInsights.archetype}
           </Text>
-          <Text className="text-gray-800 mb-3">
-            <Text className="font-semibold">Strength:</Text> {personalityInsights.strength}
+          <Text className="font-public text-on_surface leading-6 mb-2">
+            <Text className="font-public-sb">Strength: </Text>
+            {personalityInsights.strength}
           </Text>
-          <Text className="text-gray-800">
-            <Text className="font-semibold">Challenge:</Text> {personalityInsights.weakness}
+          <Text className="font-public text-on_surface leading-6">
+            <Text className="font-public-sb">Tension: </Text>
+            {personalityInsights.weakness}
           </Text>
         </View>
 
-        {/* Recommendations */}
-        <View className="bg-white rounded-lg p-6 mb-6 shadow-sm">
-          <Text className="text-xl font-bold text-gray-900 mb-4">
-            Recommendations
-          </Text>
+        <View className="bg-surface_container_lowest rounded-xl p-6 mb-8">
+          <Text className="font-manrope-md text-lg text-on_surface mb-4">Recommendations</Text>
           {profile.recommendations.map((rec, index) => (
-            <View key={index} className="flex-row mb-3">
-              <Text className="text-green-600 mr-3 font-semibold">{index + 1}.</Text>
-              <Text className="flex-1 text-gray-800">{rec}</Text>
+            <View key={index} className="flex-row mb-4">
+              <Text className="text-tertiary_fixed_dim mr-3 font-public-sb w-6">{index + 1}.</Text>
+              <Text className="flex-1 font-public text-on_surface leading-6">{rec}</Text>
             </View>
           ))}
         </View>
 
-        {/* CTA to Get App */}
-        <View className="bg-purple-100 rounded-lg p-6 mb-6">
-          <Text className="text-lg font-bold text-gray-900 mb-2">
-            Get Your Own Habit Profile
-          </Text>
-          <Text className="text-gray-700 mb-4">
-            HabitDx analyzes why YOUR habits fail and gives you personalized insights
-            and weekly adjustments. No generic advice—just what works for you.
+        <View className="bg-surface_container_low rounded-xl p-6 mb-8">
+          <Text className="font-manrope-md text-lg text-on_surface mb-2">Your Own Readout</Text>
+          <Text className="font-public text-on_surface_variant mb-5 leading-6">
+            HabitDx synthesizes why habits stall for you personally—then supports weekly
+            adjustments.
           </Text>
           <TouchableOpacity
-            className="bg-purple-600 py-4 rounded-lg items-center"
+            activeOpacity={0.92}
             onPress={handleGetApp}
+            className="rounded-full overflow-hidden"
           >
-            <Text className="text-white font-bold text-lg">Get HabitDx Free</Text>
+            <LinearGradient
+              colors={['#000000', '#131b2e']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.cta}
+            >
+              <Text className="text-white font-public-sb text-lg">Get HabitDx</Text>
+            </LinearGradient>
           </TouchableOpacity>
         </View>
 
-        {/* Footer */}
-        <View className="items-center">
-          <Text className="text-xs text-gray-500">
-            This profile has been viewed {profile.view_count} times
-          </Text>
-          <Text className="text-xs text-gray-400 mt-2">
-            Powered by AI-driven behavioral analysis
+        <View className="items-center pb-8">
+          <Text className="text-xs font-public text-on_surface_variant">
+            Views: {profile.view_count}
           </Text>
         </View>
       </View>
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  cta: {
+    paddingVertical: 16,
+    alignItems: 'center',
+    borderRadius: 9999,
+  },
+});

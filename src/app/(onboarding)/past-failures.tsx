@@ -85,14 +85,14 @@ export default function PastFailuresScreen() {
         </View>
 
         {data.pastFailures.length > 0 && (
-          <Text className="text-sm text-blue-700 mt-3 font-medium">
+          <Text className="text-sm text-primary_container mt-3 font-medium">
             {data.pastFailures.length} habit{data.pastFailures.length === 1 ? '' : 's'} selected
           </Text>
         )}
 
         {!showCustomInput ? (
           <TouchableOpacity className="mt-2 py-2" onPress={() => setShowCustomInput(true)}>
-            <Text className="text-sm text-blue-500 font-semibold">+ Add other</Text>
+            <Text className="text-sm text-primary_container font-semibold">+ Add other</Text>
           </TouchableOpacity>
         ) : (
           <View className="mt-4">
@@ -115,7 +115,7 @@ export default function PastFailuresScreen() {
                 <Text className="text-base font-semibold text-gray-500">Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                className={`flex-1 py-3 items-center rounded-lg bg-blue-500 ${!customHabit.trim() ? 'opacity-50' : ''}`}
+                className={`flex-1 py-3 items-center rounded-lg bg-primary_container ${!customHabit.trim() ? 'opacity-50' : ''}`}
                 onPress={handleAddCustom}
                 disabled={!customHabit.trim()}
               >
@@ -143,12 +143,12 @@ export default function PastFailuresScreen() {
             {data.pastFailures.length === 0
               ? 'Select at least one habit above'
               : data.failureDescription.length < 20
-              ? `Describe why they failed (${20 - data.failureDescription.length} more characters needed)`
-              : null}
+                ? `Describe why they failed (${20 - data.failureDescription.length} more characters needed)`
+                : null}
           </Text>
         )}
         <TouchableOpacity className="py-3 items-center" onPress={handleBack}>
-          <Text className="text-base text-blue-600 font-semibold">← Back</Text>
+          <Text className="text-base text-primary_container font-semibold">← Back</Text>
         </TouchableOpacity>
         <AuthButton
           title={canProceed(2) ? 'That sounds right' : 'Answer to continue'}

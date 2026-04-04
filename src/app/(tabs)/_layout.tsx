@@ -1,5 +1,5 @@
 import { Redirect, Tabs } from 'expo-router';
-import { Text } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { useAuthStore } from '../../stores/authStore';
 
 export default function TabLayout() {
@@ -17,19 +17,24 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#9333EA',
-        tabBarInactiveTintColor: '#9CA3AF',
+        tabBarActiveTintColor: '#191c1e',
+        tabBarInactiveTintColor: '#8a9199',
         tabBarStyle: {
-          backgroundColor: '#FFFFFF',
-          borderTopColor: '#E5E7EB',
-          borderTopWidth: 1,
-          paddingTop: 8,
-          paddingBottom: 8,
-          height: 60,
+          backgroundColor: '#f7f9fb',
+          borderTopWidth: 0,
+          elevation: 0,
+          shadowOpacity: 0,
+          paddingTop: 10,
+          paddingBottom: 10,
+          height: 62,
         },
         tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: '600',
+          fontSize: 11,
+          fontFamily: 'PublicSans_500Medium',
+          marginTop: 2,
+        },
+        tabBarItemStyle: {
+          paddingVertical: 4,
         },
       }}
     >
@@ -37,17 +42,15 @@ export default function TabLayout() {
         name="home"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color: _color, focused }) => (
-            <Text style={{ fontSize: 24 }}>{focused ? '🏠' : '🏡'}</Text>
-          ),
+          tabBarIcon: ({ color, size }) => <Feather name="home" size={size ?? 22} color={color} />,
         }}
       />
       <Tabs.Screen
         name="insights"
         options={{
           title: 'Insights',
-          tabBarIcon: ({ color: _color, focused }) => (
-            <Text style={{ fontSize: 24 }}>{focused ? '📊' : '📈'}</Text>
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="bar-chart-2" size={size ?? 22} color={color} />
           ),
         }}
       />
@@ -55,8 +58,8 @@ export default function TabLayout() {
         name="settings"
         options={{
           title: 'Settings',
-          tabBarIcon: ({ color: _color, focused }) => (
-            <Text style={{ fontSize: 24 }}>{focused ? '⚙️' : '⚙'}</Text>
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="settings" size={size ?? 22} color={color} />
           ),
         }}
       />

@@ -5,8 +5,8 @@ import {
   StyleSheet,
   ActivityIndicator,
   TouchableOpacityProps,
-  View,
 } from 'react-native';
+import { fontFamily } from '../../lib/fonts';
 
 interface SocialButtonProps extends TouchableOpacityProps {
   provider: 'google' | 'apple';
@@ -23,17 +23,13 @@ export const SocialButton: React.FC<SocialButtonProps> = ({
   const providerConfig = {
     google: {
       title: 'Continue with Google',
-      icon: '🔍', // In production, use proper icons
-      backgroundColor: '#fff',
-      textColor: '#333',
-      borderColor: '#ddd',
+      backgroundColor: '#f2f4f6',
+      textColor: '#191c1e',
     },
     apple: {
       title: 'Continue with Apple',
-      icon: '🍎',
-      backgroundColor: '#000',
-      textColor: '#fff',
-      borderColor: '#000',
+      backgroundColor: '#131b2e',
+      textColor: '#ffffff',
     },
   };
 
@@ -43,22 +39,17 @@ export const SocialButton: React.FC<SocialButtonProps> = ({
     <TouchableOpacity
       style={[
         styles.button,
-        {
-          backgroundColor: config.backgroundColor,
-          borderColor: config.borderColor,
-        },
+        { backgroundColor: config.backgroundColor },
         isDisabled && styles.disabledButton,
       ]}
       disabled={isDisabled}
+      activeOpacity={0.88}
       {...props}
     >
       {loading ? (
         <ActivityIndicator color={config.textColor} />
       ) : (
-        <View style={styles.content}>
-          <Text style={styles.icon}>{config.icon}</Text>
-          <Text style={[styles.buttonText, { color: config.textColor }]}>{config.title}</Text>
-        </View>
+        <Text style={[styles.buttonText, { color: config.textColor }]}>{config.title}</Text>
       )}
     </TouchableOpacity>
   );
@@ -66,27 +57,18 @@ export const SocialButton: React.FC<SocialButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    height: 48,
-    borderRadius: 8,
-    borderWidth: 1,
+    minHeight: 52,
+    borderRadius: 9999,
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: 8,
+    paddingHorizontal: 24,
   },
   disabledButton: {
     opacity: 0.5,
   },
-  content: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  icon: {
-    fontSize: 20,
-    marginRight: 8,
-  },
   buttonText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: fontFamily.publicSansSemibold,
   },
 });

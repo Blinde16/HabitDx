@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { fontFamily } from '../../lib/fonts';
 
 interface ErrorMessageProps {
   message: string | null;
@@ -17,15 +18,15 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({ message }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fee2e2',
-    borderRadius: 8,
-    padding: 12,
+    backgroundColor: '#f0e6e8',
+    borderRadius: 16,
+    padding: 14,
     marginVertical: 8,
-    borderLeftWidth: 4,
-    borderLeftColor: '#ef4444',
   },
   text: {
-    color: '#991b1b',
+    color: '#6b2f38',
     fontSize: 14,
+    fontFamily: fontFamily.publicSans,
+    lineHeight: 21,
   },
 });

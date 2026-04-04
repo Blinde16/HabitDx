@@ -19,12 +19,18 @@ export default function ConfirmationScreen() {
       return;
     }
 
-    logInfo('Confirmation: submitting onboarding', { userId: user.id, event: 'onboarding.confirm.submit' });
+    logInfo('Confirmation: submitting onboarding', {
+      userId: user.id,
+      event: 'onboarding.confirm.submit',
+    });
 
     try {
       setSubmitting(true);
       await submitOnboarding(user.id);
-      logInfo('Confirmation: onboarding submitted', { userId: user.id, event: 'onboarding.confirm.success' });
+      logInfo('Confirmation: onboarding submitted', {
+        userId: user.id,
+        event: 'onboarding.confirm.success',
+      });
       router.push('/(onboarding)/failure-profile');
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -56,10 +62,10 @@ export default function ConfirmationScreen() {
         </View>
       )}
 
-      <View className="bg-white border border-gray-200 rounded-[28px] p-5 mb-6">
+      <View className="bg-surface_container_lowest rounded-[28px] p-5 mb-6">
         <Text className="text-base font-semibold text-gray-900 mb-4">What happens next</Text>
         <View className="flex-row mb-5">
-          <View className="w-12 h-12 rounded-full bg-blue-50 items-center justify-center mr-4">
+          <View className="w-12 h-12 rounded-full bg-surface_container_low items-center justify-center mr-4">
             <Text className="text-2xl">✅</Text>
           </View>
           <View className="flex-1 justify-center">
@@ -71,7 +77,7 @@ export default function ConfirmationScreen() {
         </View>
 
         <View className="flex-row mb-5">
-          <View className="w-12 h-12 rounded-full bg-blue-50 items-center justify-center mr-4">
+          <View className="w-12 h-12 rounded-full bg-surface_container_low items-center justify-center mr-4">
             <Text className="text-2xl">🎯</Text>
           </View>
           <View className="flex-1 justify-center">
@@ -83,7 +89,7 @@ export default function ConfirmationScreen() {
         </View>
 
         <View className="flex-row mb-5">
-          <View className="w-12 h-12 rounded-full bg-blue-50 items-center justify-center mr-4">
+          <View className="w-12 h-12 rounded-full bg-surface_container_low items-center justify-center mr-4">
             <Text className="text-2xl">📋</Text>
           </View>
           <View className="flex-1 justify-center">
@@ -95,7 +101,7 @@ export default function ConfirmationScreen() {
         </View>
 
         <View className="flex-row mb-5">
-          <View className="w-12 h-12 rounded-full bg-blue-50 items-center justify-center mr-4">
+          <View className="w-12 h-12 rounded-full bg-surface_container_low items-center justify-center mr-4">
             <Text className="text-2xl">📱</Text>
           </View>
           <View className="flex-1 justify-center">
@@ -107,7 +113,7 @@ export default function ConfirmationScreen() {
         </View>
 
         <View className="flex-row mb-5">
-          <View className="w-12 h-12 rounded-full bg-blue-50 items-center justify-center mr-4">
+          <View className="w-12 h-12 rounded-full bg-surface_container_low items-center justify-center mr-4">
             <Text className="text-2xl">💡</Text>
           </View>
           <View className="flex-1 justify-center">
@@ -119,7 +125,7 @@ export default function ConfirmationScreen() {
         </View>
       </View>
 
-      <View className="bg-white border border-gray-200 rounded-[28px] p-5 mb-6">
+      <View className="bg-surface_container_lowest rounded-[28px] p-5 mb-6">
         <Text className="text-base font-semibold text-gray-900 mb-3">
           Can we send helpful reminders?
         </Text>
@@ -129,7 +135,7 @@ export default function ConfirmationScreen() {
         >
           <View
             className={`w-[51px] h-[31px] rounded-2xl p-0.5 ${
-              data.notificationsEnabled ? 'bg-blue-500' : 'bg-gray-300'
+              data.notificationsEnabled ? 'bg-primary_container' : 'bg-surface_container_highest'
             }`}
           >
             <View
@@ -146,9 +152,9 @@ export default function ConfirmationScreen() {
         <Text className="text-xs text-gray-400">You can change this anytime in settings</Text>
       </View>
 
-      <View className="p-4 bg-green-50 rounded-2xl mb-6 border border-green-100">
-        <Text className="text-sm text-green-800 text-center">
-          🔒 Your data is private and never shared
+      <View className="p-4 bg-surface_container_low rounded-2xl mb-6">
+        <Text className="text-sm font-public text-on_surface text-center leading-5">
+          Your responses stay private and are used only to shape your plan.
         </Text>
       </View>
 
@@ -158,7 +164,7 @@ export default function ConfirmationScreen() {
           onPress={handleBack}
           disabled={submitting}
         >
-          <Text className="text-base text-blue-600 font-semibold">← Back</Text>
+          <Text className="text-base text-primary_container font-semibold">← Back</Text>
         </TouchableOpacity>
         <AuthButton
           title={submitting ? 'Analyzing...' : 'Build My Habit Plan'}

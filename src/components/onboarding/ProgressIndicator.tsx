@@ -10,18 +10,21 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({ current, t
   const progress = (current / total) * 100;
 
   return (
-    <View className="mb-6">
+    <View className="mb-8">
       <View className="flex-row items-center justify-between mb-3">
-        <Text className="text-xs font-semibold uppercase tracking-[1px] text-blue-700">
+        <Text className="text-xs font-public-sb uppercase tracking-[2px] text-on_surface_variant">
           Guided setup
         </Text>
-        <Text className="text-xs font-semibold text-gray-500">
+        <Text className="text-xs font-public text-on_surface_variant">
           Step {current} of {total}
         </Text>
       </View>
 
-      <View className="h-2 bg-blue-100 rounded-full overflow-hidden mb-3">
-        <View className="h-full bg-blue-500 rounded-full" style={{ width: `${progress}%` }} />
+      <View className="h-1.5 bg-surface_container_highest rounded-full overflow-hidden mb-3">
+        <View
+          className="h-full bg-primary_container rounded-full"
+          style={{ width: `${progress}%` }}
+        />
       </View>
 
       <View className="flex-row gap-2">
@@ -33,8 +36,12 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({ current, t
           return (
             <View
               key={stepNumber}
-              className={`flex-1 h-2 rounded-full ${
-                isComplete ? 'bg-blue-500' : isActive ? 'bg-blue-300' : 'bg-gray-200'
+              className={`flex-1 h-1.5 rounded-full ${
+                isComplete
+                  ? 'bg-primary_container'
+                  : isActive
+                    ? 'bg-surface_container_high'
+                    : 'bg-surface_container_highest'
               }`}
             />
           );

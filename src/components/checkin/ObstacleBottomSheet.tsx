@@ -1,28 +1,17 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Modal,
-  TextInput,
-  Animated,
-  PanResponder,
-  Dimensions,
-  Keyboard,
-} from 'react-native';
+import { View, Text, TouchableOpacity, Modal, TextInput, Keyboard, Pressable } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useCheckinStore } from '../../stores/checkinStore';
 import { useAuthStore } from '../../stores/authStore';
 
-const SCREEN_HEIGHT = Dimensions.get('window').height;
-
 const OBSTACLES = [
-  { id: 'time', label: 'No Time', emoji: '⏰' },
-  { id: 'energy', label: 'No Energy', emoji: '😴' },
-  { id: 'forgot', label: 'Forgot', emoji: '🤔' },
-  { id: 'unmotivated', label: 'Unmotivated', emoji: '😐' },
-  { id: 'sick', label: 'Sick/Unwell', emoji: '🤒' },
-  { id: 'schedule', label: 'Schedule Conflict', emoji: '📅' },
-  { id: 'other', label: 'Other', emoji: '💭' },
+  { id: 'time', label: 'No time' },
+  { id: 'energy', label: 'Low energy' },
+  { id: 'forgot', label: 'Forgot' },
+  { id: 'unmotivated', label: 'Low motivation' },
+  { id: 'sick', label: 'Unwell' },
+  { id: 'schedule', label: 'Schedule conflict' },
+  { id: 'other', label: 'Other' },
 ];
 
 interface ObstacleBottomSheetProps {
@@ -33,7 +22,7 @@ interface ObstacleBottomSheetProps {
 export default function ObstacleBottomSheet({ visible, onClose }: ObstacleBottomSheetProps) {
   const { user } = useAuthStore();
   const { selectedHabitForObstacle, getHabitById, logObstacle } = useCheckinStore();
-  
+
   const [selectedObstacle, setSelectedObstacle] = useState<string | null>(null);
   const [note, setNote] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -46,8 +35,7 @@ export default function ObstacleBottomSheet({ visible, onClose }: ObstacleBottom
     try {
       setSubmitting(true);
       await logObstacle(habit.id, user.id, selectedObstacle, note);
-      
-      // Reset and close
+
       setSelectedObstacle(null);
       setNote('');
       onClose();
@@ -61,130 +49,115 @@ export default function ObstacleBottomSheet({ visible, onClose }: ObstacleBottom
   const handleClose = () => {
     setSelectedObstacle(null);
     setNote('');
+    Keyboard.dismiss();
     onClose();
   };
 
   if (!visible || !habit) return null;
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={handleClose}
-    >
-      <TouchableOpacity 
-        className="flex-1 bg-black/50"
-        activeOpacity={1}
-        onPress={handleClose}
-      >
-        <View className="flex-1" />
-        <TouchableOpacity 
-          activeOpacity={1}
-          onPress={(e) => e.stopPropagation()}
-        >
-          <View className="bg-white rounded-t-3xl pt-2 pb-8">
-            {/* Handle bar */}
-            <View className="items-center mb-4">
-              <View className="w-12 h-1 bg-gray-300 rounded-full" />
-            </View>
-
-            <View className="px-6">
-              {/* Header */}
-              <Text className="text-2xl font-bold text-gray-900 mb-2">
-                What got in the way?
-              </Text>
-              <Text className="text-gray-600 mb-1">
-                For habit: <Text className="font-semibold">{habit.name}</Text>
-              </Text>
-              <Text className="text-sm text-gray-500 mb-6">
-                This helps us adjust your habits next week
-              </Text>
-
-              {/* Obstacle Options */}
-              <View className="flex-row flex-wrap mb-6">
-                {OBSTACLES.map((obstacle) => (
-                  <TouchableOpacity
-                    key={obstacle.id}
-                    className={`mr-2 mb-2 px-4 py-3 rounded-lg border-2 ${
-                      selectedObstacle === obstacle.id
-                        ? 'border-purple-500 bg-purple-50'
-                        : 'border-gray-300 bg-white'
-                    }`}
-                    onPress={() => setSelectedObstacle(obstacle.id)}
-                  >
-                    <Text className="text-center">
-                      <Text className="text-xl">{obstacle.emoji}</Text>{' '}
-                      <Text
-                        className={`text-sm font-medium ${
-                          selectedObstacle === obstacle.id ? 'text-purple-900' : 'text-gray-700'
-                        }`}
-                      >
-                        {obstacle.label}
-                      </Text>
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-
-              {/* Optional Note */}
-              {selectedObstacle && (
-                <View className="mb-6">
-                  <Text className="text-sm font-semibold text-gray-700 mb-2">
-                    Anything else? (optional)
-                  </Text>
-                  <TextInput
-                    className="border border-gray-300 rounded-lg p-3 text-base"
-                    placeholder="E.g., 'Meeting ran late' or 'Kids were sick'"
-                    value={note}
-                    onChangeText={setNote}
-                    multiline
-                    numberOfLines={3}
-                    maxLength={200}
-                  />
-                  <Text className="text-xs text-gray-500 mt-1">
-                    {note.length}/200 characters
-                  </Text>
-                </View>
-              )}
-
-              {/* Actions */}
-              <View className="gap-3">
-                <TouchableOpacity
-                  className={`py-4 rounded-lg items-center ${
-                    selectedObstacle
-                      ? 'bg-purple-600'
-                      : 'bg-gray-300'
-                  }`}
-                  onPress={handleSubmit}
-                  disabled={!selectedObstacle || submitting}
-                >
-                  <Text className="text-white font-bold text-lg">
-                    {submitting ? 'Saving...' : 'Save Obstacle'}
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  className="py-3 items-center"
-                  onPress={handleClose}
-                  disabled={submitting}
-                >
-                  <Text className="text-gray-600 font-semibold">Cancel</Text>
-                </TouchableOpacity>
-              </View>
-
-              {/* Info */}
-              <View className="mt-4 p-3 bg-blue-50 rounded-lg">
-                <Text className="text-xs text-blue-900">
-                  💡 <Text className="font-semibold">Why track obstacles?</Text> Our AI uses this
-                  to redesign your habits next week. If "No Time" keeps coming up, we'll make the
-                  habit even smaller or move it to a better time.
-                </Text>
-              </View>
-            </View>
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={handleClose}>
+      <View className="flex-1 bg-black/40 justify-end">
+        <Pressable className="flex-1" onPress={handleClose} accessibilityRole="button" />
+        <View className="bg-surface_container_lowest rounded-t-3xl pt-3 pb-10 px-6">
+          <View className="items-center mb-5">
+            <View className="w-10 h-1 rounded-full bg-surface_container_highest" />
           </View>
-        </TouchableOpacity>
-      </TouchableOpacity>
+
+          <Text className="font-manrope text-2xl text-on_surface mb-2">What got in the way?</Text>
+          <Text className="font-public text-on_surface_variant mb-1">
+            Habit: <Text className="font-public-sb text-on_surface">{habit.name}</Text>
+          </Text>
+          <Text className="text-sm font-public text-on_surface_variant mb-6 leading-5">
+            This informs weekly adjustments—not a score.
+          </Text>
+
+          <View className="flex-row flex-wrap mb-6">
+            {OBSTACLES.map((obstacle) => {
+              const selected = selectedObstacle === obstacle.id;
+              return (
+                <TouchableOpacity
+                  key={obstacle.id}
+                  className={`mr-2 mb-2 px-4 py-3 rounded-full ${
+                    selected ? 'bg-surface_container_high' : 'bg-surface_container_low'
+                  }`}
+                  onPress={() => setSelectedObstacle(obstacle.id)}
+                  activeOpacity={0.85}
+                >
+                  <Text
+                    className={`text-sm font-public-sb ${
+                      selected ? 'text-on_surface' : 'text-on_surface_variant'
+                    }`}
+                  >
+                    {obstacle.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          {selectedObstacle && (
+            <View className="mb-6">
+              <Text className="text-sm font-public-sb text-on_surface mb-2">Notes (optional)</Text>
+              <TextInput
+                className="bg-surface_container_lowest rounded-xl p-4 text-base font-public text-on_surface"
+                style={{
+                  borderWidth: 1,
+                  borderColor: 'rgba(25, 28, 30, 0.12)',
+                  minHeight: 88,
+                  textAlignVertical: 'top',
+                }}
+                placeholder="e.g. meeting ran late"
+                placeholderTextColor="#8a9199"
+                value={note}
+                onChangeText={setNote}
+                multiline
+                numberOfLines={3}
+                maxLength={200}
+              />
+              <Text className="text-xs font-public text-on_surface_variant mt-2">
+                {note.length}/200
+              </Text>
+            </View>
+          )}
+
+          <TouchableOpacity
+            activeOpacity={0.92}
+            disabled={!selectedObstacle || submitting}
+            onPress={handleSubmit}
+            className="rounded-full overflow-hidden mb-3"
+          >
+            <LinearGradient
+              colors={selectedObstacle ? ['#000000', '#131b2e'] : ['#e0e3e5', '#d1d5d9']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={{ paddingVertical: 16, alignItems: 'center' }}
+            >
+              <Text
+                className={`font-public-sb text-base ${
+                  selectedObstacle ? 'text-white' : 'text-on_surface_variant'
+                }`}
+              >
+                {submitting ? 'Saving…' : 'Save'}
+              </Text>
+            </LinearGradient>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className="py-3 items-center"
+            onPress={handleClose}
+            disabled={submitting}
+          >
+            <Text className="text-on_surface_variant font-public-sb">Cancel</Text>
+          </TouchableOpacity>
+
+          <View className="mt-4 bg-surface_container_low rounded-xl p-4">
+            <Text className="text-xs font-public text-on_surface_variant leading-5">
+              Obstacles help the system suggest smaller steps or better timing—never to label you.
+            </Text>
+          </View>
+        </View>
+      </View>
     </Modal>
   );
 }

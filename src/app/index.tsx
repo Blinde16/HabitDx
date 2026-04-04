@@ -34,7 +34,11 @@ export default function IndexScreen() {
 
         if (cancelled) return;
 
-        let destination: '/(tabs)/home' | '/(onboarding)/chat' | '/(onboarding)/failure-profile' | '/(onboarding)/habits';
+        let destination:
+          | '/(tabs)/home'
+          | '/(onboarding)/chat'
+          | '/(onboarding)/failure-profile'
+          | '/(onboarding)/habits';
 
         if (stackRow) {
           destination = '/(tabs)/home';
@@ -88,8 +92,8 @@ export default function IndexScreen() {
 
   if (!initialized || loading) {
     return (
-      <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator size="large" color="#8B5CF6" />
+      <View className="flex-1 items-center justify-center bg-surface">
+        <ActivityIndicator size="large" color="#191c1e" />
       </View>
     );
   }
@@ -99,8 +103,8 @@ export default function IndexScreen() {
   }
 
   return (
-    <View className="flex-1 items-center justify-center bg-white">
-      <ActivityIndicator size="large" color="#8B5CF6" />
+    <View className="flex-1 items-center justify-center bg-surface">
+      <ActivityIndicator size="large" color="#191c1e" />
     </View>
   );
 }

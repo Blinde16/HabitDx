@@ -20,7 +20,7 @@ interface NotificationState {
   permissionStatus: 'granted' | 'denied' | 'undetermined';
   isLoading: boolean;
   error: string | null;
-  
+
   // Actions
   requestPermissions: () => Promise<boolean>;
   registerForPushNotifications: () => Promise<void>;
@@ -48,10 +48,10 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       // Check if physical device
       if (!Device.isDevice) {
         logWarning('Push notifications do not work on simulator/emulator');
-        set({ 
-          permissionStatus: 'denied', 
+        set({
+          permissionStatus: 'denied',
           isLoading: false,
-          error: 'Notifications require a physical device'
+          error: 'Notifications require a physical device',
         });
         return false;
       }
@@ -67,10 +67,10 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
 
       if (finalStatus !== 'granted') {
         logWarning('Notification permissions denied');
-        set({ 
-          permissionStatus: 'denied', 
+        set({
+          permissionStatus: 'denied',
           isLoading: false,
-          error: 'Notification permissions denied'
+          error: 'Notification permissions denied',
         });
         return false;
       }
@@ -86,10 +86,10 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
         });
       }
 
-      set({ 
-        permissionStatus: 'granted', 
+      set({
+        permissionStatus: 'granted',
         notificationsEnabled: true,
-        isLoading: false 
+        isLoading: false,
       });
 
       logInfo('Notification permissions granted');
@@ -97,9 +97,9 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       logError(error as Error, { context: 'notifications.requestPermissions' });
-      set({ 
-        error: errorMessage, 
-        isLoading: false 
+      set({
+        error: errorMessage,
+        isLoading: false,
       });
       return false;
     }
@@ -122,7 +122,9 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       logInfo('Expo push token obtained', { token: token.data });
 
       // Save token to database
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (user) {
         const { error } = await supabase
           .from('user_profiles')
@@ -138,31 +140,27 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
         }
       }
 
-      set({ 
+      set({
         expoPushToken: token.data,
         notificationsEnabled: true,
-        isLoading: false 
+        isLoading: false,
       });
 
       logInfo('Push notifications registered successfully');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       logError(error as Error, { context: 'notifications.register' });
-      set({ 
-        error: errorMessage, 
-        isLoading: false 
+      set({
+        error: errorMessage,
+        isLoading: false,
       });
     }
   },
 
-  scheduleHabitReminder: async (
-    habitId: string,
-    habitName: string,
-    reminderTime: Date
-  ) => {
+  scheduleHabitReminder: async (habitId: string, habitName: string, reminderTime: Date) => {
     try {
       const { permissionStatus } = get();
-      
+
       if (permissionStatus !== 'granted') {
         logWarning('Cannot schedule reminder: permissions not granted');
         return null;
@@ -173,7 +171,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       const habitNotifications = existingNotifications.filter(
         (notif) => notif.content.data?.habitId === habitId
       );
-      
+
       for (const notif of habitNotifications) {
         await Notifications.cancelScheduledNotificationAsync(notif.identifier);
       }
@@ -181,12 +179,12 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       // Schedule new notification
       const notificationId = await Notifications.scheduleNotificationAsync({
         content: {
-          title: `Time for ${habitName} ✨`,
-          body: 'Tap to check in and keep your streak going!',
-          data: { 
+          title: `Time for ${habitName}`,
+          body: 'Tap to record your habit when you are ready.',
+          data: {
             habitId,
             type: 'habit_reminder',
-            screen: 'home'
+            screen: 'home',
           },
           sound: true,
           priority: Notifications.AndroidNotificationPriority.HIGH,
@@ -199,11 +197,11 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
         },
       });
 
-      logInfo('Habit reminder scheduled', { 
-        habitId, 
+      logInfo('Habit reminder scheduled', {
+        habitId,
         habitName,
         notificationId,
-        time: reminderTime.toISOString()
+        time: reminderTime.toISOString(),
       });
 
       return notificationId;
@@ -238,7 +236,9 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     try {
       set({ isLoading: true, error: null });
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         throw new Error('User not authenticated');
       }
@@ -259,18 +259,18 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
         await get().cancelAllReminders();
       }
 
-      set({ 
+      set({
         notificationsEnabled: enabled,
-        isLoading: false 
+        isLoading: false,
       });
 
       logInfo('Notification settings updated', { enabled });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       logError(error as Error, { context: 'notifications.updateSettings' });
-      set({ 
-        error: errorMessage, 
-        isLoading: false 
+      set({
+        error: errorMessage,
+        isLoading: false,
       });
     }
   },

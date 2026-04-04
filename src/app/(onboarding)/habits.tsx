@@ -6,7 +6,9 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  StyleSheet,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '../../stores/authStore';
 import HabitService from '../../lib/habitService';
@@ -24,7 +26,7 @@ export default function HabitStackScreen() {
 
   useEffect(() => {
     loadHabits();
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only load
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only load
   }, []);
 
   const loadHabits = async () => {
@@ -34,7 +36,6 @@ export default function HabitStackScreen() {
       setLoading(true);
       setError(null);
 
-      // Check for existing habit stack
       const existingStack = await HabitService.getActiveStack(user.id);
 
       if (existingStack) {
@@ -42,7 +43,6 @@ export default function HabitStackScreen() {
         const existingHabits = await HabitService.getActiveHabits(user.id);
         setHabits(existingHabits);
       } else {
-        // No stack exists, generate one
         await generateHabits();
       }
     } catch (err) {
@@ -79,7 +79,7 @@ export default function HabitStackScreen() {
   const handleRegenerate = () => {
     Alert.alert(
       'Regenerate Habits?',
-      'This will create a new set of habits based on your Habit Profile. Your current habits will be archived.',
+      'This will create a new set of habits based on your habit profile. Current habits will be archived.',
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -92,7 +92,7 @@ export default function HabitStackScreen() {
               const result = await HabitService.regenerateHabits(user.id);
               setStack(result.stack);
               setHabits(result.habits);
-              Alert.alert('Success', 'Your habit stack has been regenerated!');
+              Alert.alert('Updated', 'Your habit stack has been regenerated.');
             } catch (err) {
               const errorMessage = err instanceof Error ? err.message : 'Failed to regenerate';
               Alert.alert('Error', errorMessage);
@@ -106,7 +106,6 @@ export default function HabitStackScreen() {
   };
 
   const handleStartTracking = () => {
-    // Navigate to notification permission screen
     router.replace('/(onboarding)/notifications');
   };
 
@@ -122,16 +121,15 @@ export default function HabitStackScreen() {
     };
 
     if (days.length === 7) return 'Every day';
-    if (days.length === 5 && days.every(d => d >= 1 && d <= 5)) return 'Weekdays';
+    if (days.length === 5 && days.every((d) => d >= 1 && d <= 5)) return 'Weekdays';
     if (days.length === 2 && days.includes(6) && days.includes(7)) return 'Weekends';
 
-    return days.map(d => dayMap[d]).join(', ');
+    return days.map((d) => dayMap[d]).join(', ');
   };
 
   const formatTime = (time: string): string => {
-    // Convert 24h to 12h format
     const [hours, minutes] = time.split(':');
-    const hour = parseInt(hours);
+    const hour = parseInt(hours, 10);
     const ampm = hour >= 12 ? 'PM' : 'AM';
     const displayHour = hour % 12 || 12;
     return `${displayHour}:${minutes} ${ampm}`;
@@ -139,29 +137,34 @@ export default function HabitStackScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 bg-gray-50 items-center justify-center">
-        <ActivityIndicator size="large" color="#8B5CF6" />
-        <Text className="mt-4 text-gray-600">Loading your habits...</Text>
+      <View className="flex-1 bg-surface items-center justify-center">
+        <ActivityIndicator size="large" color="#191c1e" />
+        <Text className="mt-4 font-public text-on_surface_variant">Loading habits…</Text>
       </View>
     );
   }
 
   if (generating) {
     return (
-      <View className="flex-1 bg-gray-50 items-center justify-center px-6">
-        <ActivityIndicator size="large" color="#8B5CF6" />
-        <Text className="mt-4 text-xl font-semibold text-gray-900">
-          Designing Your Habits...
+      <View className="flex-1 bg-surface items-center justify-center px-7">
+        <ActivityIndicator size="large" color="#191c1e" />
+        <Text className="mt-4 text-xl font-manrope text-on_surface text-center">
+          Designing Your Stack
         </Text>
-        <Text className="mt-2 text-gray-600 text-center">
-          Our AI is creating habits that fit YOUR life, based on your Habit Profile and
-          constraints. This takes 3-5 seconds.
+        <Text className="mt-2 font-public text-on_surface_variant text-center leading-6">
+          Translating your profile and constraints into small, schedulable actions.
         </Text>
-        <View className="mt-6 space-y-2">
-          <Text className="text-sm text-gray-500 text-center">✓ Analyzing your energy patterns</Text>
-          <Text className="text-sm text-gray-500 text-center">✓ Avoiding past failure triggers</Text>
-          <Text className="text-sm text-gray-500 text-center">✓ Designing tiny versions</Text>
-          <Text className="text-sm text-gray-500 text-center">✓ Finding anchor routines</Text>
+        <View className="mt-8 space-y-3">
+          <Text className="text-sm font-public text-on_surface_variant text-center">
+            · Energy and timing
+          </Text>
+          <Text className="text-sm font-public text-on_surface_variant text-center">
+            · Past friction points
+          </Text>
+          <Text className="text-sm font-public text-on_surface_variant text-center">
+            · Tiny versions
+          </Text>
+          <Text className="text-sm font-public text-on_surface_variant text-center">· Anchors</Text>
         </View>
       </View>
     );
@@ -169,15 +172,26 @@ export default function HabitStackScreen() {
 
   if (error) {
     return (
-      <View className="flex-1 bg-gray-50 items-center justify-center px-6">
-        <Text className="text-6xl mb-4">⚠️</Text>
-        <Text className="text-xl font-semibold text-gray-900 mb-2">Oops!</Text>
-        <Text className="text-gray-600 text-center mb-6">{error}</Text>
+      <View className="flex-1 bg-surface items-center justify-center px-7">
+        <Text className="text-xl font-manrope text-on_surface mb-2 text-center">
+          Something Went Wrong
+        </Text>
+        <Text className="font-public text-on_surface_variant text-center mb-8 leading-6">
+          {error}
+        </Text>
         <TouchableOpacity
-          className="bg-purple-600 px-6 py-3 rounded-lg"
+          activeOpacity={0.92}
           onPress={loadHabits}
+          className="rounded-full overflow-hidden"
         >
-          <Text className="text-white font-semibold">Try Again</Text>
+          <LinearGradient
+            colors={['#000000', '#131b2e']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradBtn}
+          >
+            <Text className="text-white font-public-sb">Try Again</Text>
+          </LinearGradient>
         </TouchableOpacity>
       </View>
     );
@@ -185,110 +199,100 @@ export default function HabitStackScreen() {
 
   if (!stack || habits.length === 0) {
     return (
-      <View className="flex-1 bg-gray-50 items-center justify-center px-6">
-        <Text className="text-xl font-semibold text-gray-900 mb-4">
-          No Habits Found
-        </Text>
+      <View className="flex-1 bg-surface items-center justify-center px-7">
+        <Text className="text-xl font-manrope text-on_surface mb-6 text-center">No Habits Yet</Text>
         <TouchableOpacity
-          className="bg-purple-600 px-6 py-3 rounded-lg"
+          activeOpacity={0.92}
           onPress={generateHabits}
+          className="rounded-full overflow-hidden"
         >
-          <Text className="text-white font-semibold">Generate Habits</Text>
+          <LinearGradient
+            colors={['#000000', '#131b2e']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradBtn}
+          >
+            <Text className="text-white font-public-sb">Generate Habits</Text>
+          </LinearGradient>
         </TouchableOpacity>
       </View>
     );
   }
 
   return (
-    <ScrollView className="flex-1 bg-gray-50">
-      <View className="px-6 py-8">
-        {/* Header */}
-        <View className="mb-6">
-          <Text className="text-3xl font-bold text-gray-900 mb-2">
-            💡 Your Personalized Habits
+    <ScrollView className="flex-1 bg-surface">
+      <View className="px-7 py-10">
+        <View className="mb-8 self-start">
+          <Text className="font-manrope text-display-lg text-on_surface mb-2">
+            Your Habit Stack
           </Text>
-          <Text className="text-gray-600">
-            Designed specifically for you based on your Habit Profile
+          <Text className="font-public text-on_surface_variant leading-6">
+            Shaped by your profile and constraints
           </Text>
         </View>
 
-        {/* Stack Rationale */}
         {stack.generation_rationale && (
-          <View className="bg-blue-50 rounded-lg p-4 mb-6 border border-blue-200">
-            <Text className="text-sm font-semibold text-blue-900 mb-2">
+          <View className="bg-surface_container_low rounded-xl p-5 mb-8">
+            <Text className="text-sm font-manrope-md text-on_surface mb-2">
               Why This Combination
             </Text>
-            <Text className="text-gray-800">{stack.generation_rationale}</Text>
+            <Text className="font-public text-on_surface leading-6">
+              {stack.generation_rationale}
+            </Text>
           </View>
         )}
 
-        {/* Habit Cards */}
         {habits.map((habit, index) => (
-          <View
-            key={habit.id}
-            className="bg-white rounded-lg p-6 mb-4 shadow-sm border-l-4 border-purple-500"
-          >
-            {/* Habit Number */}
-            <View className="flex-row items-center mb-3">
-              <View className="w-8 h-8 bg-purple-600 rounded-full items-center justify-center mr-3">
-                <Text className="text-white font-bold">{index + 1}</Text>
+          <View key={habit.id} className="bg-surface_container_lowest rounded-xl p-6 mb-5">
+            <View className="flex-row items-center mb-4">
+              <View className="w-9 h-9 bg-primary_container rounded-full items-center justify-center mr-3">
+                <Text className="text-white font-public-sb">{index + 1}</Text>
               </View>
-              <Text className="text-xl font-bold text-gray-900 flex-1">
-                {habit.name}
-              </Text>
+              <Text className="text-xl font-manrope text-on_surface flex-1">{habit.name}</Text>
             </View>
 
-            {/* Tiny Version */}
             <View className="mb-4">
-              <Text className="text-sm font-semibold text-gray-700 mb-1">
-                Tiny Version (2 minutes or less)
+              <Text className="text-sm font-public-sb text-on_surface_variant mb-1">
+                Tiny version
               </Text>
-              <Text className="text-gray-800">{habit.tiny_version}</Text>
+              <Text className="font-public text-on_surface leading-6">{habit.tiny_version}</Text>
             </View>
 
-            {/* Anchor */}
             <View className="mb-4">
-              <Text className="text-sm font-semibold text-gray-700 mb-1">
-                🔗 Anchor
-              </Text>
-              <Text className="text-gray-800">{habit.anchor}</Text>
+              <Text className="text-sm font-public-sb text-on_surface_variant mb-1">Anchor</Text>
+              <Text className="font-public text-on_surface leading-6">{habit.anchor}</Text>
             </View>
 
-            {/* Celebration */}
             <View className="mb-4">
-              <Text className="text-sm font-semibold text-gray-700 mb-1">
-                🎉 Celebration
+              <Text className="text-sm font-public-sb text-on_surface_variant mb-1">
+                Celebration
               </Text>
-              <Text className="text-gray-800">{habit.celebration}</Text>
+              <Text className="font-public text-on_surface leading-6">{habit.celebration}</Text>
             </View>
 
-            {/* Rationale - Why This Works */}
-            <View className="bg-purple-50 rounded-lg p-4 mb-4">
-              <Text className="text-sm font-semibold text-purple-900 mb-2">
-                💜 Why This Works for You
-              </Text>
-              <Text className="text-gray-800">{habit.rationale}</Text>
+            <View className="bg-growth_muted rounded-xl p-4 mb-4">
+              <Text className="text-sm font-manrope-md text-on_surface mb-2">Why This Fits</Text>
+              <Text className="font-public text-on_surface leading-6">{habit.rationale}</Text>
             </View>
 
-            {/* Schedule Info */}
-            <View className="flex-row items-center justify-between">
-              <View>
-                <Text className="text-xs text-gray-500">Schedule</Text>
-                <Text className="text-sm font-medium text-gray-700">
+            <View className="flex-row flex-wrap justify-between gap-y-3">
+              <View className="min-w-[45%]">
+                <Text className="text-xs font-public text-on_surface_variant">Schedule</Text>
+                <Text className="text-sm font-public-sb text-on_surface">
                   {getDayNames(habit.days_of_week)}
                 </Text>
               </View>
               {habit.reminder_enabled && (
-                <View>
-                  <Text className="text-xs text-gray-500">Reminder</Text>
-                  <Text className="text-sm font-medium text-gray-700">
+                <View className="min-w-[45%]">
+                  <Text className="text-xs font-public text-on_surface_variant">Reminder</Text>
+                  <Text className="text-sm font-public-sb text-on_surface">
                     {formatTime(habit.reminder_time)}
                   </Text>
                 </View>
               )}
-              <View>
-                <Text className="text-xs text-gray-500">Addresses</Text>
-                <Text className="text-sm font-medium text-purple-700">
+              <View className="min-w-[45%]">
+                <Text className="text-xs font-public text-on_surface_variant">Pattern</Text>
+                <Text className="text-sm font-public-sb text-tertiary_fixed_dim">
                   {habit.addresses_pattern}
                 </Text>
               </View>
@@ -296,58 +300,65 @@ export default function HabitStackScreen() {
           </View>
         ))}
 
-        {/* Key Principles */}
-        <View className="bg-green-50 rounded-lg p-4 mb-6 border border-green-200">
-          <Text className="text-sm font-semibold text-green-900 mb-3">
-            🌟 Remember These Principles
+        <View className="bg-surface_container_low rounded-xl p-5 mb-8">
+          <Text className="text-sm font-manrope-md text-on_surface mb-3">Principles</Text>
+          <Text className="font-public text-on_surface leading-6 mb-2">
+            · Start small: the minimum counts as the win.
           </Text>
-          <View className="space-y-2">
-            <Text className="text-gray-800">
-              • <Text className="font-semibold">Start TINY:</Text> You can always do more, but the
-              win is doing the minimum
-            </Text>
-            <Text className="text-gray-800">
-              • <Text className="font-semibold">Anchor matters:</Text> The &quot;After I...&quot; part makes
-              it automatic
-            </Text>
-            <Text className="text-gray-800">
-              • <Text className="font-semibold">Celebrate immediately:</Text> Dopamine reinforces
-              the habit
-            </Text>
-            <Text className="text-gray-800">
-              • <Text className="font-semibold">Don&apos;t miss twice:</Text> One skip is fine; two
-              starts a pattern
-            </Text>
-          </View>
+          <Text className="font-public text-on_surface leading-6 mb-2">
+            · Anchors turn intention into sequence.
+          </Text>
+          <Text className="font-public text-on_surface leading-6 mb-2">
+            · Acknowledge completion calmly—it reinforces the loop.
+          </Text>
+          <Text className="font-public text-on_surface leading-6">
+            · Don&apos;t miss twice: one quiet day is data; back-to-back misses deserve a smaller
+            step.
+          </Text>
         </View>
 
-        {/* Actions */}
         <View className="space-y-3">
           <TouchableOpacity
-            className="bg-purple-600 py-4 rounded-lg items-center"
+            activeOpacity={0.92}
             onPress={handleStartTracking}
+            className="rounded-full overflow-hidden"
           >
-            <Text className="text-white font-bold text-lg">Start Tracking</Text>
+            <LinearGradient
+              colors={['#000000', '#131b2e']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.gradBtnWide}
+            >
+              <Text className="text-white font-public-sb text-lg">Start Tracking</Text>
+            </LinearGradient>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            className="border border-gray-300 py-3 rounded-lg items-center"
-            onPress={handleRegenerate}
-          >
-            <Text className="text-gray-700 font-semibold">Regenerate Habits</Text>
+          <TouchableOpacity className="py-4 items-center" onPress={handleRegenerate}>
+            <Text className="text-on_surface_variant font-public-sb">Regenerate Stack</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Footer */}
-        <View className="mt-6 p-4 bg-gray-100 rounded-lg">
-          <Text className="text-xs text-gray-600 text-center">
-            Stack created: {new Date(stack.created_at).toLocaleDateString()}
+        <View className="mt-8 bg-surface_container_low rounded-xl p-4">
+          <Text className="text-xs font-public text-on_surface_variant text-center">
+            Stack created {new Date(stack.created_at).toLocaleDateString()}
           </Text>
-          <Text className="text-xs text-gray-500 text-center mt-1">
-            These habits will adjust weekly based on your data
+          <Text className="text-xs font-public text-on_surface_variant text-center mt-2">
+            Adjustments can follow weekly from your data
           </Text>
         </View>
       </View>
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  gradBtn: {
+    paddingVertical: 14,
+    paddingHorizontal: 28,
+    alignItems: 'center',
+  },
+  gradBtnWide: {
+    paddingVertical: 16,
+    alignItems: 'center',
+  },
+});

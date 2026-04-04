@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } fr
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useAuthStore } from '../../stores/authStore';
 import { AuthInput, AuthButton, ErrorMessage } from '../../components/auth';
+import { authScreenStyles as s } from '../../styles/authScreenStyles';
+import { fontFamily } from '../../lib/fonts';
 
 export default function ResetPasswordScreen() {
   const router = useRouter();
@@ -18,8 +20,6 @@ export default function ResetPasswordScreen() {
   const [resetSuccess, setResetSuccess] = useState(false);
 
   useEffect(() => {
-    // Check if we have the necessary tokens from the deep link
-    // The tokens will be in the URL params
     console.log('Reset password params:', params);
   }, [params]);
 
@@ -34,13 +34,13 @@ export default function ResetPasswordScreen() {
   const getPasswordStrengthColor = (strength: string): string => {
     switch (strength) {
       case 'Weak':
-        return '#ef4444';
+        return '#8b5a5a';
       case 'Medium':
-        return '#f59e0b';
+        return '#7d6b55';
       case 'Strong':
-        return '#10b981';
+        return '#2d6a58';
       default:
-        return '#6b7280';
+        return '#5c6370';
     }
   };
 
@@ -77,7 +77,6 @@ export default function ResetPasswordScreen() {
       await updatePassword(newPassword);
       setResetSuccess(true);
 
-      // Redirect to login after 2 seconds
       setTimeout(() => {
         router.replace('/(auth)/login');
       }, 2000);
@@ -88,12 +87,11 @@ export default function ResetPasswordScreen() {
 
   if (resetSuccess) {
     return (
-      <View style={styles.container}>
+      <View style={s.container}>
         <View style={styles.successContainer}>
-          <Text style={styles.successIcon}>✅</Text>
-          <Text style={styles.successTitle}>Password Updated!</Text>
+          <Text style={styles.successTitle}>Password Updated</Text>
           <Text style={styles.successMessage}>
-            Your password has been successfully updated. Redirecting to login...
+            Your password has been updated. Redirecting to sign in…
           </Text>
         </View>
       </View>
@@ -104,16 +102,16 @@ export default function ResetPasswordScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={s.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-        <View style={styles.header}>
-          <Text style={styles.title}>Reset Password</Text>
-          <Text style={styles.subtitle}>Enter your new password below</Text>
+      <ScrollView contentContainerStyle={s.scrollContent} keyboardShouldPersistTaps="handled">
+        <View style={s.header}>
+          <Text style={s.title}>Reset Password</Text>
+          <Text style={s.subtitle}>Enter your new password below</Text>
         </View>
 
-        <View style={styles.form}>
+        <View style={s.form}>
           <ErrorMessage message={error} />
 
           <AuthInput
@@ -165,60 +163,30 @@ export default function ResetPasswordScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 32,
-  },
-  header: {
-    marginBottom: 32,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#111',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#6b7280',
-  },
-  form: {
-    width: '100%',
-  },
   passwordStrength: {
     marginTop: -8,
     marginBottom: 8,
   },
   strengthText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: fontFamily.publicSansMedium,
   },
   successContainer: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-  },
-  successIcon: {
-    fontSize: 64,
-    marginBottom: 24,
+    paddingHorizontal: 28,
   },
   successTitle: {
     fontSize: 28,
-    fontWeight: 'bold',
-    color: '#111',
+    fontFamily: fontFamily.manrope,
+    color: '#191c1e',
     marginBottom: 16,
-    textAlign: 'center',
+    textAlign: 'left',
   },
   successMessage: {
     fontSize: 16,
-    color: '#374151',
-    textAlign: 'center',
+    fontFamily: fontFamily.publicSans,
+    color: '#5c6370',
+    lineHeight: 24,
   },
 });

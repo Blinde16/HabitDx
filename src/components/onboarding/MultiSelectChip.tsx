@@ -10,14 +10,14 @@ interface MultiSelectChipProps {
 export const MultiSelectChip: React.FC<MultiSelectChipProps> = ({ label, selected, onPress }) => {
   return (
     <TouchableOpacity
-      className={`px-4 py-3 rounded-2xl border mr-2 mb-2 ${
-        selected ? 'bg-blue-600 border-blue-600' : 'bg-white border-gray-200'
+      className={`px-4 py-3 rounded-full mr-2 mb-2 ${
+        selected ? 'bg-primary_container' : 'bg-surface_container_low'
       }`}
       onPress={onPress}
-      activeOpacity={0.7}
+      activeOpacity={0.85}
     >
-      <Text className={`text-sm font-semibold ${selected ? 'text-white' : 'text-gray-700'}`}>
-        {selected ? `✓ ${label}` : label}
+      <Text className={`text-sm font-public-sb ${selected ? 'text-white' : 'text-on_surface'}`}>
+        {label}
       </Text>
     </TouchableOpacity>
   );

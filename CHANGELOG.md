@@ -8,6 +8,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Com
 
 ### Added
 
+- **Design system:** Master editorial UI standard — Tailwind semantic tokens (surfaces, primary/navy gradient CTAs, soft emerald accents), **Manrope** + **Public Sans** via `expo-font` / `@expo-google-fonts`, shared `src/lib/fonts.ts` and `src/styles/authScreenStyles.ts`. Reference: [`aiDocs/master-design.md`](aiDocs/master-design.md).
 - **Home:** Total completed check-ins (all habits) shown in the header next to daily completion.
 - **Insights:** Progress copy toward unlocking weekly insights (X of 5 check-ins); generate button disabled until the minimum is met.
 - **Auth (login & signup):** Value proposition — tagline and three bullets above the form.
@@ -15,6 +16,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Com
 
 ### Changed
 
+- **UI (site-wide):** Redesign aligned with the Intellectual Sanctuary direction — tonal layering instead of default borders, editorial spacing, gradient primary buttons, Feather tab icons, calmer check-in success and obstacle flows. **Home** removes streak-centric UI and harsh red/green habit states; **Insights**, **Settings**, **auth**, **onboarding** (chat, habits, failure profile, notifications, goals, constraints, confirmation, past failures), **profile**, and **shared profile** routes updated. Notification titles/bodies no longer emphasize streaks; splash and Android adaptive backgrounds use paper-toned `#f7f9fb`.
 - **Naming:** User-facing "Failure Profile" / "Habit Failure Profile" copy updated to **Habit Profile** (settings, onboarding, share page, habits screen, confirmation).
 - **Home:** Softer "welcome back" messaging after a miss; clearer tap / long-press help text (`text-sm` / `text-gray-600`); daily tip wording less punitive.
 - **Onboarding AI chat:** "Skip for now" navigates to home instead of signing out.

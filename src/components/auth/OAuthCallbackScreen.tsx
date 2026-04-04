@@ -56,20 +56,14 @@ async function recoverSessionFromWebRedirectUrl(): Promise<WebRedirectRecovery> 
   }
 
   const url = new URL(window.location.href);
-  const hashParams = new URLSearchParams(
-    url.hash.startsWith('#') ? url.hash.slice(1) : url.hash
-  );
+  const hashParams = new URLSearchParams(url.hash.startsWith('#') ? url.hash.slice(1) : url.hash);
 
   const oauthError =
-    hashParams.get('error') ||
-    url.searchParams.get('error') ||
-    url.searchParams.get('error_code');
+    hashParams.get('error') || url.searchParams.get('error') || url.searchParams.get('error_code');
   const oauthErrorDescription =
     hashParams.get('error_description') || url.searchParams.get('error_description');
   if (oauthError) {
-    const msg = oauthErrorDescription
-      ? safeDecodeOAuthMessage(oauthErrorDescription)
-      : oauthError;
+    const msg = oauthErrorDescription ? safeDecodeOAuthMessage(oauthErrorDescription) : oauthError;
     stripAuthFragmentFromUrl();
     url.searchParams.delete('error');
     url.searchParams.delete('error_description');
@@ -82,7 +76,11 @@ async function recoverSessionFromWebRedirectUrl(): Promise<WebRedirectRecovery> 
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     url.searchParams.delete('code');
-    window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
+    window.history.replaceState(
+      window.history.state,
+      '',
+      `${url.pathname}${url.search}${url.hash}`
+    );
     if (error) {
       const msg = error.message?.includes('PKCE code verifier')
         ? `${error.message}\n\nTip: finish sign-in on the same site URL you started from (www vs non-www must match). Add every origin you use under Supabase → Authentication → URL Configuration → Redirect URLs.`
@@ -272,7 +270,7 @@ export function OAuthCallbackScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f7f9fb',
     padding: 24,
     justifyContent: 'center',
   },
@@ -290,10 +288,10 @@ const styles = StyleSheet.create({
   },
   button: {
     alignSelf: 'flex-start',
-    backgroundColor: '#8B5CF6',
+    backgroundColor: '#131b2e',
     paddingVertical: 12,
     paddingHorizontal: 20,
-    borderRadius: 8,
+    borderRadius: 9999,
   },
   buttonText: {
     color: '#fff',

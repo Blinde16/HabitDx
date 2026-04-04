@@ -43,7 +43,9 @@ export default function GoalsScreen() {
       tip="Good habits stick better when the payoff feels personal and immediate."
     >
       <View className="bg-white border border-gray-200 rounded-[28px] p-5 mb-6">
-        <Text className="text-base font-semibold text-gray-800 mb-2">What matters most right now?</Text>
+        <Text className="text-base font-semibold text-gray-800 mb-2">
+          What matters most right now?
+        </Text>
         <Text className="text-sm text-gray-500 leading-6 mb-4">
           You can pick up to three goals. Focus beats ambition here.
         </Text>
@@ -58,8 +60,8 @@ export default function GoalsScreen() {
                 key={goal.value}
                 className={`w-[48%] aspect-[1.2] p-4 rounded-[24px] border items-center justify-center relative ${
                   isSelected
-                    ? 'bg-blue-600 border-blue-600'
-                    : 'bg-gray-50 border-gray-200'
+                    ? 'bg-primary_container border-primary_container'
+                    : 'bg-surface_container_low'
                 } ${isDisabled ? 'opacity-50' : ''}`}
                 onPress={() => handleToggleGoal(goal.value)}
                 disabled={isDisabled}
@@ -74,7 +76,7 @@ export default function GoalsScreen() {
                 </Text>
                 {isSelected && (
                   <View className="absolute top-2 right-2 w-6 h-6 rounded-full bg-white items-center justify-center">
-                    <Text className="text-blue-600 text-sm font-bold">✓</Text>
+                    <Text className="text-primary_container text-sm font-bold">✓</Text>
                   </View>
                 )}
               </TouchableOpacity>
@@ -107,7 +109,7 @@ export default function GoalsScreen() {
           </Text>
         )}
         <TouchableOpacity className="py-3 items-center" onPress={handleBack}>
-          <Text className="text-base text-blue-600 font-semibold">← Back</Text>
+          <Text className="text-base text-primary_container font-semibold">← Back</Text>
         </TouchableOpacity>
         <AuthButton
           title={canProceed(4) ? 'Review my plan' : 'Answer to continue'}

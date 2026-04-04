@@ -31,7 +31,7 @@ function Bubble({ role, children }: { role: 'user' | 'assistant'; children: Reac
   return (
     <View className={`mb-3 max-w-[92%] ${isUser ? 'self-end' : 'self-start'}`}>
       {!isUser && (
-        <View className="self-start bg-blue-600 rounded-full px-3 py-1 mb-1.5">
+        <View className="self-start bg-primary_container rounded-full px-3 py-1 mb-1.5">
           <Text className="text-[10px] font-semibold uppercase tracking-[1px] text-white">
             HabitDx
           </Text>
@@ -39,7 +39,7 @@ function Bubble({ role, children }: { role: 'user' | 'assistant'; children: Reac
       )}
       <View
         className={`rounded-[20px] px-4 py-3 ${
-          isUser ? 'bg-blue-100 border border-blue-200 rounded-tr-sm' : 'bg-slate-900 rounded-tl-sm'
+          isUser ? 'bg-surface_container_low rounded-tr-sm' : 'bg-primary_container rounded-tl-sm'
         }`}
       >
         <Text className={`text-base leading-6 ${isUser ? 'text-slate-800' : 'text-white'}`}>
@@ -55,8 +55,12 @@ export function OnboardingAiChat() {
   const scrollRef = useRef<ScrollView>(null);
   const { applyAiExtracted, submitOnboarding, loading: storeLoading } = useOnboardingStore();
   const { user } = useAuthStore();
-  const { listening, supported: speechSupported, startListening, stopListening } =
-    useWebSpeechRecognition();
+  const {
+    listening,
+    supported: speechSupported,
+    startListening,
+    stopListening,
+  } = useWebSpeechRecognition();
 
   const [messages, setMessages] = useState<ChatTurn[]>([{ role: 'assistant', content: WELCOME }]);
   const [input, setInput] = useState('');
@@ -149,7 +153,7 @@ export function OnboardingAiChat() {
         ))}
         {coachLoading && (
           <View className="self-start flex-row items-center gap-2 mb-4">
-            <ActivityIndicator size="small" color="#2563eb" />
+            <ActivityIndicator size="small" color="#191c1e" />
             <Text className="text-slate-500 text-sm">Thinking…</Text>
           </View>
         )}
@@ -186,7 +190,7 @@ export function OnboardingAiChat() {
           <TouchableOpacity
             onPress={handleSend}
             disabled={!input.trim() || coachLoading}
-            className={`h-12 px-4 rounded-2xl items-center justify-center bg-blue-600 ${
+            className={`h-12 px-4 rounded-2xl items-center justify-center bg-primary_container ${
               !input.trim() || coachLoading ? 'opacity-40' : ''
             }`}
           >

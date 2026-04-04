@@ -12,6 +12,8 @@ import { useRouter } from 'expo-router';
 import { useAuthStore } from '../../stores/authStore';
 import { AuthInput, AuthButton, SocialButton, ErrorMessage } from '../../components/auth';
 import { logError } from '../../lib/logger';
+import { authScreenStyles as s } from '../../styles/authScreenStyles';
+import { fontFamily } from '../../lib/fonts';
 
 export default function SignupScreen() {
   const router = useRouter();
@@ -39,13 +41,13 @@ export default function SignupScreen() {
   const getPasswordStrengthColor = (strength: string): string => {
     switch (strength) {
       case 'Weak':
-        return '#ef4444';
+        return '#8b5a5a';
       case 'Medium':
-        return '#f59e0b';
+        return '#7d6b55';
       case 'Strong':
-        return '#10b981';
+        return '#2d6a58';
       default:
-        return '#6b7280';
+        return '#5c6370';
     }
   };
 
@@ -104,7 +106,9 @@ export default function SignupScreen() {
     try {
       await signInWithGoogle();
     } catch (err) {
-      logError(err instanceof Error ? err : new Error(String(err)), { context: 'auth.googleSignUp' });
+      logError(err instanceof Error ? err : new Error(String(err)), {
+        context: 'auth.googleSignUp',
+      });
     }
   };
 
@@ -112,24 +116,24 @@ export default function SignupScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={s.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-        <View style={styles.header}>
-          <Text style={styles.title}>Create Account</Text>
-          <Text style={styles.subtitle}>Sign up to get started with HabitDx</Text>
-          <Text style={styles.valueTagline}>
+      <ScrollView contentContainerStyle={s.scrollContent} keyboardShouldPersistTaps="handled">
+        <View style={s.header}>
+          <Text style={s.title}>Create Account</Text>
+          <Text style={s.subtitle}>Sign up to get started with HabitDx</Text>
+          <Text style={s.valueTagline}>
             Understand why your habits fail. Build ones that stick.
           </Text>
-          <View style={styles.valueBullets}>
-            <Text style={styles.valueBullet}>• AI-powered habit diagnosis</Text>
-            <Text style={styles.valueBullet}>• Personalized tiny habits</Text>
-            <Text style={styles.valueBullet}>• Weekly adjustments that adapt to you</Text>
+          <View style={s.valueBullets}>
+            <Text style={s.valueBullet}>• Diagnostic habit analysis</Text>
+            <Text style={s.valueBullet}>• Personalized tiny habits</Text>
+            <Text style={s.valueBullet}>• Weekly pattern adjustments</Text>
           </View>
         </View>
 
-        <View style={styles.form}>
+        <View style={s.form}>
           <ErrorMessage message={error} />
 
           <AuthInput
@@ -200,22 +204,18 @@ export default function SignupScreen() {
             variant="primary"
           />
 
-          <View style={styles.divider}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>OR</Text>
-            <View style={styles.dividerLine} />
-          </View>
+          <Text style={s.orLabel}>OR</Text>
 
           <SocialButton provider="google" onPress={handleGoogleSignUp} loading={loading} />
 
-          <View style={styles.loginPrompt}>
-            <Text style={styles.loginPromptText}>Already have an account? </Text>
+          <View style={s.linkRow}>
+            <Text style={s.linkMuted}>Already have an account? </Text>
             <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
-              <Text style={styles.loginLink}>Sign In</Text>
+              <Text style={s.linkAccent}>Sign In</Text>
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.termsText}>
+          <Text style={s.termsText}>
             By signing up, you agree to our Terms of Service and Privacy Policy
           </Text>
         </View>
@@ -225,89 +225,12 @@ export default function SignupScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 32,
-  },
-  header: {
-    marginBottom: 32,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#111',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#6b7280',
-  },
-  valueTagline: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: '#111827',
-    marginTop: 16,
-    lineHeight: 24,
-  },
-  valueBullets: {
-    marginTop: 12,
-  },
-  valueBullet: {
-    fontSize: 15,
-    color: '#4b5563',
-    lineHeight: 22,
-    marginBottom: 6,
-  },
-  form: {
-    width: '100%',
-  },
   passwordStrength: {
     marginTop: -8,
     marginBottom: 8,
   },
   strengthText: {
     fontSize: 12,
-    fontWeight: '600',
-  },
-  divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 24,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#e5e7eb',
-  },
-  dividerText: {
-    marginHorizontal: 16,
-    color: '#6b7280',
-    fontSize: 14,
-  },
-  loginPrompt: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 24,
-  },
-  loginPromptText: {
-    color: '#6b7280',
-    fontSize: 14,
-  },
-  loginLink: {
-    color: '#3b82f6',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  termsText: {
-    fontSize: 12,
-    color: '#9ca3af',
-    textAlign: 'center',
-    marginTop: 16,
+    fontFamily: fontFamily.publicSansMedium,
   },
 });

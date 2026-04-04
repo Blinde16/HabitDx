@@ -27,7 +27,7 @@ const GUIDE_LABEL = 'HabitDx guide';
 function GuideBubble({ children }: { children: React.ReactNode }) {
   return (
     <View className="mb-4 max-w-[92%] self-start">
-      <View className="self-start bg-blue-600 rounded-full px-3 py-1.5 mb-2">
+      <View className="self-start bg-primary_container rounded-full px-3 py-1.5 mb-2">
         <Text className="text-[10px] font-semibold uppercase tracking-[1px] text-white">
           {GUIDE_LABEL}
         </Text>
@@ -42,7 +42,7 @@ function GuideBubble({ children }: { children: React.ReactNode }) {
 function UserBubble({ children }: { children: React.ReactNode }) {
   return (
     <View className="mb-4 max-w-[90%] self-end">
-      <View className="bg-blue-100 border border-blue-200 rounded-[22px] rounded-tr-md px-4 py-3">
+      <View className="bg-surface_container_low rounded-[22px] rounded-tr-md px-4 py-3">
         <Text className="text-sm text-slate-800 leading-6">{children}</Text>
       </View>
     </View>
@@ -54,10 +54,7 @@ function energyLabel(value: string | null) {
   return o ? `${o.icon} ${o.label}` : '—';
 }
 
-function formatPastSummary(data: {
-  pastFailures: string[];
-  failureDescription: string;
-}) {
+function formatPastSummary(data: { pastFailures: string[]; failureDescription: string }) {
   const habits = data.pastFailures.join(', ') || '(none)';
   const desc =
     data.failureDescription.length > 160
@@ -79,10 +76,7 @@ function formatConstraintsSummary(data: {
 
 function formatGoalsSummary(data: { goals: string[]; motivation: string }) {
   const g = data.goals.join(', ');
-  const m =
-    data.motivation.length > 120
-      ? `${data.motivation.slice(0, 120)}…`
-      : data.motivation;
+  const m = data.motivation.length > 120 ? `${data.motivation.slice(0, 120)}…` : data.motivation;
   return `Goals: ${g}\n\nWhy: ${m}`;
 }
 
@@ -237,14 +231,14 @@ export function OnboardingChat() {
       {currentScreen === 2 && (
         <GuideBubble>
           Tell me about the habits that keep slipping. Start with ones you&apos;ve genuinely tried,
-          even if they only lasted a few days. Pick what feels familiar, then describe the pattern in
-          your own words.
+          even if they only lasted a few days. Pick what feels familiar, then describe the pattern
+          in your own words.
         </GuideBubble>
       )}
       {currentScreen === 3 && (
         <GuideBubble>
-          Now let&apos;s make this fit your real life — not an ideal week. I&apos;m looking for
-          your energy patterns, schedule shape, and the friction that shows up most often.
+          Now let&apos;s make this fit your real life — not an ideal week. I&apos;m looking for your
+          energy patterns, schedule shape, and the friction that shows up most often.
         </GuideBubble>
       )}
       {currentScreen === 4 && (
@@ -256,15 +250,15 @@ export function OnboardingChat() {
       {currentScreen === 5 && (
         <GuideBubble>
           Here&apos;s what happens next: we&apos;ll analyze your answers, show your Habit Profile,
-          then suggest 1–3 small habits matched to you. If anything below feels off, go
-          back and fix it — small accuracy wins here.
+          then suggest 1–3 small habits matched to you. If anything below feels off, go back and fix
+          it — small accuracy wins here.
         </GuideBubble>
       )}
     </>
   );
 
   const pastFailuresForm = (
-    <View className="bg-white border border-gray-200 rounded-[24px] p-4 mb-4">
+    <View className="bg-surface_container_lowest rounded-2xl rounded-[24px] p-4 mb-4">
       <Text className="text-base font-semibold text-gray-800 mb-2">What have you tried?</Text>
       <Text className="text-sm text-gray-500 leading-6 mb-3">
         Choose every habit you&apos;ve started and struggled to keep going.
@@ -290,13 +284,13 @@ export function OnboardingChat() {
           ))}
       </View>
       {data.pastFailures.length > 0 && (
-        <Text className="text-sm text-blue-700 mt-2 font-medium">
+        <Text className="text-sm text-primary_container mt-2 font-medium">
           {data.pastFailures.length} habit{data.pastFailures.length === 1 ? '' : 's'} selected
         </Text>
       )}
       {!showCustomInput ? (
         <TouchableOpacity className="mt-2 py-2" onPress={() => setShowCustomInput(true)}>
-          <Text className="text-sm text-blue-500 font-semibold">+ Add other</Text>
+          <Text className="text-sm text-primary_container font-semibold">+ Add other</Text>
         </TouchableOpacity>
       ) : (
         <View className="mt-3">
@@ -319,7 +313,7 @@ export function OnboardingChat() {
               <Text className="text-base font-semibold text-gray-500">Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              className={`flex-1 py-3 items-center rounded-lg bg-blue-500 ${!customHabit.trim() ? 'opacity-50' : ''}`}
+              className={`flex-1 py-3 items-center rounded-lg bg-primary_container ${!customHabit.trim() ? 'opacity-50' : ''}`}
               onPress={handleAddCustom}
               disabled={!customHabit.trim()}
             >
@@ -341,7 +335,7 @@ export function OnboardingChat() {
 
   const constraintsForm = (
     <>
-      <View className="bg-white border border-gray-200 rounded-[24px] p-4 mb-4">
+      <View className="bg-surface_container_lowest rounded-2xl rounded-[24px] p-4 mb-4">
         <Text className="text-base font-semibold text-gray-700 mb-2">
           When do you have the most energy?
         </Text>
@@ -354,8 +348,8 @@ export function OnboardingChat() {
               key={option.value}
               className={`min-w-[22%] flex-1 py-3 items-center rounded-2xl border ${
                 data.constraints.peak_energy === option.value
-                  ? 'bg-blue-600 border-blue-600'
-                  : 'bg-gray-50 border-gray-200'
+                  ? 'bg-primary_container border-primary_container'
+                  : 'bg-surface_container_low'
               }`}
               onPress={() =>
                 updateData('constraints', {
@@ -376,7 +370,7 @@ export function OnboardingChat() {
           ))}
         </View>
       </View>
-      <View className="bg-white border border-gray-200 rounded-[24px] p-4 mb-4">
+      <View className="bg-surface_container_lowest rounded-2xl rounded-[24px] p-4 mb-4">
         <Text className="text-base font-semibold text-gray-700 mb-2">
           What&apos;s your daily schedule like?
         </Text>
@@ -402,7 +396,7 @@ export function OnboardingChat() {
           ))}
         </View>
       </View>
-      <View className="bg-white border border-gray-200 rounded-[24px] p-4 mb-4">
+      <View className="bg-surface_container_lowest rounded-2xl rounded-[24px] p-4 mb-4">
         <Text className="text-base font-semibold text-gray-700 mb-2">
           What makes habits hard for you?
         </Text>
@@ -433,8 +427,10 @@ export function OnboardingChat() {
 
   const goalsForm = (
     <>
-      <View className="bg-white border border-gray-200 rounded-[24px] p-4 mb-4">
-        <Text className="text-base font-semibold text-gray-800 mb-2">What matters most right now?</Text>
+      <View className="bg-surface_container_lowest rounded-2xl rounded-[24px] p-4 mb-4">
+        <Text className="text-base font-semibold text-gray-800 mb-2">
+          What matters most right now?
+        </Text>
         <Text className="text-sm text-gray-500 leading-6 mb-3">
           Pick up to three goals. Tap again to deselect.
         </Text>
@@ -446,7 +442,9 @@ export function OnboardingChat() {
               <TouchableOpacity
                 key={goal.value}
                 className={`w-[48%] min-h-[100px] p-3 rounded-[20px] border items-center justify-center relative mb-2 ${
-                  isSelected ? 'bg-blue-600 border-blue-600' : 'bg-gray-50 border-gray-200'
+                  isSelected
+                    ? 'bg-primary_container border-primary_container'
+                    : 'bg-surface_container_low'
                 } ${isDisabled ? 'opacity-50' : ''}`}
                 onPress={() => {
                   const current = data.goals;
@@ -471,7 +469,7 @@ export function OnboardingChat() {
                 </Text>
                 {isSelected && (
                   <View className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-white items-center justify-center">
-                    <Text className="text-blue-600 text-xs font-bold">✓</Text>
+                    <Text className="text-primary_container text-xs font-bold">✓</Text>
                   </View>
                 )}
               </TouchableOpacity>
@@ -484,7 +482,7 @@ export function OnboardingChat() {
           </Text>
         )}
       </View>
-      <View className="bg-white border border-gray-200 rounded-[24px] p-4 mb-4">
+      <View className="bg-surface_container_lowest rounded-2xl rounded-[24px] p-4 mb-4">
         <CharacterCounter
           value={data.motivation}
           onChangeText={(text) => updateData('motivation', text)}
@@ -498,15 +496,17 @@ export function OnboardingChat() {
   );
 
   const confirmationBlock = (
-    <View className="bg-white border border-gray-200 rounded-[24px] p-4 mb-4">
-      <Text className="text-base font-semibold text-gray-900 mb-3">Can we send helpful reminders?</Text>
+    <View className="bg-surface_container_lowest rounded-2xl rounded-[24px] p-4 mb-4">
+      <Text className="text-base font-semibold text-gray-900 mb-3">
+        Can we send helpful reminders?
+      </Text>
       <TouchableOpacity
         className="flex-row items-center mb-2"
         onPress={() => updateData('notificationsEnabled', !data.notificationsEnabled)}
       >
         <View
           className={`w-[51px] h-[31px] rounded-2xl p-0.5 ${
-            data.notificationsEnabled ? 'bg-blue-500' : 'bg-gray-300'
+            data.notificationsEnabled ? 'bg-primary_container' : 'bg-surface_container_highest'
           }`}
         >
           <View
@@ -547,12 +547,14 @@ export function OnboardingChat() {
           </View>
         )}
         {currentScreen === 1 && (
-          <View className="bg-white rounded-[24px] px-4 py-4 border border-blue-100 mb-4 mt-2">
-            <Text className="text-xs font-semibold text-blue-700 uppercase tracking-[1px] mb-3">
+          <View className="bg-surface_container_low rounded-[24px] px-4 py-4 mb-4 mt-2">
+            <Text className="text-xs font-semibold text-primary_container uppercase tracking-[1px] mb-3">
               What you&apos;ll get
             </Text>
             <Text className="text-sm text-slate-700 mb-2">🎯 A personalized habit profile</Text>
-            <Text className="text-sm text-slate-700 mb-2">🧠 Habits matched to real constraints</Text>
+            <Text className="text-sm text-slate-700 mb-2">
+              🧠 Habits matched to real constraints
+            </Text>
             <Text className="text-sm text-slate-700">📈 Weekly course-corrections</Text>
           </View>
         )}
@@ -587,7 +589,7 @@ export function OnboardingChat() {
               </Text>
             )}
             <TouchableOpacity className="py-2 items-center" onPress={handleBack}>
-              <Text className="text-base text-blue-600 font-semibold">← Back</Text>
+              <Text className="text-base text-primary_container font-semibold">← Back</Text>
             </TouchableOpacity>
             <AuthButton
               title={canProceed(2) ? 'That sounds right' : 'Answer to continue'}
@@ -605,7 +607,7 @@ export function OnboardingChat() {
               </Text>
             )}
             <TouchableOpacity className="py-2 items-center" onPress={handleBack}>
-              <Text className="text-base text-blue-600 font-semibold">← Back</Text>
+              <Text className="text-base text-primary_container font-semibold">← Back</Text>
             </TouchableOpacity>
             <AuthButton
               title={canProceed(3) ? 'Keep going' : 'Answer to continue'}
@@ -623,7 +625,7 @@ export function OnboardingChat() {
               </Text>
             )}
             <TouchableOpacity className="py-2 items-center" onPress={handleBack}>
-              <Text className="text-base text-blue-600 font-semibold">← Back</Text>
+              <Text className="text-base text-primary_container font-semibold">← Back</Text>
             </TouchableOpacity>
             <AuthButton
               title={canProceed(4) ? 'Review my plan' : 'Answer to continue'}
@@ -635,13 +637,17 @@ export function OnboardingChat() {
         )}
         {currentScreen === 5 && (
           <>
-            <View className="p-3 bg-green-50 rounded-2xl mb-2 border border-green-100">
-              <Text className="text-sm text-green-800 text-center">
+            <View className="p-3 bg-surface_container_low rounded-2xl mb-2">
+              <Text className="text-sm font-public text-on_surface text-center leading-5">
                 Your data stays private and is used only to personalize your plan.
               </Text>
             </View>
-            <TouchableOpacity className="py-2 items-center" onPress={handleBack} disabled={submitting}>
-              <Text className="text-base text-blue-600 font-semibold">← Back</Text>
+            <TouchableOpacity
+              className="py-2 items-center"
+              onPress={handleBack}
+              disabled={submitting}
+            >
+              <Text className="text-base text-primary_container font-semibold">← Back</Text>
             </TouchableOpacity>
             <AuthButton
               title={submitting ? 'Analyzing…' : 'Build my habit plan'}

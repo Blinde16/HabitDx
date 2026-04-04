@@ -4,7 +4,11 @@ import { useRouter } from 'expo-router';
 import { useOnboardingStore } from '../../stores/onboardingStore';
 import { OnboardingContainer, MultiSelectChip } from '../../components/onboarding';
 import { AuthButton } from '../../components/auth';
-import { ENERGY_OPTIONS, OBSTACLE_OPTIONS, SCHEDULE_OPTIONS } from '../../constants/onboardingIntake';
+import {
+  ENERGY_OPTIONS,
+  OBSTACLE_OPTIONS,
+  SCHEDULE_OPTIONS,
+} from '../../constants/onboardingIntake';
 
 export default function ConstraintsScreen() {
   const router = useRouter();
@@ -73,8 +77,8 @@ export default function ConstraintsScreen() {
               key={option.value}
               className={`flex-1 py-4 items-center rounded-2xl border ${
                 data.constraints.peak_energy === option.value
-                  ? 'bg-blue-600 border-blue-600'
-                  : 'bg-gray-50 border-gray-200'
+                  ? 'bg-primary_container border-primary_container'
+                  : 'bg-surface_container_low'
               }`}
               onPress={() =>
                 updateData('constraints', {
@@ -141,7 +145,7 @@ export default function ConstraintsScreen() {
           </Text>
         )}
         <TouchableOpacity className="py-3 items-center" onPress={handleBack}>
-          <Text className="text-base text-blue-600 font-semibold">← Back</Text>
+          <Text className="text-base text-primary_container font-semibold">← Back</Text>
         </TouchableOpacity>
         <AuthButton
           title={canProceed(3) ? 'Keep going' : 'Answer to continue'}

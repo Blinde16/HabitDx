@@ -8,7 +8,7 @@ interface LoadingSpinnerProps {
 export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ message }) => {
   return (
     <View style={styles.container}>
-      <ActivityIndicator size="large" color="#3b82f6" />
+      <ActivityIndicator size="large" color="#191c1e" />
       {message && <Text style={styles.message}>{message}</Text>}
     </View>
   );
@@ -19,11 +19,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#f7f9fb',
   },
   message: {
     marginTop: 16,
     fontSize: 16,
-    color: '#6b7280',
+    color: '#5c6370',
   },
 });
