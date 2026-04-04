@@ -1,6 +1,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { OpenAI } from 'https://esm.sh/openai@4.20.1';
+import { verifyJwtAndGetUserId } from '../_shared/auth.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -65,31 +66,14 @@ serve(async (req) => {
 
   try {
     const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
+    const auth = await verifyJwtAndGetUserId(authHeader);
+    if (!auth.ok) {
       return new Response(
-        JSON.stringify({ error: 'Unauthorized', detail: 'Missing authorization header' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Unauthorized', detail: auth.error }),
+        { status: auth.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
-
-    // Use service role to verify the JWT
-    const supabaseAdmin = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-    );
-
-    const jwt = authHeader.replace('Bearer ', '');
-    const {
-      data: { user },
-      error: authError,
-    } = await supabaseAdmin.auth.getUser(jwt);
-
-    if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized', detail: authError?.message }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    const userId = auth.userId;
 
     // Client with user's auth for RLS-scoped queries
     const supabaseClient = createClient(
@@ -106,7 +90,7 @@ serve(async (req) => {
     const { data: habits, error: habitsError } = await supabaseClient
       .from('habits')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .eq('is_active', true)
       .order('order_index');
 
@@ -122,7 +106,7 @@ serve(async (req) => {
     const { data: logs, error: logsError } = await supabaseClient
       .from('habit_logs')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .gte('log_date', sevenDaysAgo.toISOString().split('T')[0])
       .order('log_date', { ascending: false });
 
@@ -135,7 +119,7 @@ serve(async (req) => {
     const { data: failureProfile } = await supabaseClient
       .from('habit_failure_profiles')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .limit(1)
       .single();
@@ -228,7 +212,7 @@ Based on this data, provide ONE specific adjustment recommendation that will hav
     const { data: iteration, error: iterationError } = await supabaseClient
       .from('weekly_iterations')
       .insert({
-        user_id: user.id,
+        user_id: userId,
         week_start: sevenDaysAgo.toISOString(),
         week_end: new Date().toISOString(),
         completion_stats: stats,

@@ -29,6 +29,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Com
 
 ### Fixed
 
+- **Edge Functions (JWT / signing keys):** Per-function `verify_jwt = false` in `supabase/config.toml` plus in-function validation with `auth.getClaims()` (shared `verifyJwtAndGetUserId`). The Edge gateway’s default JWT check does not accept asymmetric (JWT Signing Keys / ES256) tokens, which caused **401 Invalid JWT** before function code ran; the client-side token fix alone could not resolve that until functions were redeployed with this config.
 - **Edge Functions (JWT):** Invocations now send an explicit user access token after `refreshSession()`. The Supabase client otherwise can fall back to the anon key as `Authorization` when the internal session is missing, which produced **401 Invalid JWT** on `generate-habits` and similar functions after account switches or timing edge cases.
 - **REST “406” on empty rows:** Active habit stack and habit profile lookups use `maybeSingle()` so “no row yet” does not surface as HTTP 406 in the network panel.
 
