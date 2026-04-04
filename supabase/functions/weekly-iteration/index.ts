@@ -289,8 +289,12 @@ Based on this data, provide ONE specific adjustment recommendation that will hav
     });
   } catch (error) {
     console.error('Error in weekly-iteration:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return new Response(JSON.stringify({ error: errorMessage }), {
+    const err = error as { message?: string; details?: string; hint?: string; code?: string };
+    const errorMessage =
+      typeof err?.message === 'string' && err.message.length > 0 ? err.message : 'Unknown error';
+    const detail =
+      typeof err?.details === 'string' && err.details.length > 0 ? err.details : undefined;
+    return new Response(JSON.stringify({ error: errorMessage, detail, code: err?.code }), {
       status: 400,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
