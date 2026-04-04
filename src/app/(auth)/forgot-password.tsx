@@ -13,6 +13,7 @@ import { useAuthStore } from '../../stores/authStore';
 import { AuthInput, AuthButton, ErrorMessage } from '../../components/auth';
 import { authScreenStyles as s } from '../../styles/authScreenStyles';
 import { fontFamily } from '../../lib/fonts';
+import { HabitDxLogo } from '../../components/brand';
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();
@@ -54,6 +55,7 @@ export default function ForgotPasswordScreen() {
     return (
       <View style={s.container}>
         <View style={styles.successContainer}>
+          <HabitDxLogo width={200} style={{ marginBottom: 24 }} />
           <Text style={styles.successTitle}>Check Your Email</Text>
           <Text style={styles.successMessage}>
             We&apos;ve sent a password reset link to {email}
@@ -90,6 +92,7 @@ export default function ForgotPasswordScreen() {
     >
       <ScrollView contentContainerStyle={s.scrollContent} keyboardShouldPersistTaps="handled">
         <View style={s.header}>
+          <HabitDxLogo width={200} style={{ marginBottom: 20 }} />
           <Text style={s.title}>Forgot Password?</Text>
           <Text style={s.subtitle}>
             Enter your email address and we&apos;ll send you a link to reset your password

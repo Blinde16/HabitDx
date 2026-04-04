@@ -13,6 +13,7 @@ import { useAuthStore } from '../stores/authStore';
 import { getProfile, updateProfile } from '../lib/db';
 import type { UserProfile, UserProfileUpdate } from '../types/database';
 import { AuthButton } from '../components/auth';
+import { HabitDxLogo } from '../components/brand';
 import { fontFamily } from '../lib/fonts';
 
 export default function ProfileScreen() {
@@ -32,7 +33,7 @@ export default function ProfileScreen() {
 
   useEffect(() => {
     loadProfile();
-  }, [user]);
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps -- reload when auth user changes
 
   const loadProfile = async () => {
     if (!user) return;
@@ -112,6 +113,7 @@ export default function ProfileScreen() {
   if (!initialized || authLoading) {
     return (
       <View style={styles.loadingContainer}>
+        <HabitDxLogo width={140} style={{ alignSelf: 'center', marginBottom: 20 }} />
         <ActivityIndicator size="large" color="#191c1e" />
       </View>
     );
@@ -124,6 +126,7 @@ export default function ProfileScreen() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
+        <HabitDxLogo width={140} style={{ alignSelf: 'center', marginBottom: 20 }} />
         <ActivityIndicator size="large" color="#191c1e" />
         <Text style={styles.loadingText}>Loading profile…</Text>
       </View>
@@ -133,6 +136,7 @@ export default function ProfileScreen() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.header}>
+        <HabitDxLogo width={200} style={{ marginBottom: 16 }} />
         <Text style={styles.title}>Profile</Text>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Text style={styles.backText}>← Back</Text>

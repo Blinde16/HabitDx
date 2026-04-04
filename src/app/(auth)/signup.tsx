@@ -13,6 +13,7 @@ import { useAuthStore } from '../../stores/authStore';
 import { AuthInput, AuthButton, SocialButton, ErrorMessage } from '../../components/auth';
 import { logError } from '../../lib/logger';
 import { authScreenStyles as s } from '../../styles/authScreenStyles';
+import { HabitDxLogo } from '../../components/brand';
 import { fontFamily } from '../../lib/fonts';
 
 export default function SignupScreen() {
@@ -121,6 +122,7 @@ export default function SignupScreen() {
     >
       <ScrollView contentContainerStyle={s.scrollContent} keyboardShouldPersistTaps="handled">
         <View style={s.header}>
+          <HabitDxLogo width={220} style={{ marginBottom: 20 }} />
           <Text style={s.title}>Create Account</Text>
           <Text style={s.subtitle}>Sign up to get started with HabitDx</Text>
           <Text style={s.valueTagline}>

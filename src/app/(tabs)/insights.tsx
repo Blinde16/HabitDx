@@ -13,6 +13,7 @@ import { useAuthStore } from '../../stores/authStore';
 import { useIterationStore } from '../../stores/iterationStore';
 import HabitService from '../../lib/habitService';
 import { logError } from '../../lib/logger';
+import { HabitDxLogo } from '../../components/brand';
 
 const MIN_CHECK_INS_FOR_INSIGHTS = 5;
 
@@ -111,7 +112,8 @@ export default function InsightsScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 items-center justify-center bg-surface">
+      <View className="flex-1 items-center justify-center bg-surface px-7">
+        <HabitDxLogo width={160} style={{ alignSelf: 'center', marginBottom: 20 }} />
         <ActivityIndicator size="large" color="#191c1e" />
         <Text className="mt-4 font-public text-on_surface_variant">Loading insights…</Text>
       </View>
@@ -122,6 +124,7 @@ export default function InsightsScreen() {
     return (
       <View className="flex-1 bg-surface px-7 py-12">
         <ScrollView showsVerticalScrollIndicator={false}>
+          <HabitDxLogo width={176} style={{ marginBottom: 20 }} />
           <View className="mb-10 self-start w-full">
             <Text className="font-manrope text-display-lg text-on_surface mb-3">
               Weekly Insights
@@ -201,6 +204,7 @@ export default function InsightsScreen() {
   if (generating) {
     return (
       <View className="flex-1 items-center justify-center bg-surface px-7">
+        <HabitDxLogo width={140} style={{ alignSelf: 'center', marginBottom: 20 }} />
         <ActivityIndicator size="large" color="#191c1e" />
         <Text className="mt-4 text-lg font-manrope-md text-on_surface text-center">
           Reviewing Your Week
@@ -217,6 +221,7 @@ export default function InsightsScreen() {
   return (
     <ScrollView className="flex-1 bg-surface">
       <View className="px-7 py-10">
+        <HabitDxLogo width={176} style={{ marginBottom: 20 }} />
         <View className="mb-8">
           <Text className="text-sm font-public text-on_surface_variant mb-1">
             {new Date(currentIteration.week_start).toLocaleDateString()} –{' '}

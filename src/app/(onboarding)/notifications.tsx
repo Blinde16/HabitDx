@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNotificationStore } from '@/stores/notificationStore';
 import { OnboardingContainer } from '@/components/onboarding/OnboardingContainer';
+import { HabitDxLogo } from '@/components/brand';
 import { logInfo, logError } from '@/lib/logger';
 
 export default function NotificationPermissionScreen() {
@@ -44,9 +45,7 @@ export default function NotificationPermissionScreen() {
     >
       <View className="flex-1 justify-center px-2">
         <View className="items-center mb-10">
-          <View className="w-20 h-20 bg-surface_container_high rounded-full items-center justify-center">
-            <Text className="text-2xl font-manrope text-on_surface">Hx</Text>
-          </View>
+          <HabitDxLogo width={200} style={{ alignSelf: 'center' }} />
         </View>
 
         <Text className="text-3xl font-manrope text-on_surface text-center mb-4">

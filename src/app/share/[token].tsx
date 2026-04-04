@@ -12,6 +12,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import FailureProfileService from '../../lib/failureProfileService';
 import type { HabitFailureProfile } from '../../types/failure-profile';
 import { logInfo, logError } from '../../lib/logger';
+import { HabitDxLogo } from '../../components/brand';
 
 export default function SharedProfileScreen() {
   const { token } = useLocalSearchParams<{ token: string }>();
@@ -56,7 +57,8 @@ export default function SharedProfileScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 bg-surface items-center justify-center">
+      <View className="flex-1 bg-surface items-center justify-center px-7">
+        <HabitDxLogo width={160} style={{ alignSelf: 'center', marginBottom: 20 }} />
         <ActivityIndicator size="large" color="#191c1e" />
         <Text className="mt-4 font-public text-on_surface_variant">Loading profile…</Text>
       </View>
@@ -66,6 +68,7 @@ export default function SharedProfileScreen() {
   if (error || !profile) {
     return (
       <View className="flex-1 bg-surface items-center justify-center px-7">
+        <HabitDxLogo width={160} style={{ alignSelf: 'center', marginBottom: 24 }} />
         <Text className="text-xl font-manrope text-on_surface mb-2 text-center">
           {error || 'Profile Not Found'}
         </Text>
@@ -98,9 +101,7 @@ export default function SharedProfileScreen() {
     <ScrollView className="flex-1 bg-surface">
       <View className="px-7 py-10">
         <View className="mb-8">
-          <Text className="text-xs font-public-sb text-on_surface_variant uppercase tracking-[3px] mb-3">
-            HabitDx
-          </Text>
+          <HabitDxLogo width={200} style={{ marginBottom: 16 }} />
           <Text className="font-manrope text-display-lg text-on_surface mb-2">
             Shared Habit Profile
           </Text>

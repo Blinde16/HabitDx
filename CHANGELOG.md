@@ -8,6 +8,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Com
 
 ### Added
 
+- **Brand:** `HabitDxLogo` component and `assets/habitdx-logo.png` (wordmark) embedded on auth, tabs, profile, share, onboarding notifications, and loading gates; web favicon uses a cropped symbol from the same asset (`assets/favicon.png`).
 - **Design system:** Master editorial UI standard — Tailwind semantic tokens (surfaces, primary/navy gradient CTAs, soft emerald accents), **Manrope** + **Public Sans** via `expo-font` / `@expo-google-fonts`, shared `src/lib/fonts.ts` and `src/styles/authScreenStyles.ts`. Reference: [`aiDocs/master-design.md`](aiDocs/master-design.md).
 - **Home:** Total completed check-ins (all habits) shown in the header next to daily completion.
 - **Insights:** Progress copy toward unlocking weekly insights (X of 5 check-ins); generate button disabled until the minimum is met.

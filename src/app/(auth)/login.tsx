@@ -12,6 +12,7 @@ import { useAuthStore } from '../../stores/authStore';
 import { AuthInput, AuthButton, SocialButton, ErrorMessage } from '../../components/auth';
 import { logError } from '../../lib/logger';
 import { authScreenStyles as s } from '../../styles/authScreenStyles';
+import { HabitDxLogo } from '../../components/brand';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -76,6 +77,7 @@ export default function LoginScreen() {
     >
       <ScrollView contentContainerStyle={s.scrollContent} keyboardShouldPersistTaps="handled">
         <View style={s.header}>
+          <HabitDxLogo width={220} style={{ marginBottom: 20 }} />
           <Text style={s.title}>Welcome Back</Text>
           <Text style={s.subtitle}>Sign in to continue to HabitDx</Text>
           <Text style={s.valueTagline}>

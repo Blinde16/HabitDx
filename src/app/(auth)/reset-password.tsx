@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useAuthStore } from '../../stores/authStore';
 import { AuthInput, AuthButton, ErrorMessage } from '../../components/auth';
 import { authScreenStyles as s } from '../../styles/authScreenStyles';
 import { fontFamily } from '../../lib/fonts';
+import { HabitDxLogo } from '../../components/brand';
 
 export default function ResetPasswordScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams();
   const { updatePassword, loading, error, clearError } = useAuthStore();
 
   const [newPassword, setNewPassword] = useState('');
@@ -18,10 +18,6 @@ export default function ResetPasswordScreen() {
     confirmPassword?: string;
   }>({});
   const [resetSuccess, setResetSuccess] = useState(false);
-
-  useEffect(() => {
-    console.log('Reset password params:', params);
-  }, [params]);
 
   const getPasswordStrength = (pwd: string): string => {
     if (pwd.length === 0) return '';
@@ -89,6 +85,7 @@ export default function ResetPasswordScreen() {
     return (
       <View style={s.container}>
         <View style={styles.successContainer}>
+          <HabitDxLogo width={200} style={{ marginBottom: 24 }} />
           <Text style={styles.successTitle}>Password Updated</Text>
           <Text style={styles.successMessage}>
             Your password has been updated. Redirecting to sign in…
@@ -107,6 +104,7 @@ export default function ResetPasswordScreen() {
     >
       <ScrollView contentContainerStyle={s.scrollContent} keyboardShouldPersistTaps="handled">
         <View style={s.header}>
+          <HabitDxLogo width={220} style={{ marginBottom: 20 }} />
           <Text style={s.title}>Reset Password</Text>
           <Text style={s.subtitle}>Enter your new password below</Text>
         </View>

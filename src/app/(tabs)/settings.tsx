@@ -8,6 +8,7 @@ import { logError } from '../../lib/logger';
 import appConfig from '../../lib/appConfig';
 import { openExternalUrl, openSupportEmail } from '../../lib/externalLinks';
 import { isExpoWeb } from '../../lib/runtime';
+import { HabitDxLogo } from '../../components/brand';
 
 function SettingsRow({
   title,
@@ -152,6 +153,7 @@ export default function SettingsScreen() {
   return (
     <ScrollView className="flex-1 bg-surface">
       <View className="px-7 py-10">
+        <HabitDxLogo width={200} style={{ marginBottom: 24 }} />
         <Text className="font-manrope text-display-lg text-on_surface mb-8 self-start">
           Settings
         </Text>

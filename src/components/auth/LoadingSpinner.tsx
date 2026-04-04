@@ -1,13 +1,22 @@
 import React from 'react';
 import { View, ActivityIndicator, StyleSheet, Text } from 'react-native';
+import { HabitDxLogo } from '../brand';
 
 interface LoadingSpinnerProps {
   message?: string;
+  /** Show wordmark above the spinner (default true). */
+  showLogo?: boolean;
 }
 
-export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ message }) => {
+export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
+  message,
+  showLogo = true,
+}) => {
   return (
     <View style={styles.container}>
+      {showLogo ? (
+        <HabitDxLogo width={152} style={{ alignSelf: 'center', marginBottom: 24 }} />
+      ) : null}
       <ActivityIndicator size="large" color="#191c1e" />
       {message && <Text style={styles.message}>{message}</Text>}
     </View>
