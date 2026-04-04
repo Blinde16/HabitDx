@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, View, Text } from 'react-native';
+import { Animated, View, Text, Platform } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 interface SuccessAnimationProps {
@@ -18,7 +18,9 @@ export default function SuccessAnimation({
 
   useEffect(() => {
     if (visible) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      if (Platform.OS !== 'web') {
+        void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
 
       Animated.parallel([
         Animated.timing(fadeAnim, {

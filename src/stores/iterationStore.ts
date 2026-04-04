@@ -138,12 +138,9 @@ export const useIterationStore = create<IterationState>((set, get) => ({
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
-        // PGRST116 = no rows
-        throw error;
-      }
+      if (error) throw error;
 
       set({
         currentIteration: data as WeeklyIteration | null,

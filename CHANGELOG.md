@@ -32,9 +32,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Com
 
 ### Fixed
 
+- **Weekly insights (web + Edge):** `weekly-iteration` no longer requires a `habit_failure_profiles` row (`.single()` threw when none existed, causing **400**). Profiles and `user_profiles` are optional context; prompts include onboarding goals/constraints when present. **406** on “latest iteration” empty state is avoided via `maybeSingle()` instead of `.single()`. Check-in success haptics are skipped on **web** so `Haptics.notificationAsync` does not throw.
 - **Edge Functions (JWT / signing keys):** Per-function `verify_jwt = false` in `supabase/config.toml` plus in-function validation with `auth.getClaims()` (shared `verifyJwtAndGetUserId`). The Edge gateway’s default JWT check does not accept asymmetric (JWT Signing Keys / ES256) tokens, which caused **401 Invalid JWT** before function code ran; the client-side token fix alone could not resolve that until functions were redeployed with this config.
 - **Edge Functions (JWT):** Invocations now send an explicit user access token after `refreshSession()`. The Supabase client otherwise can fall back to the anon key as `Authorization` when the internal session is missing, which produced **401 Invalid JWT** on `generate-habits` and similar functions after account switches or timing edge cases.
-- **REST “406” on empty rows:** Active habit stack and habit profile lookups use `maybeSingle()` so “no row yet” does not surface as HTTP 406 in the network panel.
+- **REST “406” on empty rows:** Active habit stack, habit profile, and latest `weekly_iterations` lookups use `maybeSingle()` so “no row yet” does not surface as HTTP 406 in the network panel.
 
 - **Undo check-in:** Deletes today’s `habit_logs` row instead of upserting `completed: false`.
 - **Onboarding confirmation:** Removed `console.log` of onboarding payload; structured `logInfo` / `logError` only.
