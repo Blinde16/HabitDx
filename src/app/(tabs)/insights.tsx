@@ -123,7 +123,10 @@ export default function InsightsScreen() {
   if (!currentIteration && !generating) {
     return (
       <View className="flex-1 bg-surface px-7 py-12">
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ width: '100%', maxWidth: 960, alignSelf: 'center' }}
+        >
           <HabitDxLogo variant="header" width={176} style={{ marginBottom: 20 }} />
           <View className="mb-10 self-start w-full">
             <Text className="font-manrope text-display-lg text-on_surface mb-3">
@@ -220,7 +223,7 @@ export default function InsightsScreen() {
 
   return (
     <ScrollView className="flex-1 bg-surface">
-      <View className="px-7 py-10">
+      <View className="px-7 py-10 max-w-3xl self-center w-full">
         <HabitDxLogo variant="header" width={176} style={{ marginBottom: 20 }} />
         <View className="mb-8">
           <Text className="text-sm font-public text-on_surface_variant mb-1">

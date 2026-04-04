@@ -179,7 +179,7 @@ export default function HomeScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#191c1e" />
         }
       >
-        <View className="px-7 py-10 max-w-xl self-stretch w-full">
+        <View className="px-7 py-10 max-w-3xl self-center w-full">
           <HabitDxLogo variant="header" width={176} style={{ marginBottom: 20 }} />
           <View className="mb-8 self-start w-full">
             <Text className="text-sm font-public text-on_surface_variant mb-2 tracking-wide">

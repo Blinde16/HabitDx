@@ -152,7 +152,7 @@ export default function SettingsScreen() {
 
   return (
     <ScrollView className="flex-1 bg-surface">
-      <View className="px-7 py-10">
+      <View className="px-7 py-10 max-w-3xl self-center w-full">
         <HabitDxLogo variant="wordmark" width={200} style={{ marginBottom: 24 }} />
         <Text className="font-manrope text-display-lg text-on_surface mb-8 self-start">
           Settings
@@ -205,7 +205,7 @@ export default function SettingsScreen() {
                 <Switch
                   value={notifEnabled}
                   onValueChange={handleNotificationToggle}
-                  trackColor={{ false: '#e0e3e5', true: '#131b2e' }}
+                  trackColor={{ false: '#d9e0e3', true: '#62c49d' }}
                   thumbColor="#FFFFFF"
                 />
               </View>

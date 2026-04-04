@@ -43,7 +43,7 @@ export default function NotificationPermissionScreen() {
       title="Reminders"
       subtitle="Optional nudges at the times you choose"
     >
-      <View className="flex-1 justify-center px-2">
+      <View className="flex-1 justify-center px-2 max-w-2xl self-center w-full">
         <View className="items-center mb-10">
           <HabitDxLogo width={200} style={{ alignSelf: 'center' }} />
         </View>
@@ -87,7 +87,7 @@ export default function NotificationPermissionScreen() {
             className={`rounded-full overflow-hidden ${isLoading ? 'opacity-50' : ''}`}
           >
             <LinearGradient
-              colors={['#000000', '#131b2e']}
+              colors={['#263247', '#2d384a']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={{ paddingVertical: 16, alignItems: 'center' }}
