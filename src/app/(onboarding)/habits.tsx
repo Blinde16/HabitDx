@@ -24,6 +24,7 @@ export default function HabitStackScreen() {
 
   useEffect(() => {
     loadHabits();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only load
   }, []);
 
   const loadHabits = async () => {
@@ -78,7 +79,7 @@ export default function HabitStackScreen() {
   const handleRegenerate = () => {
     Alert.alert(
       'Regenerate Habits?',
-      'This will create a new set of habits based on your Failure Profile. Your current habits will be archived.',
+      'This will create a new set of habits based on your Habit Profile. Your current habits will be archived.',
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -153,7 +154,7 @@ export default function HabitStackScreen() {
           Designing Your Habits...
         </Text>
         <Text className="mt-2 text-gray-600 text-center">
-          Our AI is creating habits that fit YOUR life, based on your Failure Profile and
+          Our AI is creating habits that fit YOUR life, based on your Habit Profile and
           constraints. This takes 3-5 seconds.
         </Text>
         <View className="mt-6 space-y-2">
@@ -207,7 +208,7 @@ export default function HabitStackScreen() {
             💡 Your Personalized Habits
           </Text>
           <Text className="text-gray-600">
-            Designed specifically for you based on your Failure Profile
+            Designed specifically for you based on your Habit Profile
           </Text>
         </View>
 
@@ -306,7 +307,7 @@ export default function HabitStackScreen() {
               win is doing the minimum
             </Text>
             <Text className="text-gray-800">
-              • <Text className="font-semibold">Anchor matters:</Text> The "After I..." part makes
+              • <Text className="font-semibold">Anchor matters:</Text> The &quot;After I...&quot; part makes
               it automatic
             </Text>
             <Text className="text-gray-800">
@@ -314,7 +315,7 @@ export default function HabitStackScreen() {
               the habit
             </Text>
             <Text className="text-gray-800">
-              • <Text className="font-semibold">Don't miss twice:</Text> One skip is fine; two
+              • <Text className="font-semibold">Don&apos;t miss twice:</Text> One skip is fine; two
               starts a pattern
             </Text>
           </View>

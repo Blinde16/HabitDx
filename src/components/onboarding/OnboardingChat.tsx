@@ -255,8 +255,8 @@ export function OnboardingChat() {
       )}
       {currentScreen === 5 && (
         <GuideBubble>
-          Here&apos;s what happens next: we&apos;ll analyze your answers, show your Habit Failure
-          Profile, then suggest 1–3 small habits matched to you. If anything below feels off, go
+          Here&apos;s what happens next: we&apos;ll analyze your answers, show your Habit Profile,
+          then suggest 1–3 small habits matched to you. If anything below feels off, go
           back and fix it — small accuracy wins here.
         </GuideBubble>
       )}
@@ -551,7 +551,7 @@ export function OnboardingChat() {
             <Text className="text-xs font-semibold text-blue-700 uppercase tracking-[1px] mb-3">
               What you&apos;ll get
             </Text>
-            <Text className="text-sm text-slate-700 mb-2">🎯 A personalized failure profile</Text>
+            <Text className="text-sm text-slate-700 mb-2">🎯 A personalized habit profile</Text>
             <Text className="text-sm text-slate-700 mb-2">🧠 Habits matched to real constraints</Text>
             <Text className="text-sm text-slate-700">📈 Weekly course-corrections</Text>
           </View>

@@ -372,6 +372,10 @@ export async function resetPassword(email: string) {
 
 ### Google OAuth
 
+> **Shipped implementation (web, Apr 2026):** The app uses `supabase.auth.signInWithOAuth` in `src/stores/authStore.ts`, web **`flowType: 'implicit'`** in `src/lib/supabase.ts`, and `src/components/auth/OAuthCallbackScreen.tsx` for `/callback`. In **Google Cloud**, set **Authorized redirect URIs** to `https://<project-ref>.supabase.co/auth/v1/callback` (not your Vercel domain). See [`CHANGELOG.md`](../../CHANGELOG.md) and [`aiDocs/web_beta_launch_plan.md`](../../aiDocs/web_beta_launch_plan.md).
+
+The snippet below illustrates an **alternative** pattern (`expo-auth-session` + `signInWithIdToken`); it is not the primary web beta path.
+
 ```typescript
 // src/lib/auth.ts (continued)
 import * as WebBrowser from 'expo-web-browser';

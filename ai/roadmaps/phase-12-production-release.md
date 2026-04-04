@@ -40,6 +40,7 @@ Final phase to prepare HabitDx MVP for public release on iOS App Store and Googl
 - [ ] Environment variables set for production
 - [ ] API keys secured (not hardcoded)
 - [ ] Version number finalized (1.0.0)
+- [x] **Web beta track (Apr 2026):** Google OAuth + `/callback` verified on Vercel for Expo Web; see [`CHANGELOG.md`](../../CHANGELOG.md), [`NEXT_STEPS.md`](../../NEXT_STEPS.md) engineering log, and [`aiDocs/web_beta_launch_plan.md`](../../aiDocs/web_beta_launch_plan.md).
 
 ### 2. Build Configuration
 

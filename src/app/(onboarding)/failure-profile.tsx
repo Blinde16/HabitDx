@@ -11,7 +11,7 @@ import {
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '../../stores/authStore';
 import FailureProfileService from '../../lib/failureProfileService';
-import type { HabitFailureProfile, PersonalityInsights } from '../../types/failure-profile';
+import type { HabitFailureProfile } from '../../types/failure-profile';
 import { logInfo, logError } from '../../lib/logger';
 
 export default function FailureProfileScreen() {
@@ -24,6 +24,8 @@ export default function FailureProfileScreen() {
 
   useEffect(() => {
     loadProfile();
+    // intentional: run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadProfile = async () => {
@@ -111,14 +113,14 @@ export default function FailureProfileScreen() {
       const shareUrl = FailureProfileService.getShareUrl(profile.share_token);
 
       await Share.share({
-        message: `Check out my Habit Failure Profile! ${shareUrl}`,
+        message: `Check out my Habit Profile on HabitDx! ${shareUrl}`,
         url: shareUrl, // iOS only
-        title: 'My Habit Failure Profile',
+        title: 'My Habit Profile',
       });
 
       logInfo('User shared profile', { userId: user?.id, shareToken: profile.share_token });
     } catch (err) {
-      console.error('Error sharing:', err);
+      logError(err instanceof Error ? err : new Error(String(err)), { context: 'failureProfile.share' });
     }
   };
 
@@ -147,7 +149,7 @@ export default function FailureProfileScreen() {
           Our AI is reviewing your data and identifying insights. This usually takes 3-5 seconds.
         </Text>
         <Text className="mt-4 text-sm text-gray-500 text-center">
-          💡 Tip: The insights you're about to see are personalized to YOU—not generic advice.
+          💡 Tip: The insights you&apos;re about to see are personalized to YOU—not generic advice.
         </Text>
       </View>
     );
@@ -195,7 +197,7 @@ export default function FailureProfileScreen() {
         {/* Header */}
         <View className="mb-6">
           <Text className="text-3xl font-bold text-gray-900 mb-2">
-            🎯 Your Habit Failure Profile
+            🎯 Your Habit Profile
           </Text>
           <Text className="text-gray-600">
             Based on your personal history and constraints

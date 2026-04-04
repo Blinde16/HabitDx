@@ -21,6 +21,7 @@ export default function HomeScreen() {
   const { user } = useAuthStore();
   const {
     todaysHabits,
+    totalCompletedCheckIns,
     loading,
     initialize,
     fetchTodaysHabits,
@@ -193,6 +194,13 @@ export default function HomeScreen() {
                 {completionRate > 0 && (
                   <Text className="text-purple-600 font-semibold"> ({completionRate}%)</Text>
                 )}
+                {totalCompletedCheckIns > 0 && (
+                  <Text className="text-gray-600">
+                    {' '}
+                    · Total check-ins:{' '}
+                    <Text className="text-purple-600 font-semibold">{totalCompletedCheckIns}</Text>
+                  </Text>
+                )}
               </Text>
             )}
           </View>
@@ -306,11 +314,11 @@ export default function HomeScreen() {
                 {habit.status !== 'completed' && habit.streak === 0 && habit.last_obstacle && (
                   <View className="mt-2 bg-orange-50 border-l-4 border-orange-500 rounded p-3">
                     <Text className="text-sm font-bold text-orange-900 mb-1">
-                      ⚠️ Don&apos;t Miss Twice!
+                      Welcome back
                     </Text>
                     <Text className="text-xs text-orange-800">
-                      You missed yesterday. One skip is fine—but two in a row starts a pattern.
-                      Let&apos;s get back on track today!
+                      Yesterday didn&apos;t happen — that&apos;s okay. Today is a fresh chance. Even
+                      the tiny version counts.
                     </Text>
                   </View>
                 )}
@@ -324,8 +332,9 @@ export default function HomeScreen() {
 
                 {/* Help text */}
                 {habit.status === 'not_done' && (
-                  <Text className="text-xs text-gray-400 mt-3">
-                    Tap to complete • Long press if you can&apos;t do it today
+                  <Text className="text-sm text-gray-600 mt-3">
+                    Tap to complete · Long-press this card if you can&apos;t do it today (log an
+                    obstacle for smarter weekly tweaks)
                   </Text>
                 )}
               </TouchableOpacity>
@@ -337,8 +346,8 @@ export default function HomeScreen() {
             <View className="bg-blue-50 rounded-lg p-4 mt-4">
               <Text className="text-sm font-semibold text-blue-900 mb-2">💡 Daily Tip</Text>
               <Text className="text-sm text-gray-800">
-                Don&apos;t miss twice! One skip is fine—life happens. It&apos;s two in a row that
-                starts a pattern. Focus on consistency over perfection.
+                One missed day doesn&apos;t define you. Stack tiny wins — consistency beats
+                perfection.
               </Text>
             </View>
           )}

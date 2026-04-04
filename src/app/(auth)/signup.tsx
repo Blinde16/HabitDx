@@ -11,6 +11,7 @@ import {
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '../../stores/authStore';
 import { AuthInput, AuthButton, SocialButton, ErrorMessage } from '../../components/auth';
+import { logError } from '../../lib/logger';
 
 export default function SignupScreen() {
   const router = useRouter();
@@ -103,7 +104,7 @@ export default function SignupScreen() {
     try {
       await signInWithGoogle();
     } catch (err) {
-      console.error('Google sign up error:', err);
+      logError(err instanceof Error ? err : new Error(String(err)), { context: 'auth.googleSignUp' });
     }
   };
 
@@ -118,6 +119,14 @@ export default function SignupScreen() {
         <View style={styles.header}>
           <Text style={styles.title}>Create Account</Text>
           <Text style={styles.subtitle}>Sign up to get started with HabitDx</Text>
+          <Text style={styles.valueTagline}>
+            Understand why your habits fail. Build ones that stick.
+          </Text>
+          <View style={styles.valueBullets}>
+            <Text style={styles.valueBullet}>• AI-powered habit diagnosis</Text>
+            <Text style={styles.valueBullet}>• Personalized tiny habits</Text>
+            <Text style={styles.valueBullet}>• Weekly adjustments that adapt to you</Text>
+          </View>
         </View>
 
         <View style={styles.form}>
@@ -238,6 +247,22 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     color: '#6b7280',
+  },
+  valueTagline: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#111827',
+    marginTop: 16,
+    lineHeight: 24,
+  },
+  valueBullets: {
+    marginTop: 12,
+  },
+  valueBullet: {
+    fontSize: 15,
+    color: '#4b5563',
+    lineHeight: 22,
+    marginBottom: 6,
   },
   form: {
     width: '100%',

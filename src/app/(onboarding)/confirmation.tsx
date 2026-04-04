@@ -5,6 +5,7 @@ import { useOnboardingStore } from '../../stores/onboardingStore';
 import { useAuthStore } from '../../stores/authStore';
 import { OnboardingContainer } from '../../components/onboarding';
 import { AuthButton } from '../../components/auth';
+import { logInfo, logError } from '../../lib/logger';
 
 export default function ConfirmationScreen() {
   const router = useRouter();
@@ -18,17 +19,19 @@ export default function ConfirmationScreen() {
       return;
     }
 
-    console.log('[Confirmation] Starting submission for user:', user.id);
-    console.log('[Confirmation] Onboarding data:', JSON.stringify(data, null, 2));
+    logInfo('Confirmation: submitting onboarding', { userId: user.id, event: 'onboarding.confirm.submit' });
 
     try {
       setSubmitting(true);
       await submitOnboarding(user.id);
-      console.log('[Confirmation] submitOnboarding succeeded — navigating to failure-profile');
+      logInfo('Confirmation: onboarding submitted', { userId: user.id, event: 'onboarding.confirm.success' });
       router.push('/(onboarding)/failure-profile');
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      console.error('[Confirmation] Submission failed:', msg);
+      logError(err instanceof Error ? err : new Error(msg), {
+        context: 'onboarding.confirm',
+        userId: user.id,
+      });
       Alert.alert('Submission Error', msg);
       setSubmitting(false);
     }
@@ -73,7 +76,7 @@ export default function ConfirmationScreen() {
           </View>
           <View className="flex-1 justify-center">
             <Text className="text-base font-semibold text-gray-900 mb-1">
-              Step 2: You&apos;ll get your Habit Failure Profile
+              Step 2: You&apos;ll get your Habit Profile
             </Text>
             <Text className="text-sm text-gray-500">Understand your patterns</Text>
           </View>

@@ -87,7 +87,7 @@ export default function SharedProfileScreen() {
         <View className="mb-6">
           <Text className="text-sm text-purple-600 font-semibold mb-2">HABITDX</Text>
           <Text className="text-3xl font-bold text-gray-900 mb-2">
-            🎯 Habit Failure Profile
+            🎯 Habit Profile
           </Text>
           <Text className="text-gray-600">
             Someone shared their personalized habit analysis with you
@@ -150,7 +150,7 @@ export default function SharedProfileScreen() {
         {/* CTA to Get App */}
         <View className="bg-purple-100 rounded-lg p-6 mb-6">
           <Text className="text-lg font-bold text-gray-900 mb-2">
-            Get Your Own Habit Failure Profile
+            Get Your Own Habit Profile
           </Text>
           <Text className="text-gray-700 mb-4">
             HabitDx analyzes why YOUR habits fail and gives you personalized insights

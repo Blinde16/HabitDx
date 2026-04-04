@@ -133,7 +133,7 @@ export default function SettingsScreen() {
               onPress={() => router.push('/(onboarding)/failure-profile')}
             >
               <View className="flex-1">
-                <Text className="text-base font-medium text-gray-900">View Failure Profile</Text>
+                <Text className="text-base font-medium text-gray-900">View Habit Profile</Text>
                 <Text className="text-sm text-gray-600 mt-1">
                   See your AI-generated habit analysis
                 </Text>
@@ -275,57 +275,59 @@ export default function SettingsScreen() {
               <Text className="text-base text-gray-900 mt-1">1.0.0</Text>
             </View>
 
-            {/* Privacy Policy */}
-            <TouchableOpacity
-              className="flex-row items-center justify-between p-4 border-b border-gray-200"
-              onPress={() =>
-                handleOpenLink(
-                  appConfig.privacyPolicyUrl,
-                  'Privacy Policy Not Configured',
-                  'Add EXPO_PUBLIC_PRIVACY_POLICY_URL after you publish the policy.'
-                )
-              }
-            >
-              <Text className="text-base text-gray-900">Privacy Policy</Text>
-              <Text className="text-2xl text-gray-400">→</Text>
-            </TouchableOpacity>
+            {appConfig.privacyPolicyUrl && (
+              <TouchableOpacity
+                className={`flex-row items-center justify-between p-4 ${appConfig.termsUrl ? 'border-b border-gray-200' : ''}`}
+                onPress={() =>
+                  handleOpenLink(
+                    appConfig.privacyPolicyUrl,
+                    'Privacy Policy Not Configured',
+                    'Add EXPO_PUBLIC_PRIVACY_POLICY_URL after you publish the policy.'
+                  )
+                }
+              >
+                <Text className="text-base text-gray-900">Privacy Policy</Text>
+                <Text className="text-2xl text-gray-400">→</Text>
+              </TouchableOpacity>
+            )}
 
-            {/* Terms of Service */}
-            <TouchableOpacity
-              className="flex-row items-center justify-between p-4"
-              onPress={() =>
-                handleOpenLink(
-                  appConfig.termsUrl,
-                  'Terms Not Configured',
-                  'Add EXPO_PUBLIC_TERMS_URL after you publish the terms.'
-                )
-              }
-            >
-              <Text className="text-base text-gray-900">Terms of Service</Text>
-              <Text className="text-2xl text-gray-400">→</Text>
-            </TouchableOpacity>
+            {appConfig.termsUrl && (
+              <TouchableOpacity
+                className="flex-row items-center justify-between p-4"
+                onPress={() =>
+                  handleOpenLink(
+                    appConfig.termsUrl,
+                    'Terms Not Configured',
+                    'Add EXPO_PUBLIC_TERMS_URL after you publish the terms.'
+                  )
+                }
+              >
+                <Text className="text-base text-gray-900">Terms of Service</Text>
+                <Text className="text-2xl text-gray-400">→</Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
 
         {/* Support */}
-        <View className="mb-8">
-          <Text className="text-lg font-semibold text-gray-900 mb-4">Support</Text>
+        {appConfig.supportEmail && (
+          <View className="mb-8">
+            <Text className="text-lg font-semibold text-gray-900 mb-4">Support</Text>
 
-          <View className="bg-white border border-gray-200 rounded-lg">
-            <TouchableOpacity
-              className="flex-row items-center justify-between p-4"
-              onPress={handleContactSupport}
-            >
-              <View className="flex-1">
-                <Text className="text-base font-medium text-gray-900">Email Support</Text>
-                <Text className="text-sm text-gray-600 mt-1">
-                  {appConfig.supportEmail || 'Configure EXPO_PUBLIC_SUPPORT_EMAIL'}
-                </Text>
-              </View>
-              <Text className="text-2xl text-gray-400">→</Text>
-            </TouchableOpacity>
+            <View className="bg-white border border-gray-200 rounded-lg">
+              <TouchableOpacity
+                className="flex-row items-center justify-between p-4"
+                onPress={handleContactSupport}
+              >
+                <View className="flex-1">
+                  <Text className="text-base font-medium text-gray-900">Email Support</Text>
+                  <Text className="text-sm text-gray-600 mt-1">Contact us</Text>
+                </View>
+                <Text className="text-2xl text-gray-400">→</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+        )}
 
         {/* Danger Zone */}
         <View className="mb-8">

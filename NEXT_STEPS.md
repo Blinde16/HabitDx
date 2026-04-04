@@ -7,6 +7,7 @@
 ### Engineering log (web / deployment)
 
 - **2026-04-01:** Web auth routing refactored to stop React error #185 (maximum update depth) on Vercel and local web: layout-level `<Redirect />` instead of root `useEffect` navigation. Documented in [`CHANGELOG.md`](CHANGELOG.md) (commits `95aae9f`, `3234552`). Aligns with [`aiDocs/web_beta_launch_plan.md`](aiDocs/web_beta_launch_plan.md) §3.2.
+- **2026-04-01:** **Google sign-in (web) verified on production** (`habitdx.vercel.app`). OAuth callback hardened: `initialize()` + fragment/code recovery, retries, implicit OAuth in `src/lib/supabase.ts` (avoids PKCE verifier loss on Expo web). Ops checklist: Google Cloud OAuth client redirect URI = `https://<project-ref>.supabase.co/auth/v1/callback` only; Supabase Auth URL allowlist includes `https://habitdx.vercel.app/callback`; Vercel env `EXPO_PUBLIC_SUPABASE_*` match that project. Logged in [`CHANGELOG.md`](CHANGELOG.md) (commits `93ebd50`–`30dc04e`, esp. `522604c`, `30dc04e`). Web beta checklist §3.1–3.2 updated in [`aiDocs/web_beta_launch_plan.md`](aiDocs/web_beta_launch_plan.md).
 
 ---
 

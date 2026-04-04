@@ -1,6 +1,8 @@
 /** Shared options for onboarding intake (multi-screen + chat flow). */
 
 export const HABIT_OPTIONS = [
+  'Walking / daily movement',
+  'Drinking water',
   'Morning routine',
   'Exercise',
   'Meditation',
@@ -8,9 +10,13 @@ export const HABIT_OPTIONS = [
   'Journaling',
   'Healthy eating',
   'Sleep schedule',
-  'Drinking water',
   'Yoga',
   'Running',
+  'Career development',
+  'Creative practice',
+  'Financial habits',
+  'Networking / social',
+  'Learning / studying',
 ] as const;
 
 export const ENERGY_OPTIONS = [

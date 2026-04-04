@@ -8,16 +8,17 @@ import {
   Alert,
 } from 'react-native';
 import { useAuthStore } from '../../stores/authStore';
-import { useIterationStore, type WeeklyIteration } from '../../stores/iterationStore';
+import { useIterationStore } from '../../stores/iterationStore';
+import HabitService from '../../lib/habitService';
 import { logError } from '../../lib/logger';
+
+const MIN_CHECK_INS_FOR_INSIGHTS = 5;
 
 export default function InsightsScreen() {
   const { user } = useAuthStore();
   const {
     currentIteration,
-    iterationHistory,
     loading,
-    error,
     generateWeeklyIteration,
     loadLatestIteration,
     loadIterationHistory,
@@ -26,20 +27,27 @@ export default function InsightsScreen() {
   } = useIterationStore();
 
   const [generating, setGenerating] = useState(false);
-  const [showHistory, setShowHistory] = useState(false);
+  const [completedCheckInCount, setCompletedCheckInCount] = useState<number | null>(null);
 
   useEffect(() => {
     if (user) {
       loadLatestIteration(user.id);
+      void HabitService.getTotalCompletedCheckIns(user.id).then(setCompletedCheckInCount);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- loadLatestIteration is a stable store action
   }, [user]);
 
+  const canGenerateInsights =
+    completedCheckInCount !== null && completedCheckInCount >= MIN_CHECK_INS_FOR_INSIGHTS;
+
   const handleGenerate = async () => {
-    if (!user) return;
+    if (!user || !canGenerateInsights) return;
 
     try {
       setGenerating(true);
       await generateWeeklyIteration(user.id);
+      const n = await HabitService.getTotalCompletedCheckIns(user.id);
+      setCompletedCheckInCount(n);
     } catch (err) {
       Alert.alert('Error', 'Failed to generate weekly insight');
       logError(err as Error, { context: 'insights.generate' });
@@ -101,7 +109,6 @@ export default function InsightsScreen() {
   const handleViewHistory = async () => {
     if (!user) return;
     await loadIterationHistory(user.id);
-    setShowHistory(true);
   };
 
   if (loading) {
@@ -182,17 +189,22 @@ export default function InsightsScreen() {
 
           {/* Generate Button */}
           <TouchableOpacity
-            className="bg-purple-600 py-4 rounded-lg items-center"
+            className={`py-4 rounded-lg items-center ${canGenerateInsights ? 'bg-purple-600' : 'bg-gray-300'}`}
             onPress={handleGenerate}
+            disabled={!canGenerateInsights}
           >
             <Text className="text-white font-bold text-lg">
               Generate This Week&apos;s Insight
             </Text>
           </TouchableOpacity>
 
-          {/* Info Text */}
-          <Text className="text-xs text-gray-500 text-center mt-4">
-            You need at least 5 check-ins to generate insights
+          {/* Progress toward unlock */}
+          <Text className="text-sm text-gray-600 text-center mt-4 leading-5">
+            {completedCheckInCount === null
+              ? 'Loading your check-in count…'
+              : completedCheckInCount >= MIN_CHECK_INS_FOR_INSIGHTS
+                ? "You're ready — generate your first weekly insight below."
+                : `You have ${completedCheckInCount} of ${MIN_CHECK_INS_FOR_INSIGHTS} completed check-ins. ${MIN_CHECK_INS_FOR_INSIGHTS - completedCheckInCount} more unlock weekly insights.`}
           </Text>
         </ScrollView>
       </View>

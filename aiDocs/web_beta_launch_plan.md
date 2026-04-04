@@ -1,9 +1,9 @@
 # HabitDx — Web Beta Launch Plan
 
-**Last updated:** April 1, 2026  
+**Last updated:** April 1, 2026 (engineering: Google web OAuth verified same day)  
 **Scope:** Public beta as a **responsive web app** (desktop + mobile browsers). **No** Apple App Store or Google Play submission in this phase.
 
-**Assumptions (confirmed):** Production Supabase is live, hosting and environment are configured, and the app ships as **Expo Web** (see `vercel.json`: `expo export --platform web` → `dist`).
+**Assumptions (confirmed):** Production Supabase is live, hosting and environment are configured, and the app ships as **Expo Web** (see `vercel.json`: `expo export --platform web` → `dist`). **Google sign-in on web** is verified against `habitdx.vercel.app` with matching Supabase + Google Cloud configuration (see [`CHANGELOG.md`](../CHANGELOG.md)).
 
 ---
 
@@ -32,14 +32,16 @@ Use this before inviting testers at scale.
 
 ### 3.1 Production configuration
 
-- [ ] **Supabase (prod):** URL + anon key in hosting env; redirect URLs include your **production web origin** (Auth → URL configuration).
-- [ ] **OAuth / magic link:** Callback routes work on web (`src/app/auth/callback.tsx` and related); confirm email links land on prod.
+- [x] **Supabase (prod):** URL + anon key in hosting env; redirect URLs include your **production web origin** (Auth → URL configuration). **Verified Apr 2026** for `habitdx.vercel.app` with matching `EXPO_PUBLIC_SUPABASE_*` on Vercel.
+- [x] **OAuth / Google (web):** Callback routes (`/(auth)/callback` → `/callback`, plus `src/app/auth/callback.tsx`); implicit OAuth + `OAuthCallbackScreen` recovery/retries ([`CHANGELOG.md`](../CHANGELOG.md)). Google Cloud **Authorized redirect URIs** must list only `https://<project-ref>.supabase.co/auth/v1/callback` (not the Vercel URL). **Sign-in verified** Apr 2026.
+- [ ] **OAuth / magic link (email):** Confirm email magic links land on prod (separate from Google web verification).
 - [ ] **Edge functions:** Deployed against prod; secrets (e.g. OpenAI) set for production.
 - [ ] **CORS / allowed origins:** Any Supabase or third-party settings allow your prod domain.
 
 ### 3.2 Web UX and quality bar
 
 - [x] **Auth / navigation stability (Apr 2026):** Root `ProtectedRoute` no longer performs `router.replace` in effects (avoids React “maximum update depth” / error #185 with Expo Router on web). Auth redirects use `<Redirect />` in `(auth)`, `(tabs)`, and `(onboarding)` layouts; see [`CHANGELOG.md`](../CHANGELOG.md) and commits `95aae9f`, `3234552`.
+- [x] **Google OAuth on web (Apr 2026):** Implicit grant + callback recovery (`src/components/auth/OAuthCallbackScreen.tsx`, `src/lib/supabase.ts`); production sign-in confirmed. See [`CHANGELOG.md`](../CHANGELOG.md) (commits `93ebd50`–`30dc04e`).
 - [ ] **Responsive layouts:** Critical flows (auth, onboarding, home, check-in, settings) usable from ~360px width up to desktop.
 - [ ] **Input modes:** Tap targets and spacing work on touch; keyboard navigation acceptable on desktop where applicable.
 - [ ] **Scroll / keyboard:** Long forms and onboarding avoid clipping behind mobile keyboards (`KeyboardAvoidingView` patterns already differ on web in places — verify onboarding and auth screens).

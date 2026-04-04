@@ -54,7 +54,7 @@ export function OnboardingAiChat() {
   const router = useRouter();
   const scrollRef = useRef<ScrollView>(null);
   const { applyAiExtracted, submitOnboarding, loading: storeLoading } = useOnboardingStore();
-  const { user, signOut } = useAuthStore();
+  const { user } = useAuthStore();
   const { listening, supported: speechSupported, startListening, stopListening } =
     useWebSpeechRecognition();
 
@@ -126,13 +126,8 @@ export function OnboardingAiChat() {
     });
   };
 
-  const handleSkip = async () => {
-    try {
-      await signOut();
-      router.replace('/(auth)/login');
-    } catch (e) {
-      console.error('Skip onboarding error:', e);
-    }
+  const handleSkip = () => {
+    router.replace('/(tabs)/home');
   };
 
   const main = (

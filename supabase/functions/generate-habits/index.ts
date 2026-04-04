@@ -89,6 +89,7 @@ DESIGN PRINCIPLES (CRITICAL):
 3. **CELEBRATE:** Include a tiny celebration immediately after (dopamine hit)
 4. **ADDRESS PATTERNS:** Explicitly tie each habit to their failure patterns
 5. **FIT CONSTRAINTS:** Respect their energy patterns and life constraints
+6. **SHIFT WORK / VARIABLE SCHEDULES:** If life constraints include "Shift work", freelance/irregular hours, or peak energy is evening/night, do **not** default to morning reminders (before 12:00). Anchors and \`reminder_time\` must match when this person is actually awake and able to act.
 
 EXAMPLES OF GOOD vs BAD:
 
@@ -133,7 +134,7 @@ REQUIREMENTS:
 - Generate 1-3 habits (prefer 1-2 for beginners)
 - EVERY habit must be ≤2 minutes
 - EVERY rationale must reference their actual failure patterns
-- Use their peak energy time for scheduling
+- Use their peak energy time for scheduling; align \`reminder_time\` with real wake windows (never assume 7 AM for shift workers or night owls)
 - Make celebrations feel natural (not cheesy)
 - Anchor to realistic existing routines
 
