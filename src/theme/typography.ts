@@ -5,14 +5,15 @@
  */
 
 import { TextStyle } from 'react-native';
+import { fontFamily } from '../lib/fonts';
 
 export const typography = {
   // Font Families
   fontFamily: {
-    regular: 'System',
-    medium: 'System',
-    semiBold: 'System',
-    bold: 'System',
+    regular: fontFamily.publicSans,
+    medium: fontFamily.publicSansMedium,
+    semiBold: fontFamily.publicSansSemibold,
+    bold: fontFamily.manrope,
   },
 
   // Font Sizes
@@ -46,42 +47,42 @@ export const typography = {
   // Text Styles
   h1: {
     fontSize: 36,
-    fontWeight: '700' as TextStyle['fontWeight'],
+    fontFamily: fontFamily.manrope,
     lineHeight: 43.2, // 1.2
   },
   h2: {
     fontSize: 30,
-    fontWeight: '700' as TextStyle['fontWeight'],
+    fontFamily: fontFamily.manrope,
     lineHeight: 36, // 1.2
   },
   h3: {
     fontSize: 24,
-    fontWeight: '600' as TextStyle['fontWeight'],
+    fontFamily: fontFamily.manropeSemibold,
     lineHeight: 31.2, // 1.3
   },
   h4: {
     fontSize: 20,
-    fontWeight: '600' as TextStyle['fontWeight'],
+    fontFamily: fontFamily.manropeSemibold,
     lineHeight: 26, // 1.3
   },
   body: {
     fontSize: 16,
-    fontWeight: '400' as TextStyle['fontWeight'],
+    fontFamily: fontFamily.publicSans,
     lineHeight: 24, // 1.5
   },
   bodySmall: {
     fontSize: 14,
-    fontWeight: '400' as TextStyle['fontWeight'],
+    fontFamily: fontFamily.publicSans,
     lineHeight: 21, // 1.5
   },
   caption: {
     fontSize: 12,
-    fontWeight: '400' as TextStyle['fontWeight'],
+    fontFamily: fontFamily.publicSans,
     lineHeight: 18, // 1.5
   },
   button: {
     fontSize: 16,
-    fontWeight: '600' as TextStyle['fontWeight'],
+    fontFamily: fontFamily.publicSansSemibold,
     lineHeight: 24, // 1.5
   },
 };

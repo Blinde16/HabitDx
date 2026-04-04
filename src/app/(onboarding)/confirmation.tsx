@@ -57,22 +57,22 @@ export default function ConfirmationScreen() {
       tip="If something feels off, go back now. Small accuracy improvements here make the output feel much more personal."
     >
       {error && (
-        <View className="bg-red-100 rounded-lg p-3 mb-4 border-l-4 border-red-500">
-          <Text className="text-red-900 text-sm font-semibold">Error: {error}</Text>
+        <View className="bg-error_container rounded-2xl p-4 mb-4">
+          <Text className="text-on_error_container text-sm font-public-sb">Error: {error}</Text>
         </View>
       )}
 
       <View className="bg-surface_container_lowest rounded-[28px] p-5 mb-6">
-        <Text className="text-base font-semibold text-gray-900 mb-4">What happens next</Text>
+        <Text className="text-base font-public-sb text-on_surface mb-4">What happens next</Text>
         <View className="flex-row mb-5">
           <View className="w-12 h-12 rounded-full bg-surface_container_low items-center justify-center mr-4">
             <Text className="text-2xl">✅</Text>
           </View>
           <View className="flex-1 justify-center">
-            <Text className="text-base font-semibold text-gray-900 mb-1">
+              <Text className="text-base font-public-sb text-on_surface mb-1">
               Step 1: We&apos;ll analyze your responses
             </Text>
-            <Text className="text-sm text-gray-500">Takes about 30 seconds</Text>
+              <Text className="text-sm font-public text-on_surface_variant">Takes about 30 seconds</Text>
           </View>
         </View>
 
@@ -81,10 +81,10 @@ export default function ConfirmationScreen() {
             <Text className="text-2xl">🎯</Text>
           </View>
           <View className="flex-1 justify-center">
-            <Text className="text-base font-semibold text-gray-900 mb-1">
+              <Text className="text-base font-public-sb text-on_surface mb-1">
               Step 2: You&apos;ll get your Habit Profile
             </Text>
-            <Text className="text-sm text-gray-500">Understand your patterns</Text>
+              <Text className="text-sm font-public text-on_surface_variant">Understand your patterns</Text>
           </View>
         </View>
 
@@ -93,10 +93,10 @@ export default function ConfirmationScreen() {
             <Text className="text-2xl">📋</Text>
           </View>
           <View className="flex-1 justify-center">
-            <Text className="text-base font-semibold text-gray-900 mb-1">
+              <Text className="text-base font-public-sb text-on_surface mb-1">
               Step 3: We&apos;ll design 1-3 habits just for you
             </Text>
-            <Text className="text-sm text-gray-500">Personalized to your life</Text>
+              <Text className="text-sm font-public text-on_surface_variant">Personalized to your life</Text>
           </View>
         </View>
 
@@ -105,10 +105,10 @@ export default function ConfirmationScreen() {
             <Text className="text-2xl">📱</Text>
           </View>
           <View className="flex-1 justify-center">
-            <Text className="text-base font-semibold text-gray-900 mb-1">
+              <Text className="text-base font-public-sb text-on_surface mb-1">
               Step 4: Check in daily
             </Text>
-            <Text className="text-sm text-gray-500">Takes just 10 seconds</Text>
+              <Text className="text-sm font-public text-on_surface_variant">Takes just 10 seconds</Text>
           </View>
         </View>
 
@@ -117,16 +117,16 @@ export default function ConfirmationScreen() {
             <Text className="text-2xl">💡</Text>
           </View>
           <View className="flex-1 justify-center">
-            <Text className="text-base font-semibold text-gray-900 mb-1">
+              <Text className="text-base font-public-sb text-on_surface mb-1">
               Step 5: Get weekly insights to improve
             </Text>
-            <Text className="text-sm text-gray-500">Continuous optimization</Text>
+              <Text className="text-sm font-public text-on_surface_variant">Continuous optimization</Text>
           </View>
         </View>
       </View>
 
       <View className="bg-surface_container_lowest rounded-[28px] p-5 mb-6">
-        <Text className="text-base font-semibold text-gray-900 mb-3">
+        <Text className="text-base font-public-sb text-on_surface mb-3">
           Can we send helpful reminders?
         </Text>
         <TouchableOpacity
@@ -145,11 +145,13 @@ export default function ConfirmationScreen() {
               }}
             />
           </View>
-          <Text className="ml-3 text-base text-gray-900">
+          <Text className="ml-3 text-base font-public text-on_surface">
             {data.notificationsEnabled ? 'Enabled' : 'Disabled'}
           </Text>
         </TouchableOpacity>
-        <Text className="text-xs text-gray-400">You can change this anytime in settings</Text>
+        <Text className="text-xs font-public text-on_surface_variant">
+          You can change this anytime in settings
+        </Text>
       </View>
 
       <View className="p-4 bg-surface_container_low rounded-2xl mb-6">
@@ -164,7 +166,7 @@ export default function ConfirmationScreen() {
           onPress={handleBack}
           disabled={submitting}
         >
-          <Text className="text-base text-primary_container font-semibold">← Back</Text>
+          <Text className="text-base text-primary_container font-public-sb">← Back</Text>
         </TouchableOpacity>
         <AuthButton
           title={submitting ? 'Analyzing...' : 'Build My Habit Plan'}

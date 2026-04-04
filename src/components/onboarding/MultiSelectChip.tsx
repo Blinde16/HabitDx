@@ -11,7 +11,7 @@ export const MultiSelectChip: React.FC<MultiSelectChipProps> = ({ label, selecte
   return (
     <TouchableOpacity
       className={`px-4 py-3 rounded-full mr-2 mb-2 ${
-        selected ? 'bg-primary_container' : 'bg-surface_container_low'
+        selected ? 'bg-primary_container' : 'bg-surface_brand_muted'
       }`}
       onPress={onPress}
       activeOpacity={0.85}

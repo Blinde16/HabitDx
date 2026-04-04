@@ -70,15 +70,16 @@ const styles = StyleSheet.create({
     position: 'relative',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(25, 28, 30, 0.15)',
-    backgroundColor: '#ffffff',
+    borderColor: 'rgba(38, 50, 71, 0.12)',
+    backgroundColor: '#f3fbf8',
   },
   inputContainerFocused: {
-    borderColor: 'rgba(25, 28, 30, 0.4)',
+    borderColor: 'rgba(38, 50, 71, 0.22)',
+    backgroundColor: '#ffffff',
   },
   inputContainerError: {
     backgroundColor: '#f0e6e8',
-    borderColor: 'rgba(107, 47, 56, 0.35)',
+    borderColor: 'rgba(107, 47, 56, 0.2)',
   },
   input: {
     minHeight: 52,

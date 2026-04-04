@@ -39,10 +39,10 @@ function Bubble({ role, children }: { role: 'user' | 'assistant'; children: Reac
       )}
       <View
         className={`rounded-[20px] px-4 py-3 ${
-          isUser ? 'bg-surface_container_low rounded-tr-sm' : 'bg-primary_container rounded-tl-sm'
+          isUser ? 'bg-surface_brand rounded-tr-sm' : 'bg-primary_container rounded-tl-sm'
         }`}
       >
-        <Text className={`text-base leading-6 ${isUser ? 'text-slate-800' : 'text-white'}`}>
+        <Text className={`text-base font-public leading-6 ${isUser ? 'text-on_surface' : 'text-white'}`}>
           {children}
         </Text>
       </View>
@@ -143,7 +143,7 @@ export function OnboardingAiChat() {
       showsVerticalScrollIndicator={false}
     >
       <View className="w-full max-w-lg self-center">
-        <Text className="text-xs text-slate-500 mb-4 text-center">
+        <Text className="text-xs font-public text-on_surface_variant mb-4 text-center">
           AI conversation — speak or type. We use this only to personalize your plan.
         </Text>
         {messages.map((m, i) => (
@@ -154,7 +154,7 @@ export function OnboardingAiChat() {
         {coachLoading && (
           <View className="self-start flex-row items-center gap-2 mb-4">
             <ActivityIndicator size="small" color="#191c1e" />
-            <Text className="text-slate-500 text-sm">Thinking…</Text>
+            <Text className="text-on_surface_variant font-public text-sm">Thinking…</Text>
           </View>
         )}
       </View>
@@ -162,14 +162,16 @@ export function OnboardingAiChat() {
   );
 
   const footer = (
-    <View className="border-t border-slate-200 bg-[#F5F8FF] px-4 py-3">
+    <View className="bg-surface px-4 py-3">
       <View className="w-full max-w-lg self-center gap-3">
         <View className="flex-row items-end gap-2">
           {Platform.OS === 'web' && speechSupported && (
             <TouchableOpacity
               onPress={handleMic}
               className={`h-12 w-12 rounded-2xl items-center justify-center border ${
-                listening ? 'bg-red-100 border-red-300' : 'bg-white border-slate-200'
+                listening
+                  ? 'bg-surface_brand border-accent'
+                  : 'bg-surface_brand_muted border-ghost_border'
               }`}
               accessibilityLabel={listening ? 'Stop recording' : 'Speak your reply'}
             >
@@ -177,7 +179,7 @@ export function OnboardingAiChat() {
             </TouchableOpacity>
           )}
           <TextInput
-            className="flex-1 min-h-[48px] max-h-[120px] border border-slate-200 rounded-2xl px-4 py-3 text-base text-slate-900 bg-white"
+            className="flex-1 min-h-[48px] max-h-[120px] border border-ghost_border rounded-2xl px-4 py-3 text-base text-on_surface bg-surface_brand_muted"
             placeholder="Type your reply…"
             placeholderTextColor="#94a3b8"
             value={input}
@@ -194,12 +196,12 @@ export function OnboardingAiChat() {
               !input.trim() || coachLoading ? 'opacity-40' : ''
             }`}
           >
-            <Text className="text-white font-semibold">Send</Text>
+            <Text className="text-white font-public-sb">Send</Text>
           </TouchableOpacity>
         </View>
 
         {Platform.OS === 'web' && !speechSupported && (
-          <Text className="text-xs text-slate-400 text-center">
+          <Text className="text-xs font-public text-on_surface_variant text-center">
             Voice input needs a supported browser (e.g. Chrome) and microphone permission.
           </Text>
         )}
@@ -212,21 +214,21 @@ export function OnboardingAiChat() {
           disabled={!canFinalize || finalizeLoading || storeLoading}
         />
         {!canFinalize && userTurnCount < 3 && (
-          <Text className="text-xs text-slate-500 text-center">
+          <Text className="text-xs font-public text-on_surface_variant text-center">
             Share a bit more ({3 - userTurnCount} more{' '}
             {3 - userTurnCount === 1 ? 'message' : 'messages'} before we can summarize).
           </Text>
         )}
 
         <TouchableOpacity onPress={handleSkip} className="py-2 items-center">
-          <Text className="text-base text-gray-500">Skip for now</Text>
+          <Text className="text-base font-public text-on_surface_variant">Skip for now</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 
   const body = (
-    <View className="flex-1 bg-[#F5F8FF]">
+    <View className="flex-1 bg-surface">
       {main}
       {footer}
     </View>
@@ -238,7 +240,7 @@ export function OnboardingAiChat() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-[#F5F8FF]"
+      className="flex-1 bg-surface"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={12}
     >

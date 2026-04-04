@@ -23,15 +23,15 @@ export const CharacterCounter: React.FC<CharacterCounterProps> = ({
 
   const getBorderColor = () => {
     if (error) return 'border-on_error_container';
-    if (isValid) return 'border-tertiary_fixed_dim';
-    return 'border-outline_variant';
+    if (isValid) return 'border-accent';
+    return 'border-ghost_border';
   };
 
   return (
     <View className="mb-4">
       <Text className="text-sm font-public-sb text-on_surface mb-2">{label}</Text>
       <TextInput
-        className={`min-h-[116px] border rounded-2xl px-4 py-4 text-base text-on_surface bg-surface_container_lowest ${getBorderColor()}`}
+        className={`min-h-[116px] border rounded-2xl px-4 py-4 text-base text-on_surface bg-surface_brand_muted ${getBorderColor()}`}
         style={{ textAlignVertical: 'top', borderWidth: 1 }}
         value={value}
         multiline
