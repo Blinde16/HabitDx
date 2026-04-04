@@ -4,7 +4,7 @@
  * Handles API calls for habit generation, management, and logging
  */
 
-import { supabase } from './supabase';
+import { getAccessTokenForEdgeFunctions, supabase } from './supabase';
 import { logAI, logError, logInfo, logHabit } from './logger';
 import type { Habit, HabitStack, GenerateHabitsResult } from '../types/habit';
 
@@ -16,16 +16,12 @@ export class HabitService {
     try {
       logInfo('Generating habit stack', { userId, event: 'habits.generate.start' });
 
-      // Ensure we have a fresh session token before calling the edge function
-      const { error: refreshError } = await supabase.auth.refreshSession();
-      if (refreshError) {
-        throw new Error(`Session expired. Please sign in again.`);
-      }
-
+      const accessToken = await getAccessTokenForEdgeFunctions();
       const startTime = Date.now();
 
       const { data, error } = await supabase.functions.invoke('generate-habits', {
         body: {},
+        headers: { Authorization: `Bearer ${accessToken}` },
       });
 
       if (error) {
@@ -74,16 +70,13 @@ export class HabitService {
         .select('*')
         .eq('user_id', userId)
         .eq('is_active', true)
-        .single();
+        .maybeSingle();
 
       if (error) {
-        if (error.code === 'PGRST116') {
-          return null;
-        }
         throw error;
       }
 
-      return data as HabitStack;
+      return (data ?? null) as HabitStack | null;
     } catch (error) {
       logError(error as Error, { context: 'habits.getActiveStack', userId });
       throw error;

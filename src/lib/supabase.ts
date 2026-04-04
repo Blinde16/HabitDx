@@ -61,6 +61,30 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
 });
 
+/**
+ * JWT for Edge Function calls. The shared `fetch` wrapper falls back to the anon
+ * key when `getSession()` has no access token, which makes `functions.invoke`
+ * send `Authorization: Bearer <anon>` and Edge Functions return "Invalid JWT".
+ * Refresh first, then pass this token explicitly in `invoke({ headers })`.
+ */
+export async function getAccessTokenForEdgeFunctions(): Promise<string> {
+  const { data, error } = await supabase.auth.refreshSession();
+  if (error) {
+    throw new Error('Session expired. Please sign in again.');
+  }
+  const fromRefresh = data.session?.access_token;
+  if (fromRefresh) {
+    return fromRefresh;
+  }
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (session?.access_token) {
+    return session.access_token;
+  }
+  throw new Error('Session expired. Please sign in again.');
+}
+
 // Simple connectivity check function for testing
 export async function testSupabaseConnection(): Promise<boolean> {
   try {

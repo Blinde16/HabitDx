@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { supabase } from '@/lib/supabase';
+import { getAccessTokenForEdgeFunctions, supabase } from '@/lib/supabase';
 import { logInfo, logError } from '@/lib/logger';
 import { track } from '@/lib/analytics';
 
@@ -72,11 +72,12 @@ export const useIterationStore = create<IterationState>((set, get) => ({
 
       logInfo('Generating weekly iteration', { userId });
 
+      const accessToken = await getAccessTokenForEdgeFunctions();
       const startTime = Date.now();
 
-      // Call the Edge Function (SDK handles auth automatically)
       const { data, error } = await supabase.functions.invoke('weekly-iteration', {
         body: {},
+        headers: { Authorization: `Bearer ${accessToken}` },
       });
 
       if (error) {

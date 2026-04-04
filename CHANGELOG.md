@@ -28,6 +28,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Com
 
 ### Fixed
 
+- **Edge Functions (JWT):** Invocations now send an explicit user access token after `refreshSession()`. The Supabase client otherwise can fall back to the anon key as `Authorization` when the internal session is missing, which produced **401 Invalid JWT** on `generate-habits` and similar functions after account switches or timing edge cases.
+- **REST “406” on empty rows:** Active habit stack and habit profile lookups use `maybeSingle()` so “no row yet” does not surface as HTTP 406 in the network panel.
+
 - **Undo check-in:** Deletes today’s `habit_logs` row instead of upserting `completed: false`.
 - **Onboarding confirmation:** Removed `console.log` of onboarding payload; structured `logInfo` / `logError` only.
 - **Web — React maximum update depth (error #185):** Resolved production and dev crashes where React Navigation hit nested update limits during auth redirects. Root cause was `router.replace` + `useSegments` / unstable dependencies in the root `ProtectedRoute` wrapper, which re-ran whenever navigation or child screens (e.g. home check-in) updated. Mitigations included stable `navReady` handling, deferred replaces, and OAuth/notification hooks that do not re-subscribe on every root navigation key change ([`95aae9f`](https://github.com/Blinde16/HabitDx/commit/95aae9f)).
