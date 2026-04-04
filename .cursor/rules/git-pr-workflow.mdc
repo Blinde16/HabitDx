@@ -1,0 +1,30 @@
+---
+description: Use feature branches and pull requests; never push feature work directly to main
+alwaysApply: true
+---
+
+# Git workflow: PR path (not direct to main)
+
+Follow [CONTRIBUTING.md](CONTRIBUTING.md). **Do not** commit or push iterative code changes directly to `main`.
+
+## Default for any code change
+
+1. **Branch from `main`**: `git checkout main && git pull && git checkout -b <type>/<description>-<name>`  
+   Types: `feat/`, `fix/`, `refactor/`, `chore/`, `docs/`, `test/` (see CONTRIBUTING).
+2. **Implement** on that branch; use [Conventional Commits](https://www.conventionalcommits.org/) (`feat(ui): …`).
+3. **Changelog**: For user-visible changes, add bullets under `[Unreleased]` in `CHANGELOG.md` **in the same PR** (or immediately after merge per CONTRIBUTING).
+4. **Push the branch**: `git push -u origin <branch>`.
+5. **Open a Pull Request** to `main` (describe what changed; link issues if any).
+6. **Merge after review** — do not self-merge to `main` unless the team allows it; the human merges or approves.
+
+## Do not
+
+- Run `git push origin main` for feature fixes, redesigns, or refactors.
+- Bundle unrelated changes in one PR.
+
+## Exceptions (rare)
+
+- **Docs-only** or **chore** that the repo owner explicitly asks to land on `main` without a PR.
+- **Emergency production hotfix** only when the owner says to bypass PR.
+
+If unsure, **use a PR**.

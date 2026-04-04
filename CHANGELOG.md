@@ -36,6 +36,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Com
 
 ### Documentation
 
+- **Agent workflow:** [`AGENTS.md`](AGENTS.md) and [`.cursor/rules/git-pr-workflow.mdc`](.cursor/rules/git-pr-workflow.mdc) require the PR-based workflow from [CONTRIBUTING.md](CONTRIBUTING.md) (branch → push branch → PR to `main`, not direct pushes for normal changes). `.gitignore` updated so `.cursor/rules/` is tracked while other `.cursor/` paths stay ignored.
 - **Internal testing notes:** Added and maintained [`aiDocs/testing/`](aiDocs/testing/) — multi-persona pre-presentation review (personas, walkthrough findings, functional issues, UX critique, behavioral science review, cross-persona synthesis, demo strategy, fix roadmap). Simulated/code-review methodology; complements but does not replace production QA or beta research.
 
 ### Chore
