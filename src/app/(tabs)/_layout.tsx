@@ -1,9 +1,11 @@
 import { Redirect, Tabs } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
+import { Platform } from 'react-native';
 import { useAuthStore } from '../../stores/authStore';
 
 export default function TabLayout() {
   const { user, initialized, loading } = useAuthStore();
+  const isWeb = Platform.OS === 'web';
 
   if (!initialized || loading) {
     return null;
@@ -19,23 +21,33 @@ export default function TabLayout() {
         headerShown: false,
         tabBarActiveTintColor: '#191c1e',
         tabBarInactiveTintColor: '#8a9199',
+        tabBarPosition: isWeb ? 'top' : 'bottom',
         tabBarStyle: {
           backgroundColor: '#f7f9fb',
           borderTopWidth: 0,
+          borderBottomWidth: 0,
           elevation: 0,
           shadowOpacity: 0,
-          paddingTop: 10,
-          paddingBottom: 10,
-          height: 62,
+          paddingTop: isWeb ? 18 : 10,
+          paddingBottom: isWeb ? 14 : 10,
+          height: isWeb ? 78 : 62,
         },
         tabBarLabelStyle: {
           fontSize: 11,
           fontFamily: 'PublicSans_500Medium',
-          marginTop: 2,
+          marginTop: isWeb ? 6 : 2,
         },
         tabBarItemStyle: {
-          paddingVertical: 4,
+          paddingVertical: isWeb ? 8 : 4,
+          maxWidth: isWeb ? 180 : undefined,
         },
+        tabBarIndicatorStyle: isWeb
+          ? {
+              backgroundColor: '#62c49d',
+              height: 3,
+              borderRadius: 999,
+            }
+          : undefined,
       }}
     >
       <Tabs.Screen
