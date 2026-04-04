@@ -58,7 +58,7 @@ export default function SharedProfileScreen() {
   if (loading) {
     return (
       <View className="flex-1 bg-surface items-center justify-center px-7">
-        <HabitDxLogo width={160} style={{ alignSelf: 'center', marginBottom: 20 }} />
+        <HabitDxLogo variant="mark" width={160} style={{ alignSelf: 'center', marginBottom: 20 }} />
         <ActivityIndicator size="large" color="#191c1e" />
         <Text className="mt-4 font-public text-on_surface_variant">Loading profile…</Text>
       </View>
@@ -68,7 +68,7 @@ export default function SharedProfileScreen() {
   if (error || !profile) {
     return (
       <View className="flex-1 bg-surface items-center justify-center px-7">
-        <HabitDxLogo width={160} style={{ alignSelf: 'center', marginBottom: 24 }} />
+        <HabitDxLogo variant="full" width={160} style={{ alignSelf: 'center', marginBottom: 24 }} />
         <Text className="text-xl font-manrope text-on_surface mb-2 text-center">
           {error || 'Profile Not Found'}
         </Text>

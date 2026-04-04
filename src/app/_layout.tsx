@@ -29,7 +29,7 @@ export default function RootLayout() {
   if (!fontsLoaded) {
     return (
       <View className="flex-1 bg-surface items-center justify-center px-7">
-        <HabitDxLogo width={120} style={{ alignSelf: 'center', marginBottom: 20 }} />
+        <HabitDxLogo variant="mark" width={120} style={{ alignSelf: 'center', marginBottom: 20 }} />
         <ActivityIndicator size="large" color="#191c1e" />
       </View>
     );

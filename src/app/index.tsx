@@ -94,7 +94,7 @@ export default function IndexScreen() {
   if (!initialized || loading) {
     return (
       <View className="flex-1 items-center justify-center bg-surface px-7">
-        <HabitDxLogo width={128} style={{ alignSelf: 'center', marginBottom: 20 }} />
+        <HabitDxLogo variant="mark" width={128} style={{ alignSelf: 'center', marginBottom: 20 }} />
         <ActivityIndicator size="large" color="#191c1e" />
       </View>
     );
@@ -106,7 +106,7 @@ export default function IndexScreen() {
 
   return (
     <View className="flex-1 items-center justify-center bg-surface px-7">
-      <HabitDxLogo width={128} style={{ alignSelf: 'center', marginBottom: 20 }} />
+      <HabitDxLogo variant="mark" width={128} style={{ alignSelf: 'center', marginBottom: 20 }} />
       <ActivityIndicator size="large" color="#191c1e" />
     </View>
   );

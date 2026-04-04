@@ -113,7 +113,7 @@ export default function ProfileScreen() {
   if (!initialized || authLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <HabitDxLogo width={140} style={{ alignSelf: 'center', marginBottom: 20 }} />
+        <HabitDxLogo variant="mark" width={140} style={{ alignSelf: 'center', marginBottom: 20 }} />
         <ActivityIndicator size="large" color="#191c1e" />
       </View>
     );
@@ -126,7 +126,7 @@ export default function ProfileScreen() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <HabitDxLogo width={140} style={{ alignSelf: 'center', marginBottom: 20 }} />
+        <HabitDxLogo variant="mark" width={140} style={{ alignSelf: 'center', marginBottom: 20 }} />
         <ActivityIndicator size="large" color="#191c1e" />
         <Text style={styles.loadingText}>Loading profile…</Text>
       </View>

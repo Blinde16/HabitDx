@@ -153,7 +153,7 @@ export default function HomeScreen() {
   if (loading && todaysHabits.length === 0) {
     return (
       <View className="flex-1 bg-surface items-center justify-center px-7">
-        <HabitDxLogo width={160} style={{ alignSelf: 'center', marginBottom: 20 }} />
+        <HabitDxLogo variant="mark" width={160} style={{ alignSelf: 'center', marginBottom: 20 }} />
         <ActivityIndicator size="large" color="#191c1e" />
         <Text className="mt-4 font-public text-on_surface_variant">Loading your habits…</Text>
       </View>
@@ -180,7 +180,7 @@ export default function HomeScreen() {
         }
       >
         <View className="px-7 py-10 max-w-xl self-stretch w-full">
-          <HabitDxLogo width={176} style={{ marginBottom: 20 }} />
+          <HabitDxLogo variant="header" width={176} style={{ marginBottom: 20 }} />
           <View className="mb-8 self-start w-full">
             <Text className="text-sm font-public text-on_surface_variant mb-2 tracking-wide">
               {getTodayDateString()}

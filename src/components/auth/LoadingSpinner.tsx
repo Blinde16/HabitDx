@@ -4,7 +4,7 @@ import { HabitDxLogo } from '../brand';
 
 interface LoadingSpinnerProps {
   message?: string;
-  /** Show wordmark above the spinner (default true). */
+  /** Show brand mark above the spinner (default true). */
   showLogo?: boolean;
 }
 
@@ -15,7 +15,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   return (
     <View style={styles.container}>
       {showLogo ? (
-        <HabitDxLogo width={152} style={{ alignSelf: 'center', marginBottom: 24 }} />
+        <HabitDxLogo variant="mark" width={152} style={{ alignSelf: 'center', marginBottom: 24 }} />
       ) : null}
       <ActivityIndicator size="large" color="#191c1e" />
       {message && <Text style={styles.message}>{message}</Text>}
