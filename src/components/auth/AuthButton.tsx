@@ -33,7 +33,7 @@ export const AuthButton: React.FC<AuthButtonProps> = ({
         {...props}
       >
         <LinearGradient
-          colors={['#000000', '#131b2e']}
+          colors={['#263247', '#2d384a']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.primaryGradient}
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   secondaryButton: {
-    backgroundColor: '#e0e3e5',
+    backgroundColor: '#eef7f3',
   },
   outlineButton: {
     backgroundColor: 'transparent',

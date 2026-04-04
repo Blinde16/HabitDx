@@ -43,7 +43,7 @@ function UserBubble({ children }: { children: React.ReactNode }) {
   return (
     <View className="mb-4 max-w-[90%] self-end">
       <View className="bg-surface_container_low rounded-[22px] rounded-tr-md px-4 py-3">
-        <Text className="text-sm text-slate-800 leading-6">{children}</Text>
+        <Text className="text-sm font-public text-on_surface leading-6">{children}</Text>
       </View>
     </View>
   );
@@ -258,9 +258,9 @@ export function OnboardingChat() {
   );
 
   const pastFailuresForm = (
-    <View className="bg-surface_container_lowest rounded-2xl rounded-[24px] p-4 mb-4">
-      <Text className="text-base font-semibold text-gray-800 mb-2">What have you tried?</Text>
-      <Text className="text-sm text-gray-500 leading-6 mb-3">
+      <View className="bg-surface_container_lowest rounded-2xl rounded-[24px] p-4 mb-4">
+        <Text className="text-base font-public-sb text-on_surface mb-2">What have you tried?</Text>
+        <Text className="text-sm font-public text-on_surface_variant leading-6 mb-3">
         Choose every habit you&apos;ve started and struggled to keep going.
       </Text>
       <View className="flex-row flex-wrap">
@@ -304,13 +304,13 @@ export function OnboardingChat() {
           />
           <View className="flex-row gap-3 mt-2">
             <TouchableOpacity
-              className="flex-1 py-3 items-center rounded-lg bg-gray-100"
+                className="flex-1 py-3 items-center rounded-lg bg-surface_brand_muted"
               onPress={() => {
                 setShowCustomInput(false);
                 setCustomHabit('');
               }}
             >
-              <Text className="text-base font-semibold text-gray-500">Cancel</Text>
+                <Text className="text-base font-public-sb text-on_surface_variant">Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity
               className={`flex-1 py-3 items-center rounded-lg bg-primary_container ${!customHabit.trim() ? 'opacity-50' : ''}`}
@@ -336,20 +336,20 @@ export function OnboardingChat() {
   const constraintsForm = (
     <>
       <View className="bg-surface_container_lowest rounded-2xl rounded-[24px] p-4 mb-4">
-        <Text className="text-base font-semibold text-gray-700 mb-2">
+        <Text className="text-base font-public-sb text-on_surface mb-2">
           When do you have the most energy?
         </Text>
-        <Text className="text-sm text-gray-500 leading-6 mb-3">
+        <Text className="text-sm font-public text-on_surface_variant leading-6 mb-3">
           We&apos;ll lean on your easiest window instead of demanding willpower at the wrong time.
         </Text>
         <View className="flex-row flex-wrap gap-2">
           {ENERGY_OPTIONS.map((option) => (
             <TouchableOpacity
               key={option.value}
-              className={`min-w-[22%] flex-1 py-3 items-center rounded-2xl border ${
+              className={`min-w-[22%] flex-1 py-3 items-center rounded-2xl ${
                 data.constraints.peak_energy === option.value
-                  ? 'bg-primary_container border-primary_container'
-                  : 'bg-surface_container_low'
+                  ? 'bg-primary_container'
+                  : 'bg-surface_brand_muted'
               }`}
               onPress={() =>
                 updateData('constraints', {
@@ -361,7 +361,9 @@ export function OnboardingChat() {
               <Text className="text-2xl mb-1">{option.icon}</Text>
               <Text
                 className={`text-xs font-semibold text-center ${
-                  data.constraints.peak_energy === option.value ? 'text-white' : 'text-gray-600'
+                  data.constraints.peak_energy === option.value
+                    ? 'text-white'
+                    : 'text-on_surface_variant'
                 }`}
               >
                 {option.label}
@@ -371,10 +373,10 @@ export function OnboardingChat() {
         </View>
       </View>
       <View className="bg-surface_container_lowest rounded-2xl rounded-[24px] p-4 mb-4">
-        <Text className="text-base font-semibold text-gray-700 mb-2">
+        <Text className="text-base font-public-sb text-on_surface mb-2">
           What&apos;s your daily schedule like?
         </Text>
-        <Text className="text-sm text-gray-500 leading-6 mb-3">
+        <Text className="text-sm font-public text-on_surface_variant leading-6 mb-3">
           Choose the patterns that shape when habits do or don&apos;t happen.
         </Text>
         <View className="flex-row flex-wrap">
@@ -397,10 +399,10 @@ export function OnboardingChat() {
         </View>
       </View>
       <View className="bg-surface_container_lowest rounded-2xl rounded-[24px] p-4 mb-4">
-        <Text className="text-base font-semibold text-gray-700 mb-2">
+        <Text className="text-base font-public-sb text-on_surface mb-2">
           What makes habits hard for you?
         </Text>
-        <Text className="text-sm text-gray-500 leading-6 mb-3">
+        <Text className="text-sm font-public text-on_surface_variant leading-6 mb-3">
           Pick the friction points that show up most often.
         </Text>
         <View className="flex-row flex-wrap">
@@ -428,10 +430,10 @@ export function OnboardingChat() {
   const goalsForm = (
     <>
       <View className="bg-surface_container_lowest rounded-2xl rounded-[24px] p-4 mb-4">
-        <Text className="text-base font-semibold text-gray-800 mb-2">
+        <Text className="text-base font-public-sb text-on_surface mb-2">
           What matters most right now?
         </Text>
-        <Text className="text-sm text-gray-500 leading-6 mb-3">
+        <Text className="text-sm font-public text-on_surface_variant leading-6 mb-3">
           Pick up to three goals. Tap again to deselect.
         </Text>
         <View className="flex-row flex-wrap gap-2 justify-between">
@@ -441,10 +443,10 @@ export function OnboardingChat() {
             return (
               <TouchableOpacity
                 key={goal.value}
-                className={`w-[48%] min-h-[100px] p-3 rounded-[20px] border items-center justify-center relative mb-2 ${
+                className={`w-[48%] min-h-[100px] p-3 rounded-[20px] items-center justify-center relative mb-2 ${
                   isSelected
-                    ? 'bg-primary_container border-primary_container'
-                    : 'bg-surface_container_low'
+                    ? 'bg-primary_container'
+                    : 'bg-surface_brand_muted'
                 } ${isDisabled ? 'opacity-50' : ''}`}
                 onPress={() => {
                   const current = data.goals;
@@ -462,7 +464,7 @@ export function OnboardingChat() {
                 <Text className="text-3xl mb-1">{goal.icon}</Text>
                 <Text
                   className={`text-xs font-semibold text-center ${
-                    isSelected ? 'text-white' : 'text-gray-600'
+                    isSelected ? 'text-white' : 'text-on_surface_variant'
                   }`}
                 >
                   {goal.value}
@@ -477,7 +479,7 @@ export function OnboardingChat() {
           })}
         </View>
         {data.goals.length > 0 && (
-          <Text className="text-sm text-gray-500 text-center mt-2">
+          <Text className="text-sm font-public text-on_surface_variant text-center mt-2">
             {data.goals.length} of 3 selected
           </Text>
         )}
@@ -497,7 +499,7 @@ export function OnboardingChat() {
 
   const confirmationBlock = (
     <View className="bg-surface_container_lowest rounded-2xl rounded-[24px] p-4 mb-4">
-      <Text className="text-base font-semibold text-gray-900 mb-3">
+      <Text className="text-base font-public-sb text-on_surface mb-3">
         Can we send helpful reminders?
       </Text>
       <TouchableOpacity
@@ -516,11 +518,13 @@ export function OnboardingChat() {
             }}
           />
         </View>
-        <Text className="ml-3 text-base text-gray-900">
+        <Text className="ml-3 text-base font-public text-on_surface">
           {data.notificationsEnabled ? 'Enabled' : 'Disabled'}
         </Text>
       </TouchableOpacity>
-      <Text className="text-xs text-gray-400">You can change this anytime in settings.</Text>
+      <Text className="text-xs font-public text-on_surface_variant">
+        You can change this anytime in settings.
+      </Text>
     </View>
   );
 
@@ -542,8 +546,8 @@ export function OnboardingChat() {
         {history}
         {stepIntro}
         {error && (
-          <View className="bg-red-100 rounded-xl p-3 mb-3 border-l-4 border-red-500">
-            <Text className="text-red-900 text-sm">{error}</Text>
+          <View className="bg-error_container rounded-2xl p-4 mb-3">
+            <Text className="text-on_error_container font-public text-sm">{error}</Text>
           </View>
         )}
         {currentScreen === 1 && (
@@ -551,11 +555,11 @@ export function OnboardingChat() {
             <Text className="text-xs font-semibold text-primary_container uppercase tracking-[1px] mb-3">
               What you&apos;ll get
             </Text>
-            <Text className="text-sm text-slate-700 mb-2">🎯 A personalized habit profile</Text>
-            <Text className="text-sm text-slate-700 mb-2">
+            <Text className="text-sm font-public text-on_surface mb-2">🎯 A personalized habit profile</Text>
+            <Text className="text-sm font-public text-on_surface mb-2">
               🧠 Habits matched to real constraints
             </Text>
-            <Text className="text-sm text-slate-700">📈 Weekly course-corrections</Text>
+            <Text className="text-sm font-public text-on_surface">📈 Weekly course-corrections</Text>
           </View>
         )}
         {currentScreen === 2 && pastFailuresForm}
@@ -567,20 +571,20 @@ export function OnboardingChat() {
   );
 
   const actions = (
-    <View className="px-5 pb-6 pt-2 border-t border-slate-100 bg-[#F5F8FF]">
+    <View className="px-5 pb-6 pt-2 bg-surface">
       <View className="w-full max-w-lg self-center gap-3">
         {currentScreen === 1 && (
           <>
             <AuthButton title="Get started" onPress={handleGetStarted} variant="primary" />
             <TouchableOpacity onPress={handleSkip} className="p-2 items-center">
-              <Text className="text-base text-gray-500">Skip for now</Text>
+              <Text className="text-base font-public text-on_surface_variant">Skip for now</Text>
             </TouchableOpacity>
           </>
         )}
         {currentScreen === 2 && (
           <>
             {!canProceed(2) && (
-              <Text className="text-xs text-center text-gray-500">
+              <Text className="text-xs font-public text-center text-on_surface_variant">
                 {data.pastFailures.length === 0
                   ? 'Select at least one habit above.'
                   : data.failureDescription.length < 20
@@ -602,7 +606,7 @@ export function OnboardingChat() {
         {currentScreen === 3 && (
           <>
             {!canProceed(3) && (
-              <Text className="text-xs text-center text-gray-500">
+              <Text className="text-xs font-public text-center text-on_surface_variant">
                 Choose energy, at least one schedule pattern, and at least one obstacle.
               </Text>
             )}
@@ -620,7 +624,7 @@ export function OnboardingChat() {
         {currentScreen === 4 && (
           <>
             {!canProceed(4) && (
-              <Text className="text-xs text-center text-gray-500">
+              <Text className="text-xs font-public text-center text-on_surface_variant">
                 Pick at least one goal and a short &quot;why&quot; (20+ characters).
               </Text>
             )}
@@ -670,12 +674,12 @@ export function OnboardingChat() {
   );
 
   if (Platform.OS === 'web') {
-    return <View className="flex-1 bg-[#F5F8FF]">{body}</View>;
+    return <View className="flex-1 bg-surface">{body}</View>;
   }
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-[#F5F8FF]"
+      className="flex-1 bg-surface"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={12}
     >

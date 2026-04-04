@@ -42,11 +42,11 @@ export default function GoalsScreen() {
       subtitle="Choose up to three outcomes that would make this feel genuinely worth it."
       tip="Good habits stick better when the payoff feels personal and immediate."
     >
-      <View className="bg-white border border-gray-200 rounded-[28px] p-5 mb-6">
-        <Text className="text-base font-semibold text-gray-800 mb-2">
+      <View className="bg-surface_container_lowest rounded-[28px] p-5 mb-6">
+        <Text className="text-base font-public-sb text-on_surface mb-2">
           What matters most right now?
         </Text>
-        <Text className="text-sm text-gray-500 leading-6 mb-4">
+        <Text className="text-sm font-public text-on_surface_variant leading-6 mb-4">
           You can pick up to three goals. Focus beats ambition here.
         </Text>
 
@@ -58,10 +58,10 @@ export default function GoalsScreen() {
             return (
               <TouchableOpacity
                 key={goal.value}
-                className={`w-[48%] aspect-[1.2] p-4 rounded-[24px] border items-center justify-center relative ${
+                className={`w-[48%] aspect-[1.2] p-4 rounded-[24px] items-center justify-center relative ${
                   isSelected
-                    ? 'bg-primary_container border-primary_container'
-                    : 'bg-surface_container_low'
+                    ? 'bg-primary_container'
+                    : 'bg-surface_brand_muted'
                 } ${isDisabled ? 'opacity-50' : ''}`}
                 onPress={() => handleToggleGoal(goal.value)}
                 disabled={isDisabled}
@@ -69,7 +69,7 @@ export default function GoalsScreen() {
                 <Text className="text-4xl mb-2">{goal.icon}</Text>
                 <Text
                   className={`text-sm font-semibold text-center ${
-                    isSelected ? 'text-white' : 'text-gray-600'
+                    isSelected ? 'text-white' : 'text-on_surface_variant'
                   }`}
                 >
                   {goal.value}
@@ -85,13 +85,13 @@ export default function GoalsScreen() {
         </View>
 
         {data.goals.length > 0 && (
-          <Text className="text-sm text-gray-500 text-center mt-3">
+          <Text className="text-sm font-public text-on_surface_variant text-center mt-3">
             {data.goals.length} of 3 selected
           </Text>
         )}
       </View>
 
-      <View className="bg-white border border-gray-200 rounded-[28px] p-5 mb-8">
+      <View className="bg-surface_container_lowest rounded-[28px] p-5 mb-8">
         <CharacterCounter
           value={data.motivation}
           onChangeText={(text) => updateData('motivation', text)}
@@ -104,12 +104,12 @@ export default function GoalsScreen() {
 
       <View className="mt-8 gap-3">
         {!canProceed(4) && (
-          <Text className="text-xs text-center text-gray-500">
+          <Text className="text-xs font-public text-center text-on_surface_variant">
             Choose at least one goal and add a little context about why it matters.
           </Text>
         )}
         <TouchableOpacity className="py-3 items-center" onPress={handleBack}>
-          <Text className="text-base text-primary_container font-semibold">← Back</Text>
+          <Text className="text-base text-primary_container font-public-sb">← Back</Text>
         </TouchableOpacity>
         <AuthButton
           title={canProceed(4) ? 'Review my plan' : 'Answer to continue'}

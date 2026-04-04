@@ -64,21 +64,21 @@ export default function ConstraintsScreen() {
       subtitle="I’m looking for constraints, energy patterns, and the things that usually knock you off track."
       tip="This step matters because a good plan should survive your real week, not your perfect one."
     >
-      <View className="bg-white border border-gray-200 rounded-[28px] p-5 mb-6">
-        <Text className="text-base font-semibold text-gray-700 mb-3">
+      <View className="bg-surface_container_lowest rounded-[28px] p-5 mb-6">
+        <Text className="text-base font-public-sb text-on_surface mb-3">
           When do you have the most energy?
         </Text>
-        <Text className="text-sm text-gray-500 leading-6 mb-4">
+        <Text className="text-sm font-public text-on_surface_variant leading-6 mb-4">
           We’ll lean on your easiest window instead of demanding willpower at the wrong time.
         </Text>
         <View className="flex-row gap-3">
           {ENERGY_OPTIONS.map((option) => (
             <TouchableOpacity
               key={option.value}
-              className={`flex-1 py-4 items-center rounded-2xl border ${
+              className={`flex-1 py-4 items-center rounded-2xl ${
                 data.constraints.peak_energy === option.value
-                  ? 'bg-primary_container border-primary_container'
-                  : 'bg-surface_container_low'
+                  ? 'bg-primary_container'
+                  : 'bg-surface_brand_muted'
               }`}
               onPress={() =>
                 updateData('constraints', {
@@ -90,7 +90,9 @@ export default function ConstraintsScreen() {
               <Text className="text-3xl mb-2">{option.icon}</Text>
               <Text
                 className={`text-sm font-semibold ${
-                  data.constraints.peak_energy === option.value ? 'text-white' : 'text-gray-600'
+                  data.constraints.peak_energy === option.value
+                    ? 'text-white'
+                    : 'text-on_surface_variant'
                 }`}
               >
                 {option.label}
@@ -100,11 +102,11 @@ export default function ConstraintsScreen() {
         </View>
       </View>
 
-      <View className="bg-white border border-gray-200 rounded-[28px] p-5 mb-6">
-        <Text className="text-base font-semibold text-gray-700 mb-3">
+      <View className="bg-surface_container_lowest rounded-[28px] p-5 mb-6">
+        <Text className="text-base font-public-sb text-on_surface mb-3">
           What&apos;s your daily schedule like?
         </Text>
-        <Text className="text-sm text-gray-500 leading-6 mb-4">
+        <Text className="text-sm font-public text-on_surface_variant leading-6 mb-4">
           Choose the patterns that shape when habits do or don’t happen.
         </Text>
         <View className="flex-row flex-wrap">
@@ -119,11 +121,11 @@ export default function ConstraintsScreen() {
         </View>
       </View>
 
-      <View className="bg-white border border-gray-200 rounded-[28px] p-5 mb-8">
-        <Text className="text-base font-semibold text-gray-700 mb-3">
+      <View className="bg-surface_container_lowest rounded-[28px] p-5 mb-8">
+        <Text className="text-base font-public-sb text-on_surface mb-3">
           What makes habits hard for you?
         </Text>
-        <Text className="text-sm text-gray-500 leading-6 mb-4">
+        <Text className="text-sm font-public text-on_surface_variant leading-6 mb-4">
           Pick the friction points that show up most often.
         </Text>
         <View className="flex-row flex-wrap">
@@ -140,12 +142,12 @@ export default function ConstraintsScreen() {
 
       <View className="mt-8 gap-3">
         {!canProceed(3) && (
-          <Text className="text-xs text-center text-gray-500">
+          <Text className="text-xs font-public text-center text-on_surface_variant">
             Choose your energy window, one schedule pattern, and one common obstacle.
           </Text>
         )}
         <TouchableOpacity className="py-3 items-center" onPress={handleBack}>
-          <Text className="text-base text-primary_container font-semibold">← Back</Text>
+          <Text className="text-base text-primary_container font-public-sb">← Back</Text>
         </TouchableOpacity>
         <AuthButton
           title={canProceed(3) ? 'Keep going' : 'Answer to continue'}
