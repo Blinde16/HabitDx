@@ -74,19 +74,11 @@ export default function HomeScreen() {
     if (!user) return;
 
     if (habit.status === 'completed') {
-      Alert.alert('Undo Check-in?', `Mark "${habit.name}" as not done?`, [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Undo',
-          onPress: async () => {
-            try {
-              await undoCheckIn(habit.id, user.id);
-            } catch {
-              Alert.alert('Error', 'Could not update check-in');
-            }
-          },
-        },
-      ]);
+      try {
+        await undoCheckIn(habit.id, user.id);
+      } catch {
+        Alert.alert('Error', 'Could not update check-in');
+      }
     } else {
       try {
         await checkInHabit(habit.id, user.id);
@@ -394,6 +386,12 @@ export default function HomeScreen() {
                 {habit.status === 'not_done' && habit.reminder_enabled && (
                   <Text className="text-xs font-public text-on_surface_variant mt-2">
                     Reminder: {formatTime(habit.reminder_time)}
+                  </Text>
+                )}
+
+                {habit.status === 'completed' && (
+                  <Text className="text-sm font-public text-on_surface_variant mt-4 leading-5">
+                    Tap again to un-record
                   </Text>
                 )}
 

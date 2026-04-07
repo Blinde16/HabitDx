@@ -8,6 +8,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Com
 
 ### Fixed
 
+- **Insights:** Weekly load now prefers the newest **pending** iteration (so the Suggested Adjustment card appears when a pending week exists alongside older resolved rows); if none are pending, the latest iteration is shown for the readout. Accept/decline no longer flip the whole screen to the loading spinner (separate `adjustmentSaving` state).
 - **Insights:** "Apply Adjustment" now correctly surfaces errors when the habit update fails in Supabase (previously swallowed silently).
 - **Insights:** `FREQUENCY_REDUCE` adjustments parse both comma-separated day numbers and human-readable strings like "3 days per week" (previously produced `[NaN]` and failed silently).
 - **Insights:** `OBSTACLE_MITIGATION` adjustment type is now handled gracefully as coaching-only (no habit mutation).
@@ -24,6 +25,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Com
 
 ### Changed
 
+- **Home:** Tapping a habit that is already completed immediately un-completes it (same tap toggles on/off); no confirmation dialog.
 - **Brand:** `HabitDxLogo` uses dedicated assets for each context — transparent full lockup (default), wide **header** strip on Home and Insights, **wordmark**-only on Settings, **mark**-only on loading gates and spinners, optional **fullOpaque** — with rasters in `assets/` (`habitdx-logo-transparent.png`, `habitdx-header-logo-transparent.png`, `habitdx-wordmark-only.png`, `habitdx-mark-only.png`, `habitdx-logo.png`). Android adaptive icon foreground uses `habitdx-app-icon-transparent.png`.
 - **Design system:** Refined onboarding and auth styling to better match `aiDocs/master-design.md` and the HabitDx logo palette. Shared tokens now use slate + mint brand colors, centralized typography points to the loaded Manrope/Public Sans fonts, and onboarding/auth surfaces favor tonal layering over hard gray borders and harsh red alerts.
 - **Web app / notifications:** Improved browser layout behavior with a web-first tab bar treatment and centered content widths on key app surfaces. Notification controls now use higher-contrast brand accents instead of dark-on-dark states.
