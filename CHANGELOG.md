@@ -24,6 +24,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Com
 
 ### Changed
 
+- **Home:** Tapping a habit that is already completed immediately un-completes it (same tap toggles on/off); no confirmation dialog.
 - **Brand:** `HabitDxLogo` uses dedicated assets for each context — transparent full lockup (default), wide **header** strip on Home and Insights, **wordmark**-only on Settings, **mark**-only on loading gates and spinners, optional **fullOpaque** — with rasters in `assets/` (`habitdx-logo-transparent.png`, `habitdx-header-logo-transparent.png`, `habitdx-wordmark-only.png`, `habitdx-mark-only.png`, `habitdx-logo.png`). Android adaptive icon foreground uses `habitdx-app-icon-transparent.png`.
 - **Design system:** Refined onboarding and auth styling to better match `aiDocs/master-design.md` and the HabitDx logo palette. Shared tokens now use slate + mint brand colors, centralized typography points to the loaded Manrope/Public Sans fonts, and onboarding/auth surfaces favor tonal layering over hard gray borders and harsh red alerts.
 - **Web app / notifications:** Improved browser layout behavior with a web-first tab bar treatment and centered content widths on key app surfaces. Notification controls now use higher-contrast brand accents instead of dark-on-dark states.

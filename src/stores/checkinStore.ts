@@ -162,6 +162,21 @@ export const useCheckinStore = create<CheckinStore>((set, get) => ({
   undoCheckIn: async (habitId: string, userId: string) => {
     try {
       logInfo('Undoing habit check-in', { habitId, userId });
+
+      // Optimistic update (mirrors checkInHabit streak +1)
+      set((state) => ({
+        todaysHabits: state.todaysHabits.map((h) =>
+          h.id === habitId
+            ? {
+                ...h,
+                status: 'not_done' as HabitStatus,
+                checked_in_at: undefined,
+                streak: Math.max(0, h.streak - 1),
+              }
+            : h
+        ),
+      }));
+
       const today = toLocalDateString(getAppDate());
       await HabitService.deleteCheckInForDate(habitId, userId, today);
       await track('habit_checkin_undone', { habitId });
