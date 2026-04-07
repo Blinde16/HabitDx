@@ -3,6 +3,32 @@ import { getAccessTokenForEdgeFunctions, supabase } from '@/lib/supabase';
 import { logInfo, logError } from '@/lib/logger';
 import { track } from '@/lib/analytics';
 
+/**
+ * Parse a frequency value that may be comma-separated day numbers ("1,3,5")
+ * or a human-readable string like "3 days per week". Returns valid day
+ * numbers (0-6) or an empty array on unparseable input.
+ */
+function parseFrequencyValue(value: string): number[] {
+  const commaParts = value.split(',').map((s) => s.trim());
+  const asNumbers = commaParts.map(Number);
+  if (commaParts.length > 1 && asNumbers.every((n) => !isNaN(n))) {
+    return asNumbers;
+  }
+
+  const countMatch = value.match(/(\d+)\s*days?\s*per\s*week/i);
+  if (countMatch) {
+    const count = Math.min(Math.max(parseInt(countMatch[1], 10), 1), 7);
+    const spread: number[] = [];
+    const step = 7 / count;
+    for (let i = 0; i < count; i++) {
+      spread.push(Math.round(i * step) % 7);
+    }
+    return spread.sort((a, b) => a - b);
+  }
+
+  return [];
+}
+
 interface CompletionStats {
   total_scheduled: number;
   total_completed: number;
@@ -222,44 +248,63 @@ export const useIterationStore = create<IterationState>((set, get) => ({
 
       // Apply the adjustment to the habit
       const adjustment = currentIteration.adjustment_recommendation;
+      let habitUpdateError: { message: string } | null = null;
 
       if (adjustment.type === 'TIME_CHANGE') {
-        // Update reminder time
-        await supabase
+        const { error } = await supabase
           .from('habits')
           .update({
             reminder_time: adjustment.suggested_value,
             updated_at: new Date().toISOString(),
           })
           .eq('id', adjustment.habit_id);
+        habitUpdateError = error;
       } else if (adjustment.type === 'TINY_VERSION_SIMPLIFY') {
-        // Update tiny version
-        await supabase
+        const { error } = await supabase
           .from('habits')
           .update({
             tiny_version: adjustment.suggested_value,
             updated_at: new Date().toISOString(),
           })
           .eq('id', adjustment.habit_id);
+        habitUpdateError = error;
       } else if (adjustment.type === 'ANCHOR_CHANGE') {
-        // Update anchor
-        await supabase
+        const { error } = await supabase
           .from('habits')
           .update({
             anchor: adjustment.suggested_value,
             updated_at: new Date().toISOString(),
           })
           .eq('id', adjustment.habit_id);
+        habitUpdateError = error;
       } else if (adjustment.type === 'FREQUENCY_REDUCE') {
-        // Parse and update days_of_week
-        const newDays = adjustment.suggested_value.split(',').map(Number);
-        await supabase
+        const newDays = parseFrequencyValue(adjustment.suggested_value);
+        if (newDays.length === 0 || newDays.some((d) => d < 0 || d > 6)) {
+          throw new Error(
+            `Invalid frequency value: "${adjustment.suggested_value}". Expected comma-separated day numbers (0-6).`
+          );
+        }
+        const { error } = await supabase
           .from('habits')
           .update({
             days_of_week: newDays,
             updated_at: new Date().toISOString(),
           })
           .eq('id', adjustment.habit_id);
+        habitUpdateError = error;
+      } else if (adjustment.type === 'OBSTACLE_MITIGATION') {
+        logInfo('Obstacle mitigation accepted (coaching-only, no habit change)', {
+          iterationId,
+        });
+      } else {
+        logInfo('Unknown adjustment type accepted, no habit change applied', {
+          iterationId,
+          type: adjustment.type,
+        });
+      }
+
+      if (habitUpdateError) {
+        throw new Error(`Failed to update habit: ${habitUpdateError.message}`);
       }
 
       // Update current iteration

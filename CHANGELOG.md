@@ -6,6 +6,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Com
 
 ## [Unreleased]
 
+### Fixed
+
+- **Insights:** "Apply Adjustment" now correctly surfaces errors when the habit update fails in Supabase (previously swallowed silently).
+- **Insights:** `FREQUENCY_REDUCE` adjustments parse both comma-separated day numbers and human-readable strings like "3 days per week" (previously produced `[NaN]` and failed silently).
+- **Insights:** `OBSTACLE_MITIGATION` adjustment type is now handled gracefully as coaching-only (no habit mutation).
+- **Edge function `weekly-iteration`:** Prompt specifies exact `suggested_value` format per adjustment type so the LLM returns machine-readable values.
+
 ### Added
 
 - **Brand:** `HabitDxLogo` component and `assets/habitdx-logo.png` (wordmark) embedded on auth, tabs, profile, share, onboarding notifications, and loading gates; web favicon uses a cropped symbol from the same asset (`assets/favicon.png`).

@@ -154,12 +154,12 @@ Your analysis should:
 4. Reference the user's original failure patterns
 5. Be supportive and encouraging, not judgmental
 
-Adjustment types you can suggest:
-- TIME_CHANGE: Adjust reminder time
-- TINY_VERSION_SIMPLIFY: Make the habit even smaller
-- ANCHOR_CHANGE: Change the trigger/anchor
-- FREQUENCY_REDUCE: Reduce days per week
-- OBSTACLE_MITIGATION: Address specific obstacle
+Adjustment types you can suggest (with required suggested_value format):
+- TIME_CHANGE: Adjust reminder time. suggested_value must be HH:MM (24-hour), e.g. "07:30". current_value same format.
+- TINY_VERSION_SIMPLIFY: Make the habit even smaller. suggested_value is the new tiny version text.
+- ANCHOR_CHANGE: Change the trigger/anchor. suggested_value is the new anchor text.
+- FREQUENCY_REDUCE: Reduce days per week. suggested_value must be comma-separated day numbers (0=Sun,1=Mon,...6=Sat), e.g. "1,3,5" for Mon/Wed/Fri. current_value same format. Use current_value/suggested_value for the machine-readable days; put the human-readable description in rationale.
+- OBSTACLE_MITIGATION: Address a specific obstacle with coaching advice. suggested_value is a short description of the mitigation strategy. This type does NOT modify the habit directly — it provides guidance only.
 
 Return your analysis as JSON with:
 {
@@ -174,9 +174,9 @@ Return your analysis as JSON with:
     "type": "string (one of the types above)",
     "habit_id": "string",
     "habit_name": "string",
-    "current_value": "string",
-    "suggested_value": "string",
-    "rationale": "string (2-3 sentences explaining why)"
+    "current_value": "string (machine-readable, see format above)",
+    "suggested_value": "string (machine-readable, see format above)",
+    "rationale": "string (2-3 sentences explaining why, include human-readable context)"
   } or null if no adjustment needed,
   "insights": "string (2-3 sentences of encouragement and context about their week)"
 }`;
