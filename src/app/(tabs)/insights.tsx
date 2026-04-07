@@ -22,6 +22,7 @@ export default function InsightsScreen() {
   const {
     currentIteration,
     loading,
+    adjustmentSaving,
     generateWeeklyIteration,
     loadLatestIteration,
     loadIterationHistory,
@@ -315,6 +316,7 @@ export default function InsightsScreen() {
               <TouchableOpacity
                 activeOpacity={0.92}
                 onPress={handleAccept}
+                disabled={adjustmentSaving}
                 className="rounded-full overflow-hidden mb-3"
               >
                 <LinearGradient
@@ -327,7 +329,11 @@ export default function InsightsScreen() {
                 </LinearGradient>
               </TouchableOpacity>
 
-              <TouchableOpacity className="py-3 items-center" onPress={handleDecline}>
+              <TouchableOpacity
+                className="py-3 items-center"
+                onPress={handleDecline}
+                disabled={adjustmentSaving}
+              >
                 <Text className="text-on_surface font-public-sb text-base">Keep Current Habit</Text>
               </TouchableOpacity>
             </View>

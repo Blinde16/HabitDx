@@ -8,6 +8,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Com
 
 ### Fixed
 
+- **Insights:** Weekly load now prefers the newest **pending** iteration (so the Suggested Adjustment card appears when a pending week exists alongside older resolved rows); if none are pending, the latest iteration is shown for the readout. Accept/decline no longer flip the whole screen to the loading spinner (separate `adjustmentSaving` state).
 - **Insights:** "Apply Adjustment" now correctly surfaces errors when the habit update fails in Supabase (previously swallowed silently).
 - **Insights:** `FREQUENCY_REDUCE` adjustments parse both comma-separated day numbers and human-readable strings like "3 days per week" (previously produced `[NaN]` and failed silently).
 - **Insights:** `OBSTACLE_MITIGATION` adjustment type is now handled gracefully as coaching-only (no habit mutation).

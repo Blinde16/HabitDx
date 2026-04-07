@@ -75,7 +75,10 @@ export interface WeeklyIteration {
 interface IterationState {
   currentIteration: WeeklyIteration | null;
   iterationHistory: WeeklyIteration[];
+  /** Initial load / history / generate — not used for accept/decline (avoids full-screen spinner on adjustment actions). */
   loading: boolean;
+  /** Accept or decline adjustment in flight. */
+  adjustmentSaving: boolean;
   error: string | null;
 
   // Actions
@@ -90,6 +93,7 @@ export const useIterationStore = create<IterationState>((set, get) => ({
   currentIteration: null,
   iterationHistory: [],
   loading: false,
+  adjustmentSaving: false,
   error: null,
 
   generateWeeklyIteration: async (userId: string) => {
@@ -159,7 +163,34 @@ export const useIterationStore = create<IterationState>((set, get) => ({
     try {
       set({ loading: true, error: null });
 
-      // Use a plain array result (no .single() / .maybeSingle()) so PostgREST never returns 406 when there are zero rows.
+      // Prefer the newest pending iteration so the Suggested Adjustment card can show even when an
+      // older accepted/declined row would otherwise sort first by mistake, or when multiple rows exist.
+      const { data: pendingRows, error: pendingError } = await supabase
+        .from('weekly_iterations')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (pendingError) throw pendingError;
+
+      const pending = pendingRows && pendingRows.length > 0 ? pendingRows[0] : null;
+
+      if (pending) {
+        set({
+          currentIteration: pending as WeeklyIteration,
+          loading: false,
+        });
+        logInfo('Latest iteration loaded', {
+          userId,
+          hasIteration: true,
+          source: 'pending',
+        });
+        return;
+      }
+
+      // No pending row: show the most recent iteration for the weekly readout (may be accepted/declined).
       const { data: rows, error } = await supabase
         .from('weekly_iterations')
         .select('*')
@@ -179,6 +210,7 @@ export const useIterationStore = create<IterationState>((set, get) => ({
       logInfo('Latest iteration loaded', {
         userId,
         hasIteration: !!data,
+        source: 'latest',
       });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -223,7 +255,7 @@ export const useIterationStore = create<IterationState>((set, get) => ({
 
   acceptAdjustment: async (iterationId: string, _userId: string) => {
     try {
-      set({ loading: true, error: null });
+      set({ adjustmentSaving: true, error: null });
 
       const { currentIteration } = get();
       if (!currentIteration?.adjustment_recommendation) {
@@ -313,7 +345,7 @@ export const useIterationStore = create<IterationState>((set, get) => ({
           ...currentIteration,
           status: 'accepted',
         },
-        loading: false,
+        adjustmentSaving: false,
       });
 
       await track('weekly_iteration_adjustment_accepted', {
@@ -328,7 +360,7 @@ export const useIterationStore = create<IterationState>((set, get) => ({
       logError(error as Error, { context: 'iteration.acceptAdjustment' });
       set({
         error: errorMessage,
-        loading: false,
+        adjustmentSaving: false,
       });
       throw error;
     }
@@ -336,7 +368,7 @@ export const useIterationStore = create<IterationState>((set, get) => ({
 
   declineAdjustment: async (iterationId: string) => {
     try {
-      set({ loading: true, error: null });
+      set({ adjustmentSaving: true, error: null });
 
       logInfo('Declining adjustment', { iterationId });
 
@@ -351,15 +383,15 @@ export const useIterationStore = create<IterationState>((set, get) => ({
       if (error) throw error;
 
       const { currentIteration } = get();
-      if (currentIteration) {
-        set({
-          currentIteration: {
-            ...currentIteration,
-            status: 'declined',
-          },
-          loading: false,
-        });
-      }
+      set({
+        currentIteration: currentIteration
+          ? {
+              ...currentIteration,
+              status: 'declined',
+            }
+          : null,
+        adjustmentSaving: false,
+      });
 
       await track('weekly_iteration_adjustment_declined', {
         iterationId,
@@ -371,7 +403,7 @@ export const useIterationStore = create<IterationState>((set, get) => ({
       logError(error as Error, { context: 'iteration.declineAdjustment' });
       set({
         error: errorMessage,
-        loading: false,
+        adjustmentSaving: false,
       });
       throw error;
     }
