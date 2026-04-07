@@ -13,6 +13,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '../../stores/authStore';
 import { useCheckinStore } from '../../stores/checkinStore';
+import { getAppDate, useDevDateStore } from '../../lib/devDate';
 import type { HabitWithStatus } from '../../stores/checkinStore';
 import { HabitDxLogo } from '../../components/brand';
 import { ObstacleBottomSheet, SuccessAnimation } from '../../components/checkin';
@@ -33,6 +34,7 @@ export default function HomeScreen() {
     getCompletionRate,
   } = useCheckinStore();
 
+  const devDateOverride = useDevDateStore((s) => s.dateOverride);
   const [refreshing, setRefreshing] = useState(false);
   const [showObstacleSheet, setShowObstacleSheet] = useState(false);
   const [successAnimation, setSuccessAnimation] = useState<{
@@ -53,6 +55,12 @@ export default function HomeScreen() {
       }
     }
   }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (user && devDateOverride !== undefined) {
+      fetchTodaysHabits(user.id);
+    }
+  }, [devDateOverride]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleRefresh = async () => {
     if (!user) return;
@@ -147,7 +155,7 @@ export default function HomeScreen() {
       month: 'long',
       day: 'numeric',
     };
-    return new Date().toLocaleDateString('en-US', options);
+    return getAppDate().toLocaleDateString('en-US', options);
   };
 
   if (loading && todaysHabits.length === 0) {

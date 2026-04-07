@@ -9,6 +9,7 @@ import appConfig from '../../lib/appConfig';
 import { openExternalUrl, openSupportEmail } from '../../lib/externalLinks';
 import { isExpoWeb } from '../../lib/runtime';
 import { HabitDxLogo } from '../../components/brand';
+import { getAppDate, useDevDateStore } from '../../lib/devDate';
 
 function SettingsRow({
   title,
@@ -334,11 +335,78 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </View>
 
+        {__DEV__ && <DevDateOverride />}
+
         <View className="items-center py-6">
           <Text className="text-xs font-public text-on_surface_variant">HabitDx</Text>
           <Text className="text-xs font-public text-on_surface_variant mt-2">© 2026</Text>
         </View>
       </View>
     </ScrollView>
+  );
+}
+
+function DevDateOverride() {
+  const { dateOverride, setDateOverride, advanceDay } = useDevDateStore();
+  const displayDate = getAppDate();
+
+  const formatted = displayDate.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  return (
+    <>
+      <Text className="font-manrope-md text-lg text-on_surface mb-3">Developer</Text>
+      <View className="bg-surface_container_lowest rounded-xl px-5 py-5 mb-8">
+        <Text className="text-xs font-public-sb text-on_surface_variant uppercase tracking-wide mb-1">
+          App Date {dateOverride ? '(overridden)' : '(real time)'}
+        </Text>
+        <Text className="text-base font-public text-on_surface mb-4">{formatted}</Text>
+
+        <View className="flex-row items-center justify-between mb-4">
+          <TouchableOpacity
+            className="bg-surface_container_high rounded-lg px-4 py-3 flex-1 mr-2 items-center"
+            onPress={() => advanceDay(-1)}
+          >
+            <Text className="text-sm font-public-sb text-on_surface">← Previous Day</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="bg-surface_container_high rounded-lg px-4 py-3 flex-1 ml-2 items-center"
+            onPress={() => advanceDay(1)}
+          >
+            <Text className="text-sm font-public-sb text-on_surface">Next Day →</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View className="flex-row items-center justify-between mb-4">
+          <TouchableOpacity
+            className="bg-surface_container_high rounded-lg px-4 py-3 flex-1 mr-2 items-center"
+            onPress={() => advanceDay(-7)}
+          >
+            <Text className="text-sm font-public text-on_surface">− 1 Week</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="bg-surface_container_high rounded-lg px-4 py-3 flex-1 ml-2 items-center"
+            onPress={() => advanceDay(7)}
+          >
+            <Text className="text-sm font-public text-on_surface">+ 1 Week</Text>
+          </TouchableOpacity>
+        </View>
+
+        {dateOverride && (
+          <TouchableOpacity
+            className="bg-primary_container rounded-lg px-4 py-3 items-center"
+            onPress={() => setDateOverride(null)}
+          >
+            <Text className="text-sm font-public-sb text-on_primary_container">
+              Reset to Real Time
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    </>
   );
 }

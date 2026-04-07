@@ -4,6 +4,7 @@
  */
 
 import { supabase } from './supabase';
+import { getAppDate } from './devDate';
 import type {
   UserProfile,
   UserProfileUpdate,
@@ -246,7 +247,7 @@ export const upsertHabitLog = async (log: HabitLogInsert) => {
  * Get today's logs for user
  */
 export const getTodayLogs = async (userId: string) => {
-  const today = new Date().toISOString().split('T')[0];
+  const today = getAppDate().toISOString().split('T')[0];
 
   const { data, error } = await supabase
     .from('habit_logs')
@@ -316,8 +317,9 @@ export const getHabitCompletionRate = async (
  * Get habit statistics for a user
  */
 export const getUserHabitStats = async (userId: string, days = 30) => {
-  const endDate = new Date().toISOString().split('T')[0];
-  const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+  const endDate = getAppDate().toISOString().split('T')[0];
+  const now = getAppDate();
+  const startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
   const { data: logs, error } = await supabase
     .from('habit_logs')

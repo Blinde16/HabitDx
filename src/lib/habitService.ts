@@ -7,6 +7,7 @@
 import { getAccessTokenForEdgeFunctions, supabase } from './supabase';
 import { logAI, logError, logInfo, logHabit } from './logger';
 import type { Habit, HabitStack, GenerateHabitsResult } from '../types/habit';
+import { getAppDate } from './devDate';
 
 export class HabitService {
   /**
@@ -290,7 +291,7 @@ export class HabitService {
     days: number = 7
   ): Promise<Record<string, unknown>[]> {
     try {
-      const startDate = new Date();
+      const startDate = getAppDate();
       startDate.setDate(startDate.getDate() - days);
 
       const { data, error } = await supabase
@@ -332,7 +333,7 @@ export class HabitService {
 }
 
 function localDateStringForToday(): string {
-  const d = new Date();
+  const d = getAppDate();
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
