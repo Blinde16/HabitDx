@@ -24,6 +24,7 @@ export const AuthButton: React.FC<AuthButtonProps> = ({
 
   return (
     <TouchableOpacity
+      accessibilityRole="button"
       style={[
         styles.button,
         variant === 'primary' && styles.primaryButton,
