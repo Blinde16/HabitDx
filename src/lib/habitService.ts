@@ -215,13 +215,16 @@ export class HabitService {
     try {
       const today = localDateStringForToday();
 
-      const { error } = await supabase.from('habit_logs').upsert({
-        habit_id: habitId,
-        user_id: userId,
-        log_date: today,
-        completed,
-        obstacle: obstacle || obstacleNote || null,
-      });
+      const { error } = await supabase.from('habit_logs').upsert(
+        {
+          habit_id: habitId,
+          user_id: userId,
+          log_date: today,
+          completed,
+          obstacle: obstacle || obstacleNote || null,
+        },
+        { onConflict: 'habit_id,log_date' }
+      );
 
       if (error) {
         throw error;

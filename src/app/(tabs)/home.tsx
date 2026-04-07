@@ -34,7 +34,8 @@ export default function HomeScreen() {
     getCompletionRate,
   } = useCheckinStore();
 
-  const devDateOverride = useDevDateStore((s) => s.dateOverride);
+  const { dateOverride: devDateOverride, devModeVisible, toggleDevMode, advanceDay, setDateOverride } =
+    useDevDateStore();
   const [refreshing, setRefreshing] = useState(false);
   const [showObstacleSheet, setShowObstacleSheet] = useState(false);
   const [successAnimation, setSuccessAnimation] = useState<{
@@ -188,7 +189,65 @@ export default function HomeScreen() {
         }
       >
         <View className="px-7 py-10 max-w-3xl self-center w-full">
-          <HabitDxLogo variant="header" width={176} style={{ marginBottom: 20 }} />
+          <View className="flex-row items-center justify-between mb-5">
+            <HabitDxLogo variant="header" width={176} />
+            {__DEV__ && (
+              <TouchableOpacity
+                onPress={toggleDevMode}
+                className={`rounded-full px-3 py-1.5 ${devModeVisible ? 'bg-tertiary_fixed_dim' : 'bg-surface_container_high'}`}
+              >
+                <Text className={`text-xs font-public-sb ${devModeVisible ? 'text-white' : 'text-on_surface_variant'}`}>
+                  DEV
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
+          {__DEV__ && devModeVisible && (
+            <View className="bg-surface_container_lowest rounded-xl px-4 py-4 mb-6 border border-tertiary_fixed_dim">
+              <Text className="text-xs font-public-sb text-tertiary_fixed_dim uppercase tracking-wide mb-2">
+                Time Travel {devDateOverride ? '· overridden' : '· real time'}
+              </Text>
+              <Text className="text-sm font-public text-on_surface mb-3">
+                {getAppDate().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+              </Text>
+              <View className="flex-row items-center mb-2">
+                <TouchableOpacity
+                  className="bg-surface_container_high rounded-lg px-3 py-2 flex-1 mr-1.5 items-center"
+                  onPress={() => advanceDay(-1)}
+                >
+                  <Text className="text-xs font-public-sb text-on_surface">← Day</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  className="bg-surface_container_high rounded-lg px-3 py-2 flex-1 mx-1.5 items-center"
+                  onPress={() => advanceDay(1)}
+                >
+                  <Text className="text-xs font-public-sb text-on_surface">Day →</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  className="bg-surface_container_high rounded-lg px-3 py-2 flex-1 mx-1.5 items-center"
+                  onPress={() => advanceDay(-7)}
+                >
+                  <Text className="text-xs font-public text-on_surface">−7</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  className="bg-surface_container_high rounded-lg px-3 py-2 flex-1 ml-1.5 items-center"
+                  onPress={() => advanceDay(7)}
+                >
+                  <Text className="text-xs font-public text-on_surface">+7</Text>
+                </TouchableOpacity>
+              </View>
+              {devDateOverride && (
+                <TouchableOpacity
+                  className="bg-tertiary_fixed_dim rounded-lg px-3 py-2 items-center mt-1"
+                  onPress={() => setDateOverride(null)}
+                >
+                  <Text className="text-xs font-public-sb text-white">Reset to Real Time</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
+
           <View className="mb-8 self-start w-full">
             <Text className="text-sm font-public text-on_surface_variant mb-2 tracking-wide">
               {getTodayDateString()}

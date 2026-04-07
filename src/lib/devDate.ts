@@ -32,13 +32,26 @@ export function getAppDateString(): string {
 }
 
 interface DevDateStore {
+  devModeVisible: boolean;
   dateOverride: Date | null;
+  toggleDevMode: () => void;
   setDateOverride: (date: Date | null) => void;
   advanceDay: (days?: number) => void;
 }
 
 export const useDevDateStore = create<DevDateStore>((set, get) => ({
+  devModeVisible: false,
   dateOverride: null,
+
+  toggleDevMode: () => {
+    const next = !get().devModeVisible;
+    if (!next) {
+      _dateOverride = null;
+      set({ devModeVisible: false, dateOverride: null });
+    } else {
+      set({ devModeVisible: true });
+    }
+  },
 
   setDateOverride: (date: Date | null) => {
     _dateOverride = date ? new Date(date.getTime()) : null;
