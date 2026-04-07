@@ -9,6 +9,7 @@ import HabitService from '../lib/habitService';
 import type { Habit } from '../types/habit';
 import { logError, logInfo } from '../lib/logger';
 import { track } from '../lib/analytics';
+import { getAppDate } from '../lib/devDate';
 
 export type HabitStatus = 'not_done' | 'completed' | 'missed' | 'not_scheduled';
 
@@ -60,7 +61,7 @@ export const useCheckinStore = create<CheckinStore>((set, get) => ({
       const allHabits = await HabitService.getActiveHabits(userId);
 
       // Get today's day of week (1=Monday, 7=Sunday)
-      const today = new Date();
+      const today = getAppDate();
       const dayOfWeek = today.getDay() === 0 ? 7 : today.getDay(); // Convert Sunday from 0 to 7
       const todayDate = toLocalDateString(today);
 
@@ -138,7 +139,7 @@ export const useCheckinStore = create<CheckinStore>((set, get) => ({
             ? {
                 ...h,
                 status: 'completed' as HabitStatus,
-                checked_in_at: new Date().toISOString(),
+                checked_in_at: getAppDate().toISOString(),
                 streak: h.streak + 1,
               }
             : h
@@ -161,7 +162,7 @@ export const useCheckinStore = create<CheckinStore>((set, get) => ({
   undoCheckIn: async (habitId: string, userId: string) => {
     try {
       logInfo('Undoing habit check-in', { habitId, userId });
-      const today = toLocalDateString(new Date());
+      const today = toLocalDateString(getAppDate());
       await HabitService.deleteCheckInForDate(habitId, userId, today);
       await track('habit_checkin_undone', { habitId });
       await get().fetchTodaysHabits(userId);
@@ -246,11 +247,11 @@ function getDayOfWeekMonSun(d: Date): number {
 async function calculateStreak(habit: Habit): Promise<number> {
   try {
     const history = await HabitService.getCheckInHistory(habit.id, 120);
-    const todayStr = toLocalDateString(new Date());
+    const todayStr = toLocalDateString(getAppDate());
     let streak = 0;
 
     for (let i = 0; i < 120; i++) {
-      const d = new Date();
+      const d = getAppDate();
       d.setDate(d.getDate() - i);
       const dateStr = toLocalDateString(d);
       const dow = getDayOfWeekMonSun(d);

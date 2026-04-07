@@ -78,15 +78,25 @@ export default function SettingsScreen() {
   };
 
   const handleSignOut = () => {
+    const confirmAndSignOut = async () => {
+      await signOut();
+      router.replace('/(auth)/login');
+    };
+
+    // Alert.alert is unreliable on React Native Web (embedded / automation); use window.confirm.
+    if (isExpoWeb && typeof window !== 'undefined') {
+      if (window.confirm('Sign out?\n\nAre you sure you want to sign out?')) {
+        void confirmAndSignOut();
+      }
+      return;
+    }
+
     Alert.alert('Sign Out?', 'Are you sure you want to sign out?', [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Sign Out',
         style: 'destructive',
-        onPress: async () => {
-          await signOut();
-          router.replace('/(auth)/login');
-        },
+        onPress: () => void confirmAndSignOut(),
       },
     ]);
   };
