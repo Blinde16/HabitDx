@@ -7,7 +7,7 @@
 import { create } from 'zustand';
 import HabitService from '../lib/habitService';
 import type { Habit } from '../types/habit';
-import { logHabit, logError, logInfo } from '../lib/logger';
+import { logError, logInfo } from '../lib/logger';
 import { track } from '../lib/analytics';
 
 export type HabitStatus = 'not_done' | 'completed' | 'missed' | 'not_scheduled';
@@ -22,6 +22,7 @@ export interface HabitWithStatus extends Habit {
 interface CheckinStore {
   // State
   todaysHabits: HabitWithStatus[];
+  totalCompletedCheckIns: number;
   loading: boolean;
   error: string | null;
   selectedHabitForObstacle: string | null;
@@ -41,6 +42,7 @@ interface CheckinStore {
 
 export const useCheckinStore = create<CheckinStore>((set, get) => ({
   todaysHabits: [],
+  totalCompletedCheckIns: 0,
   loading: false,
   error: null,
   selectedHabitForObstacle: null,
@@ -60,7 +62,7 @@ export const useCheckinStore = create<CheckinStore>((set, get) => ({
       // Get today's day of week (1=Monday, 7=Sunday)
       const today = new Date();
       const dayOfWeek = today.getDay() === 0 ? 7 : today.getDay(); // Convert Sunday from 0 to 7
-      const todayDate = today.toISOString().split('T')[0];
+      const todayDate = toLocalDateString(today);
 
       // Filter habits scheduled for today and add status
       const habitsWithStatus: HabitWithStatus[] = await Promise.all(
@@ -80,9 +82,8 @@ export const useCheckinStore = create<CheckinStore>((set, get) => ({
           const todayLog = checkInHistory.find(log => log.log_date === todayDate);
 
           if (todayLog) {
-            // Calculate streak
-            const streak = await calculateStreak(habit.id, userId);
-            
+            const streak = await calculateStreak(habit);
+
             return {
               ...habit,
               status: todayLog.completed ? 'completed' as HabitStatus : 'missed' as HabitStatus,
@@ -93,22 +94,18 @@ export const useCheckinStore = create<CheckinStore>((set, get) => ({
             };
           }
 
-          // Not checked in yet - check if past reminder time
-          const now = new Date();
-          const [hours, minutes] = habit.reminder_time.split(':');
-          const reminderTime = new Date(today);
-          reminderTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-
-          const isPastReminder = now > reminderTime;
-          const streak = await calculateStreak(habit.id, userId);
+          // Same day, not logged yet — never auto-mark missed based on reminder time
+          const streak = await calculateStreak(habit);
 
           return {
             ...habit,
-            status: isPastReminder ? 'missed' as HabitStatus : 'not_done' as HabitStatus,
+            status: 'not_done' as HabitStatus,
             streak,
           };
         })
       );
+
+      const totalCompletedCheckIns = await HabitService.getTotalCompletedCheckIns(userId);
 
       // Sort: scheduled first, then by order_index
       const sortedHabits = habitsWithStatus.sort((a, b) => {
@@ -117,7 +114,7 @@ export const useCheckinStore = create<CheckinStore>((set, get) => ({
         return a.order_index - b.order_index;
       });
 
-      set({ todaysHabits: sortedHabits, loading: false });
+      set({ todaysHabits: sortedHabits, totalCompletedCheckIns, loading: false });
       logInfo('Today\'s habits fetched', { 
         userId, 
         habitCount: sortedHabits.length,
@@ -164,31 +161,12 @@ export const useCheckinStore = create<CheckinStore>((set, get) => ({
   undoCheckIn: async (habitId: string, userId: string) => {
     try {
       logInfo('Undoing habit check-in', { habitId, userId });
-
-      // Optimistic update
-      set((state) => ({
-        todaysHabits: state.todaysHabits.map((h) =>
-          h.id === habitId
-            ? {
-                ...h,
-                status: 'not_done' as HabitStatus,
-                checked_in_at: undefined,
-                streak: Math.max(0, h.streak - 1),
-              }
-            : h
-        ),
-      }));
-
-      // Delete today's log
-      const today = new Date().toISOString().split('T')[0];
-      // Note: HabitService would need deleteCheckIn method
-      // For now, log as not completed
-      await HabitService.logCheckIn(habitId, userId, false);
+      const today = toLocalDateString(new Date());
+      await HabitService.deleteCheckInForDate(habitId, userId, today);
       await track('habit_checkin_undone', { habitId });
-
+      await get().fetchTodaysHabits(userId);
       logInfo('Habit check-in undone', { habitId, userId, event: 'checkin.undo' });
     } catch (error) {
-      // Revert optimistic update on error
       await get().fetchTodaysHabits(userId);
       logError(error as Error, { context: 'checkin.undo', habitId, userId });
       throw error;
@@ -248,44 +226,62 @@ export const useCheckinStore = create<CheckinStore>((set, get) => ({
   },
 }));
 
+function toLocalDateString(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+/** 1 = Monday … 7 = Sunday (matches `habit.days_of_week`) */
+function getDayOfWeekMonSun(d: Date): number {
+  const day = d.getDay();
+  return day === 0 ? 7 : day;
+}
+
 /**
- * Calculate habit streak (consecutive days completed)
+ * Consecutive scheduled days completed, counting backward from today.
+ * Skips non-scheduled weekdays; same-day pending (no log yet) does not break streak.
  */
-async function calculateStreak(habitId: string, userId: string): Promise<number> {
+async function calculateStreak(habit: Habit): Promise<number> {
   try {
-    const history = await HabitService.getCheckInHistory(habitId, 30);
-    
-    if (history.length === 0) return 0;
-
+    const history = await HabitService.getCheckInHistory(habit.id, 120);
+    const todayStr = toLocalDateString(new Date());
     let streak = 0;
-    const today = new Date();
 
-    // Start from today and count backwards
-    for (let i = 0; i < 30; i++) {
-      const checkDate = new Date(today);
-      checkDate.setDate(checkDate.getDate() - i);
-      const dateString = checkDate.toISOString().split('T')[0];
+    for (let i = 0; i < 120; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateStr = toLocalDateString(d);
+      const dow = getDayOfWeekMonSun(d);
 
-      const log = history.find(h => h.log_date === dateString);
-
-      if (!log) {
-        // No log for this date - check if habit was scheduled
-        // If habit is scheduled daily, missing log breaks streak
-        // For now, break streak on first missing day
-        break;
+      if (!habit.days_of_week.includes(dow)) {
+        continue;
       }
 
-      if (log.completed) {
+      const log = history.find((h) => String(h.log_date) === dateStr) as
+        | { completed?: boolean }
+        | undefined;
+
+      if (log?.completed === true) {
         streak++;
-      } else {
-        // Missed - break streak
+        continue;
+      }
+
+      if (log && log.completed === false) {
         break;
       }
+
+      if (dateStr === todayStr) {
+        continue;
+      }
+
+      break;
     }
 
     return streak;
   } catch (error) {
-    logError(error as Error, { context: 'calculateStreak', habitId });
+    logError(error as Error, { context: 'calculateStreak', habitId: habit.id });
     return 0;
   }
 }

@@ -4,7 +4,7 @@
  * Handles API calls to generate and retrieve Habit Failure Profiles
  */
 
-import { supabase } from './supabase';
+import { getAccessTokenForEdgeFunctions, supabase } from './supabase';
 import { logAI, logError, logInfo } from './logger';
 import type {
   HabitFailureProfile,
@@ -27,10 +27,12 @@ export class FailureProfileService {
     try {
       logInfo('Generating failure profile', { userId, event: 'failureProfile.generate.start' });
 
+      const accessToken = await getAccessTokenForEdgeFunctions();
       const startTime = Date.now();
 
       const { data, error } = await supabase.functions.invoke('analyze-failure', {
         body: {},
+        headers: { Authorization: `Bearer ${accessToken}` },
       });
 
       if (error) {
@@ -77,17 +79,13 @@ export class FailureProfileService {
         .select('*')
         .eq('user_id', userId)
         .eq('is_active', true)
-        .single();
+        .maybeSingle();
 
       if (error) {
-        if (error.code === 'PGRST116') {
-          // No rows returned - user doesn't have a profile yet
-          return null;
-        }
         throw error;
       }
 
-      return data as HabitFailureProfile;
+      return (data ?? null) as HabitFailureProfile | null;
     } catch (error) {
       logError(error as Error, { context: 'failureProfile.getActive', userId });
       throw error;

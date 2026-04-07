@@ -1,5 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { verifyJwtAndGetUserId } from '../_shared/auth.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -19,10 +20,10 @@ serve(async (req) => {
   }
 
   const authHeader = req.headers.get('Authorization');
-  const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
-  if (!token) {
-    return new Response(JSON.stringify({ error: 'Missing authorization' }), {
-      status: 401,
+  const auth = await verifyJwtAndGetUserId(authHeader);
+  if (!auth.ok) {
+    return new Response(JSON.stringify({ error: 'Invalid or expired session', detail: auth.error }), {
+      status: auth.status,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
@@ -40,19 +41,7 @@ serve(async (req) => {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 
-  const {
-    data: { user },
-    error: userError,
-  } = await admin.auth.getUser(token);
-
-  if (userError || !user) {
-    return new Response(JSON.stringify({ error: 'Invalid or expired session' }), {
-      status: 401,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  }
-
-  const { error: deleteError } = await admin.auth.admin.deleteUser(user.id);
+  const { error: deleteError } = await admin.auth.admin.deleteUser(auth.userId);
 
   if (deleteError) {
     console.error('delete-account admin.deleteUser:', deleteError);

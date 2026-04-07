@@ -33,7 +33,10 @@ logs/
 # Project-specific
 nul
 .claude/
-.cursor/
+# Cursor: ignore local/cache; track shared rules (see .cursor/rules/)
+.cursor/*
+!.cursor/rules/
+!.cursor/rules/**
 
 # Build artifacts
 *.jks

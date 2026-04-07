@@ -6,6 +6,8 @@ import {
   ActivityIndicator,
   TouchableOpacityProps,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { fontFamily } from '../../lib/fonts';
 
 interface AuthButtonProps extends TouchableOpacityProps {
   title: string;
@@ -22,26 +24,49 @@ export const AuthButton: React.FC<AuthButtonProps> = ({
 }) => {
   const isDisabled = disabled || loading;
 
+  if (variant === 'primary') {
+    return (
+      <TouchableOpacity
+        activeOpacity={0.92}
+        style={[styles.primaryWrap, isDisabled && styles.disabledButton]}
+        disabled={isDisabled}
+        {...props}
+      >
+        <LinearGradient
+          colors={['#263247', '#2d384a']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.primaryGradient}
+        >
+          {loading ? (
+            <ActivityIndicator color="#ffffff" />
+          ) : (
+            <Text style={styles.primaryButtonText}>{title}</Text>
+          )}
+        </LinearGradient>
+      </TouchableOpacity>
+    );
+  }
+
   return (
     <TouchableOpacity
       accessibilityRole="button"
       style={[
         styles.button,
-        variant === 'primary' && styles.primaryButton,
         variant === 'secondary' && styles.secondaryButton,
         variant === 'outline' && styles.outlineButton,
         isDisabled && styles.disabledButton,
       ]}
       disabled={isDisabled}
+      activeOpacity={0.85}
       {...props}
     >
       {loading ? (
-        <ActivityIndicator color={variant === 'outline' ? '#3b82f6' : '#fff'} />
+        <ActivityIndicator color={variant === 'outline' ? '#191c1e' : '#191c1e'} />
       ) : (
         <Text
           style={[
-            styles.buttonText,
-            variant === 'primary' && styles.primaryButtonText,
+            styles.buttonTextBase,
             variant === 'secondary' && styles.secondaryButtonText,
             variant === 'outline' && styles.outlineButtonText,
           ]}
@@ -54,38 +79,47 @@ export const AuthButton: React.FC<AuthButtonProps> = ({
 };
 
 const styles = StyleSheet.create({
+  primaryWrap: {
+    borderRadius: 9999,
+    overflow: 'hidden',
+    marginVertical: 8,
+  },
+  primaryGradient: {
+    minHeight: 52,
+    paddingHorizontal: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  primaryButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontFamily: fontFamily.publicSansSemibold,
+  },
   button: {
-    height: 48,
-    borderRadius: 8,
+    minHeight: 52,
+    borderRadius: 9999,
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: 8,
-  },
-  primaryButton: {
-    backgroundColor: '#3b82f6',
+    paddingHorizontal: 24,
   },
   secondaryButton: {
-    backgroundColor: '#6b7280',
+    backgroundColor: '#eef7f3',
   },
   outlineButton: {
     backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: '#3b82f6',
   },
   disabledButton: {
     opacity: 0.5,
   },
-  buttonText: {
+  buttonTextBase: {
     fontSize: 16,
-    fontWeight: '600',
-  },
-  primaryButtonText: {
-    color: '#fff',
+    fontFamily: fontFamily.publicSansSemibold,
   },
   secondaryButtonText: {
-    color: '#fff',
+    color: '#191c1e',
   },
   outlineButtonText: {
-    color: '#3b82f6',
+    color: '#191c1e',
   },
 });

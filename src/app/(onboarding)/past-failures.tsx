@@ -57,9 +57,9 @@ export default function PastFailuresScreen() {
       subtitle="Start with the ones you’ve genuinely tried, even if they only lasted a few days."
       tip="Pick the habits that feel emotionally familiar, then describe the pattern in your own words."
     >
-      <View className="bg-white border border-gray-200 rounded-[28px] p-5 mb-6">
-        <Text className="text-base font-semibold text-gray-800 mb-2">What have you tried?</Text>
-        <Text className="text-sm text-gray-500 leading-6 mb-4">
+      <View className="bg-surface_container_lowest rounded-[28px] p-5 mb-6">
+        <Text className="text-base font-public-sb text-on_surface mb-2">What have you tried?</Text>
+        <Text className="text-sm font-public text-on_surface_variant leading-6 mb-4">
           Choose every habit you’ve started and struggled to keep going.
         </Text>
 
@@ -85,14 +85,14 @@ export default function PastFailuresScreen() {
         </View>
 
         {data.pastFailures.length > 0 && (
-          <Text className="text-sm text-blue-700 mt-3 font-medium">
+          <Text className="text-sm text-primary_container mt-3 font-public-md">
             {data.pastFailures.length} habit{data.pastFailures.length === 1 ? '' : 's'} selected
           </Text>
         )}
 
         {!showCustomInput ? (
           <TouchableOpacity className="mt-2 py-2" onPress={() => setShowCustomInput(true)}>
-            <Text className="text-sm text-blue-500 font-semibold">+ Add other</Text>
+            <Text className="text-sm text-primary_container font-public-sb">+ Add other</Text>
           </TouchableOpacity>
         ) : (
           <View className="mt-4">
@@ -106,27 +106,27 @@ export default function PastFailuresScreen() {
             />
             <View className="flex-row gap-3 mt-2">
               <TouchableOpacity
-                className="flex-1 py-3 items-center rounded-lg bg-gray-100"
+                className="flex-1 py-3 items-center rounded-lg bg-surface_brand_muted"
                 onPress={() => {
                   setShowCustomInput(false);
                   setCustomHabit('');
                 }}
               >
-                <Text className="text-base font-semibold text-gray-500">Cancel</Text>
+                <Text className="text-base font-public-sb text-on_surface_variant">Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                className={`flex-1 py-3 items-center rounded-lg bg-blue-500 ${!customHabit.trim() ? 'opacity-50' : ''}`}
+                className={`flex-1 py-3 items-center rounded-lg bg-primary_container ${!customHabit.trim() ? 'opacity-50' : ''}`}
                 onPress={handleAddCustom}
                 disabled={!customHabit.trim()}
               >
-                <Text className="text-base font-semibold text-white">Add</Text>
+                <Text className="text-base font-public-sb text-white">Add</Text>
               </TouchableOpacity>
             </View>
           </View>
         )}
       </View>
 
-      <View className="bg-white border border-gray-200 rounded-[28px] p-5 mb-8">
+      <View className="bg-surface_container_lowest rounded-[28px] p-5 mb-8">
         <CharacterCounter
           value={data.failureDescription}
           onChangeText={(text) => updateData('failureDescription', text)}
@@ -139,16 +139,16 @@ export default function PastFailuresScreen() {
 
       <View className="mt-8 gap-3">
         {!canProceed(2) && (
-          <Text className="text-xs text-center text-gray-500">
+          <Text className="text-xs font-public text-center text-on_surface_variant">
             {data.pastFailures.length === 0
               ? 'Select at least one habit above'
               : data.failureDescription.length < 20
-              ? `Describe why they failed (${20 - data.failureDescription.length} more characters needed)`
-              : null}
+                ? `Describe why they failed (${20 - data.failureDescription.length} more characters needed)`
+                : null}
           </Text>
         )}
         <TouchableOpacity className="py-3 items-center" onPress={handleBack}>
-          <Text className="text-base text-blue-600 font-semibold">← Back</Text>
+          <Text className="text-base text-primary_container font-public-sb">← Back</Text>
         </TouchableOpacity>
         <AuthButton
           title={canProceed(2) ? 'That sounds right' : 'Answer to continue'}

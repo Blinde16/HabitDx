@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, View, Text } from 'react-native';
+import { Animated, View, Text, Platform } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 interface SuccessAnimationProps {
@@ -8,79 +8,76 @@ interface SuccessAnimationProps {
   celebration: string;
 }
 
-export default function SuccessAnimation({ visible, habitName, celebration }: SuccessAnimationProps) {
+export default function SuccessAnimation({
+  visible,
+  habitName,
+  celebration,
+}: SuccessAnimationProps) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(0.5)).current;
-  const slideAnim = useRef(new Animated.Value(50)).current;
+  const translateY = useRef(new Animated.Value(12)).current;
 
   useEffect(() => {
     if (visible) {
-      // Trigger haptic feedback
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      if (Platform.OS !== 'web') {
+        void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
 
-      // Animate in
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 1,
-          duration: 300,
+          duration: 280,
           useNativeDriver: true,
         }),
-        Animated.spring(scaleAnim, {
-          toValue: 1,
-          tension: 50,
-          friction: 7,
-          useNativeDriver: true,
-        }),
-        Animated.timing(slideAnim, {
+        Animated.timing(translateY, {
           toValue: 0,
-          duration: 300,
+          duration: 280,
           useNativeDriver: true,
         }),
       ]).start();
 
-      // Animate out after 2.5 seconds
       setTimeout(() => {
         Animated.parallel([
           Animated.timing(fadeAnim, {
             toValue: 0,
-            duration: 300,
+            duration: 240,
             useNativeDriver: true,
           }),
-          Animated.timing(slideAnim, {
-            toValue: -50,
-            duration: 300,
+          Animated.timing(translateY, {
+            toValue: -8,
+            duration: 240,
             useNativeDriver: true,
           }),
         ]).start();
-      }, 2500);
+      }, 2400);
     }
-  }, [visible]);
+  }, [visible, fadeAnim, translateY]);
 
   if (!visible) return null;
 
   return (
     <Animated.View
-      className="absolute top-20 left-0 right-0 mx-6 z-50"
+      className="absolute top-16 left-0 right-0 mx-7 z-50"
       style={{
         opacity: fadeAnim,
-        transform: [
-          { scale: scaleAnim },
-          { translateY: slideAnim },
-        ],
+        transform: [{ translateY }],
       }}
     >
-      <View className="bg-green-500 rounded-2xl p-4 shadow-lg">
-        <View className="flex-row items-center">
-          <Text className="text-4xl mr-3">✅</Text>
-          <View className="flex-1">
-            <Text className="text-white font-bold text-lg">
-              {habitName} Complete!
-            </Text>
-            <Text className="text-green-100 text-sm mt-1">
-              🎉 {celebration}
-            </Text>
-          </View>
-        </View>
+      <View
+        className="rounded-2xl px-5 py-4"
+        style={{
+          backgroundColor: 'rgba(19, 27, 46, 0.94)',
+          shadowColor: '#191c1e',
+          shadowOffset: { width: 0, height: 12 },
+          shadowOpacity: 0.12,
+          shadowRadius: 40,
+          elevation: 8,
+        }}
+      >
+        <Text className="text-white font-manrope-md text-lg mb-1">Recorded</Text>
+        <Text className="text-white/90 font-public text-base leading-6">{habitName}</Text>
+        {celebration ? (
+          <Text className="text-white/75 font-public text-sm mt-2 leading-5">{celebration}</Text>
+        ) : null}
       </View>
     </Animated.View>
   );

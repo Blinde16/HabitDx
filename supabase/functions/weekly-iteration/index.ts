@@ -1,6 +1,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { OpenAI } from 'https://esm.sh/openai@4.20.1';
+import { verifyJwtAndGetUserId } from '../_shared/auth.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -65,31 +66,14 @@ serve(async (req) => {
 
   try {
     const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
+    const auth = await verifyJwtAndGetUserId(authHeader);
+    if (!auth.ok) {
       return new Response(
-        JSON.stringify({ error: 'Unauthorized', detail: 'Missing authorization header' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Unauthorized', detail: auth.error }),
+        { status: auth.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
-
-    // Use service role to verify the JWT
-    const supabaseAdmin = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-    );
-
-    const jwt = authHeader.replace('Bearer ', '');
-    const {
-      data: { user },
-      error: authError,
-    } = await supabaseAdmin.auth.getUser(jwt);
-
-    if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized', detail: authError?.message }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    const userId = auth.userId;
 
     // Client with user's auth for RLS-scoped queries
     const supabaseClient = createClient(
@@ -106,7 +90,7 @@ serve(async (req) => {
     const { data: habits, error: habitsError } = await supabaseClient
       .from('habits')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .eq('is_active', true)
       .order('order_index');
 
@@ -122,7 +106,7 @@ serve(async (req) => {
     const { data: logs, error: logsError } = await supabaseClient
       .from('habit_logs')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .gte('log_date', sevenDaysAgo.toISOString().split('T')[0])
       .order('log_date', { ascending: false });
 
@@ -131,14 +115,30 @@ serve(async (req) => {
     // Calculate completion stats
     const stats = calculateCompletionStats(habits as Habit[], logs as HabitLog[]);
 
-    // Get user's failure profile for context
+    // Optional habit profile + user profile (persona context). New users may not have a profile yet.
     const { data: failureProfile } = await supabaseClient
       .from('habit_failure_profiles')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
+
+    const { data: userProfile } = await supabaseClient
+      .from('user_profiles')
+      .select('goals, past_failures, constraints')
+      .eq('id', userId)
+      .maybeSingle();
+
+    const constraints = (userProfile?.constraints as Record<string, unknown> | null) || {};
+    const constraintSummary = formatConstraintSummary(constraints);
+
+    const failurePatternsText = formatFailurePatterns(failureProfile?.failure_patterns);
+    const rootCausesText = formatStringList(failureProfile?.root_causes);
+
+    if (!Deno.env.get('OPENAI_API_KEY')) {
+      throw new Error('OPENAI_API_KEY not configured');
+    }
 
     // Call OpenAI for weekly analysis
     const openai = new OpenAI({
@@ -198,10 +198,22 @@ ${stats.habits.map(h => `- ${h.habit_name}: ${h.completed}/${h.scheduled} (${Mat
 OBSTACLES ENCOUNTERED:
 ${getObstacleSummary(logs as HabitLog[])}
 
-ORIGINAL FAILURE PATTERNS:
-${failureProfile?.failure_patterns?.map((p: any) => `- ${p.name}: ${p.description}`).join('\n') || 'None available'}
+USER GOALS (from onboarding):
+${formatStringList(userProfile?.goals)}
 
-Based on this data, provide ONE specific adjustment recommendation that will have the highest impact on their success.`;
+PAST STRUGGLES (from onboarding):
+${formatStringList(userProfile?.past_failures)}
+
+SCHEDULE / CONSTRAINTS:
+${constraintSummary || 'Not specified'}
+
+HABIT PROFILE — PATTERNS (if diagnosed):
+${failurePatternsText}
+
+HABIT PROFILE — ROOT CAUSES (if diagnosed):
+${rootCausesText}
+
+Based on this data, provide ONE specific adjustment recommendation that will have the highest impact on their success. Align tone with their goals and constraints; be supportive, not judgmental.`;
 
     console.log('Calling OpenAI for weekly analysis...');
     const startTime = Date.now();
@@ -222,19 +234,38 @@ Based on this data, provide ONE specific adjustment recommendation that will hav
 
     console.log(`OpenAI response received in ${duration}ms, ${tokensUsed} tokens`);
 
-    const analysis = JSON.parse(completion.choices[0].message.content || '{}');
+    const rawContent = completion.choices[0].message.content || '{}';
+    let analysis: {
+      patterns_detected?: unknown;
+      adjustment_recommendation?: unknown;
+      insights?: unknown;
+    };
+    try {
+      analysis = JSON.parse(rawContent);
+    } catch {
+      throw new Error('Invalid AI response: could not parse JSON');
+    }
+
+    const patternsDetected = Array.isArray(analysis.patterns_detected)
+      ? analysis.patterns_detected
+      : [];
+
+    const insightsText =
+      typeof analysis.insights === 'string' && analysis.insights.trim().length > 0
+        ? analysis.insights.trim()
+        : 'Here is a snapshot of your week based on your check-ins. Keep logging — the more data we have, the more tailored your next insight will be.';
 
     // Store iteration result
     const { data: iteration, error: iterationError } = await supabaseClient
       .from('weekly_iterations')
       .insert({
-        user_id: user.id,
+        user_id: userId,
         week_start: sevenDaysAgo.toISOString(),
         week_end: new Date().toISOString(),
         completion_stats: stats,
-        patterns_detected: analysis.patterns_detected || [],
-        adjustment_recommendation: analysis.adjustment_recommendation,
-        insights: analysis.insights,
+        patterns_detected: patternsDetected,
+        adjustment_recommendation: analysis.adjustment_recommendation ?? null,
+        insights: insightsText,
         status: 'pending',
         tokens_used: tokensUsed,
         generation_time_ms: duration,
@@ -247,9 +278,9 @@ Based on this data, provide ONE specific adjustment recommendation that will hav
     const result: WeeklyIterationResult = {
       iteration_id: iteration.id,
       completion_stats: stats,
-      patterns_detected: analysis.patterns_detected || [],
-      adjustment_recommendation: analysis.adjustment_recommendation,
-      insights: analysis.insights,
+      patterns_detected: patternsDetected as WeeklyIterationResult['patterns_detected'],
+      adjustment_recommendation: (analysis.adjustment_recommendation ?? null) as WeeklyIterationResult['adjustment_recommendation'],
+      insights: insightsText,
       tokens_used: tokensUsed,
     };
 
@@ -258,8 +289,12 @@ Based on this data, provide ONE specific adjustment recommendation that will hav
     });
   } catch (error) {
     console.error('Error in weekly-iteration:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return new Response(JSON.stringify({ error: errorMessage }), {
+    const err = error as { message?: string; details?: string; hint?: string; code?: string };
+    const errorMessage =
+      typeof err?.message === 'string' && err.message.length > 0 ? err.message : 'Unknown error';
+    const detail =
+      typeof err?.details === 'string' && err.details.length > 0 ? err.details : undefined;
+    return new Response(JSON.stringify({ error: errorMessage, detail, code: err?.code }), {
       status: 400,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
@@ -305,6 +340,34 @@ function calculateCompletionStats(habits: Habit[], logs: HabitLog[]) {
     completion_rate: totalScheduled > 0 ? totalCompleted / totalScheduled : 0,
     habits: habitStats,
   };
+}
+
+function asStringList(value: unknown): string[] {
+  if (Array.isArray(value)) return value.filter((x): x is string => typeof x === 'string' && x.length > 0);
+  if (typeof value === 'string' && value.length > 0) return [value];
+  return [];
+}
+
+/** JSONB constraints: obstacles (array), schedule_type (array or string), peak_energy, etc. */
+function formatConstraintSummary(c: Record<string, unknown>): string {
+  const parts = [
+    ...asStringList(c.obstacles),
+    ...asStringList(c.schedule_type),
+    typeof c.peak_energy === 'string' ? `Energy: ${c.peak_energy}` : '',
+    typeof c.failure_description === 'string' ? c.failure_description : '',
+  ].filter(Boolean);
+  return parts.join('; ') || '';
+}
+
+function formatStringList(value: string[] | null | undefined): string {
+  if (!value || value.length === 0) return 'None provided';
+  return value.map((s) => `- ${s}`).join('\n');
+}
+
+/** failure_patterns is stored as string[] in the DB */
+function formatFailurePatterns(patterns: string[] | null | undefined): string {
+  if (!patterns || patterns.length === 0) return 'Not yet diagnosed — use logs and stats only.';
+  return patterns.map((p) => `- ${p}`).join('\n');
 }
 
 function getObstacleSummary(logs: HabitLog[]): string {

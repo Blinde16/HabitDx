@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { Session, User, AuthError } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase';
+import { getAccessTokenForEdgeFunctions, supabase } from '../lib/supabase';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 import { logAuth, logError } from '../lib/logger';
@@ -288,7 +288,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   deleteAccount: async () => {
     const { session } = get();
-    if (!session?.access_token) {
+    if (!session?.user) {
       set({ error: 'Not signed in' });
       throw new Error('Not signed in');
     }
@@ -296,9 +296,11 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     try {
       set({ loading: true, error: null });
 
+      const accessToken = await getAccessTokenForEdgeFunctions();
       const { data, error: fnError } = await supabase.functions.invoke('delete-account', {
         method: 'POST',
         body: {},
+        headers: { Authorization: `Bearer ${accessToken}` },
       });
 
       if (fnError) {

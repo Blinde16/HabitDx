@@ -1,14 +1,39 @@
+import { useEffect } from 'react';
+import { View, ActivityIndicator } from 'react-native';
 import { Stack } from 'expo-router';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+import { HabitDxLogo } from '../components/brand';
 import { ProtectedRoute } from '../components/ProtectedRoute';
 import { useNotificationResponse } from '../hooks/useNotificationResponse';
+import { habitDxFonts } from '../lib/fonts';
 import '../../global.css';
 
+SplashScreen.preventAutoHideAsync().catch(() => undefined);
+
 export default function RootLayout() {
+  const [fontsLoaded] = useFonts(habitDxFonts);
+
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync().catch(() => undefined);
+    }
+  }, [fontsLoaded]);
+
   // Handle notification responses (deep linking)
   useNotificationResponse();
 
   // Auth initialization is handled by ProtectedRoute — calling initialize()
   // here too would register a second onAuthStateChange listener.
+
+  if (!fontsLoaded) {
+    return (
+      <View className="flex-1 bg-surface items-center justify-center px-7">
+        <HabitDxLogo variant="mark" width={120} style={{ alignSelf: 'center', marginBottom: 20 }} />
+        <ActivityIndicator size="large" color="#191c1e" />
+      </View>
+    );
+  }
 
   return (
     <ProtectedRoute>

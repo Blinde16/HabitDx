@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { supabase } from '@/lib/supabase';
+import { getAccessTokenForEdgeFunctions, supabase } from '@/lib/supabase';
 import { logInfo, logError } from '@/lib/logger';
 import { track } from '@/lib/analytics';
 
@@ -72,11 +72,12 @@ export const useIterationStore = create<IterationState>((set, get) => ({
 
       logInfo('Generating weekly iteration', { userId });
 
+      const accessToken = await getAccessTokenForEdgeFunctions();
       const startTime = Date.now();
 
-      // Call the Edge Function (SDK handles auth automatically)
       const { data, error } = await supabase.functions.invoke('weekly-iteration', {
         body: {},
+        headers: { Authorization: `Bearer ${accessToken}` },
       });
 
       if (error) {
@@ -99,9 +100,10 @@ export const useIterationStore = create<IterationState>((set, get) => ({
         .from('weekly_iterations')
         .select('*')
         .eq('id', data.iteration_id)
-        .single();
+        .maybeSingle();
 
       if (loadError) throw loadError;
+      if (!iteration) throw new Error('Weekly insight was created but could not be loaded. Try refreshing.');
 
       set({
         currentIteration: iteration as WeeklyIteration,
@@ -131,18 +133,17 @@ export const useIterationStore = create<IterationState>((set, get) => ({
     try {
       set({ loading: true, error: null });
 
-      const { data, error } = await supabase
+      // Use a plain array result (no .single() / .maybeSingle()) so PostgREST never returns 406 when there are zero rows.
+      const { data: rows, error } = await supabase
         .from('weekly_iterations')
         .select('*')
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
+        .limit(1);
 
-      if (error && error.code !== 'PGRST116') {
-        // PGRST116 = no rows
-        throw error;
-      }
+      if (error) throw error;
+
+      const data = rows && rows.length > 0 ? rows[0] : null;
 
       set({
         currentIteration: data as WeeklyIteration | null,

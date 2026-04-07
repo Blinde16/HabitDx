@@ -13,6 +13,8 @@ import { useAuthStore } from '../stores/authStore';
 import { getProfile, updateProfile } from '../lib/db';
 import type { UserProfile, UserProfileUpdate } from '../types/database';
 import { AuthButton } from '../components/auth';
+import { HabitDxLogo } from '../components/brand';
+import { fontFamily } from '../lib/fonts';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -31,7 +33,7 @@ export default function ProfileScreen() {
 
   useEffect(() => {
     loadProfile();
-  }, [user]);
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps -- reload when auth user changes
 
   const loadProfile = async () => {
     if (!user) return;
@@ -111,7 +113,8 @@ export default function ProfileScreen() {
   if (!initialized || authLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#3b82f6" />
+        <HabitDxLogo variant="mark" width={140} style={{ alignSelf: 'center', marginBottom: 20 }} />
+        <ActivityIndicator size="large" color="#191c1e" />
       </View>
     );
   }
@@ -123,8 +126,9 @@ export default function ProfileScreen() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#3b82f6" />
-        <Text style={styles.loadingText}>Loading profile...</Text>
+        <HabitDxLogo variant="mark" width={140} style={{ alignSelf: 'center', marginBottom: 20 }} />
+        <ActivityIndicator size="large" color="#191c1e" />
+        <Text style={styles.loadingText}>Loading profile…</Text>
       </View>
     );
   }
@@ -132,6 +136,7 @@ export default function ProfileScreen() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.header}>
+        <HabitDxLogo width={200} style={{ marginBottom: 16 }} />
         <Text style={styles.title}>Profile</Text>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Text style={styles.backText}>← Back</Text>
@@ -266,29 +271,30 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f7f9fb',
   },
   content: {
-    padding: 24,
+    padding: 28,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#f7f9fb',
   },
   loadingText: {
     marginTop: 16,
     fontSize: 16,
-    color: '#6b7280',
+    fontFamily: fontFamily.publicSans,
+    color: '#5c6370',
   },
   header: {
-    marginBottom: 24,
+    marginBottom: 28,
   },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#111',
+    fontSize: 34,
+    fontFamily: fontFamily.manrope,
+    color: '#191c1e',
     marginBottom: 8,
   },
   backButton: {
@@ -296,23 +302,25 @@ const styles = StyleSheet.create({
   },
   backText: {
     fontSize: 16,
-    color: '#3b82f6',
-    fontWeight: '600',
+    fontFamily: fontFamily.publicSansMedium,
+    color: '#5c6370',
   },
   errorContainer: {
-    backgroundColor: '#fee2e2',
-    borderRadius: 8,
-    padding: 12,
+    backgroundColor: '#f0e6e8',
+    borderRadius: 16,
+    padding: 14,
     marginBottom: 16,
-    borderLeftWidth: 4,
-    borderLeftColor: '#ef4444',
   },
   errorText: {
-    color: '#991b1b',
+    color: '#6b2f38',
     fontSize: 14,
+    fontFamily: fontFamily.publicSans,
   },
   section: {
-    marginBottom: 32,
+    marginBottom: 28,
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    padding: 20,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -321,42 +329,45 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#111',
+    fontSize: 18,
+    fontFamily: fontFamily.manrope,
+    color: '#191c1e',
     marginBottom: 16,
   },
   editButton: {
     fontSize: 16,
-    color: '#3b82f6',
-    fontWeight: '600',
+    fontFamily: fontFamily.publicSansSemibold,
+    color: '#131b2e',
   },
   field: {
     marginBottom: 16,
   },
   label: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#6b7280',
+    fontFamily: fontFamily.publicSansSemibold,
+    color: '#5c6370',
     marginBottom: 4,
   },
   value: {
     fontSize: 16,
-    color: '#111',
+    fontFamily: fontFamily.publicSans,
+    color: '#191c1e',
   },
   valueSmall: {
     fontSize: 12,
-    color: '#6b7280',
+    color: '#5c6370',
     fontFamily: 'monospace',
   },
   input: {
-    height: 44,
+    minHeight: 48,
     borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 8,
-    paddingHorizontal: 12,
+    borderColor: 'rgba(25, 28, 30, 0.15)',
+    borderRadius: 16,
+    paddingHorizontal: 14,
     fontSize: 16,
-    color: '#111',
+    fontFamily: fontFamily.publicSans,
+    color: '#191c1e',
+    backgroundColor: '#ffffff',
   },
   toggle: {
     flexDirection: 'row',
@@ -366,11 +377,11 @@ const styles = StyleSheet.create({
     width: 51,
     height: 31,
     borderRadius: 16,
-    backgroundColor: '#d1d5db',
+    backgroundColor: '#e0e3e5',
     padding: 2,
   },
   toggleTrackActive: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#131b2e',
   },
   toggleThumb: {
     width: 27,
@@ -384,7 +395,8 @@ const styles = StyleSheet.create({
   toggleLabel: {
     marginLeft: 12,
     fontSize: 16,
-    color: '#111',
+    fontFamily: fontFamily.publicSans,
+    color: '#191c1e',
   },
   actions: {
     flexDirection: 'row',
@@ -393,25 +405,25 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    height: 44,
-    borderRadius: 8,
+    minHeight: 48,
+    borderRadius: 9999,
     justifyContent: 'center',
     alignItems: 'center',
   },
   cancelButton: {
-    backgroundColor: '#f3f4f6',
+    backgroundColor: '#e0e3e5',
   },
   cancelButtonText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#6b7280',
+    fontFamily: fontFamily.publicSansSemibold,
+    color: '#191c1e',
   },
   saveButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#131b2e',
   },
   saveButtonText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: fontFamily.publicSansSemibold,
     color: '#fff',
   },
 });

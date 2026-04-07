@@ -9,10 +9,12 @@ import {
   Alert,
   Platform,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '../../stores/authStore';
 import { useCheckinStore } from '../../stores/checkinStore';
 import type { HabitWithStatus } from '../../stores/checkinStore';
+import { HabitDxLogo } from '../../components/brand';
 import { ObstacleBottomSheet, SuccessAnimation } from '../../components/checkin';
 import NotificationService from '../../lib/notificationService';
 
@@ -21,6 +23,7 @@ export default function HomeScreen() {
   const { user } = useAuthStore();
   const {
     todaysHabits,
+    totalCompletedCheckIns,
     loading,
     initialize,
     fetchTodaysHabits,
@@ -62,7 +65,6 @@ export default function HomeScreen() {
     if (!user) return;
 
     if (habit.status === 'completed') {
-      // Undo check-in
       Alert.alert('Undo Check-in?', `Mark "${habit.name}" as not done?`, [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -70,25 +72,22 @@ export default function HomeScreen() {
           onPress: async () => {
             try {
               await undoCheckIn(habit.id, user.id);
-            } catch (err) {
-              Alert.alert('Error', 'Failed to undo check-in');
+            } catch {
+              Alert.alert('Error', 'Could not update check-in');
             }
           },
         },
       ]);
     } else {
-      // Complete habit
       try {
         await checkInHabit(habit.id, user.id);
 
-        // Show success animation
         setSuccessAnimation({
           visible: true,
           habitName: habit.name,
           celebration: habit.celebration,
         });
 
-        // Hide animation after 3 seconds
         setTimeout(() => {
           setSuccessAnimation({
             visible: false,
@@ -96,49 +95,47 @@ export default function HomeScreen() {
             celebration: '',
           });
         }, 3000);
-      } catch (err) {
-        Alert.alert('Error', 'Failed to check in habit');
+      } catch {
+        Alert.alert('Error', 'Could not record check-in');
       }
     }
   };
 
   const handleLongPress = (habit: HabitWithStatus) => {
     if (habit.status === 'not_scheduled') return;
-
-    // Open obstacle bottom sheet
     setSelectedHabitForObstacle(habit.id);
     setShowObstacleSheet(true);
   };
 
-  const getStatusIcon = (status: HabitWithStatus['status']): string => {
+  const statusLabel = (status: HabitWithStatus['status']): string => {
     switch (status) {
       case 'completed':
-        return '✅';
+        return 'Recorded';
       case 'missed':
-        return '❌';
+        return 'Missed day';
       case 'not_scheduled':
-        return '⬜';
+        return 'Not scheduled';
       default:
-        return '⭕';
+        return 'Open';
     }
   };
 
-  const getStatusColor = (status: HabitWithStatus['status']): string => {
+  const habitCardTone = (status: HabitWithStatus['status']): string => {
     switch (status) {
       case 'completed':
-        return 'border-green-500 bg-green-50';
+        return 'bg-growth_muted';
       case 'missed':
-        return 'border-red-500 bg-red-50';
+        return 'bg-surface_container_highest';
       case 'not_scheduled':
-        return 'border-gray-300 bg-gray-50';
+        return 'bg-surface_container_low';
       default:
-        return 'border-purple-500 bg-white';
+        return 'bg-surface_container_lowest';
     }
   };
 
   const formatTime = (time: string): string => {
     const [hours, minutes] = time.split(':');
-    const hour = parseInt(hours);
+    const hour = parseInt(hours, 10);
     const ampm = hour >= 12 ? 'PM' : 'AM';
     const displayHour = hour % 12 || 12;
     return `${displayHour}:${minutes} ${ampm}`;
@@ -155,9 +152,10 @@ export default function HomeScreen() {
 
   if (loading && todaysHabits.length === 0) {
     return (
-      <View className="flex-1 bg-gray-50 items-center justify-center">
-        <ActivityIndicator size="large" color="#8B5CF6" />
-        <Text className="mt-4 text-gray-600">Loading your habits...</Text>
+      <View className="flex-1 bg-surface items-center justify-center px-7">
+        <HabitDxLogo variant="mark" width={160} style={{ alignSelf: 'center', marginBottom: 20 }} />
+        <ActivityIndicator size="large" color="#191c1e" />
+        <Text className="mt-4 font-public text-on_surface_variant">Loading your habits…</Text>
       </View>
     );
   }
@@ -169,7 +167,6 @@ export default function HomeScreen() {
 
   return (
     <>
-      {/* Success Animation Overlay */}
       <SuccessAnimation
         visible={successAnimation.visible}
         habitName={successAnimation.habitName}
@@ -177,175 +174,183 @@ export default function HomeScreen() {
       />
 
       <ScrollView
-        className="flex-1 bg-gray-50"
+        className="flex-1 bg-surface"
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#8B5CF6" />
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#191c1e" />
         }
       >
-        <View className="px-6 py-8">
-          {/* Header */}
-          <View className="mb-6">
-            <Text className="text-sm text-gray-500 mb-1">{getTodayDateString()}</Text>
-            <Text className="text-3xl font-bold text-gray-900 mb-2">Today&apos;s Habits</Text>
+        <View className="px-7 py-10 max-w-3xl self-center w-full">
+          <HabitDxLogo variant="header" width={176} style={{ marginBottom: 20 }} />
+          <View className="mb-8 self-start w-full">
+            <Text className="text-sm font-public text-on_surface_variant mb-2 tracking-wide">
+              {getTodayDateString()}
+            </Text>
+            <Text className="font-manrope text-display-lg text-on_surface mb-3">Today</Text>
             {totalCount > 0 && (
-              <Text className="text-lg text-gray-600">
-                {completedCount} of {totalCount} complete
+              <Text className="text-body-md font-public text-on_surface leading-6">
+                {completedCount} of {totalCount} scheduled complete
                 {completionRate > 0 && (
-                  <Text className="text-purple-600 font-semibold"> ({completionRate}%)</Text>
+                  <Text className="text-tertiary_fixed_dim font-public-sb">
+                    {' '}
+                    · {completionRate}% consistency
+                  </Text>
+                )}
+                {totalCompletedCheckIns > 0 && (
+                  <Text className="text-on_surface_variant font-public">
+                    {' '}
+                    · {totalCompletedCheckIns} total check-ins
+                  </Text>
                 )}
               </Text>
             )}
           </View>
 
-          {/* Motivational Message */}
           {completedCount === 0 && totalCount > 0 && (
-            <View className="bg-purple-50 rounded-lg p-4 mb-6 border border-purple-200">
-              <Text className="text-purple-900 font-semibold">Start your day right! ☀️</Text>
-              <Text className="text-purple-800 mt-1">
-                Just tap a habit to check it off. Remember: tiny actions lead to big changes.
+            <View className="bg-surface_container_low rounded-xl p-5 mb-8">
+              <Text className="font-manrope-md text-on_surface text-headline-lg mb-1">
+                Begin gently
+              </Text>
+              <Text className="font-public text-on_surface_variant leading-6">
+                Tap a habit when you complete it. Small actions, observed without judgment.
               </Text>
             </View>
           )}
 
           {completedCount === totalCount && totalCount > 0 && (
-            <View className="bg-green-50 rounded-lg p-4 mb-6 border border-green-200">
-              <Text className="text-green-900 font-bold text-lg">🎉 All Done for Today!</Text>
-              <Text className="text-green-800 mt-1">
-                You crushed it! Don&apos;t forget your celebrations. See you tomorrow!
+            <View className="bg-surface_container_low rounded-xl p-5 mb-8">
+              <Text className="font-manrope-md text-on_surface text-headline-lg mb-1">
+                Stable for today
+              </Text>
+              <Text className="font-public text-on_surface_variant leading-6">
+                Everything scheduled is recorded. Rest counts too.
               </Text>
             </View>
           )}
 
-          {/* Habit Cards */}
           {todaysHabits.length === 0 ? (
-            <View className="bg-white rounded-lg p-6 items-center">
-              <Text className="text-6xl mb-4">🌟</Text>
-              <Text className="text-xl font-semibold text-gray-900 mb-2">No Habits Yet</Text>
-              <Text className="text-gray-600 text-center mb-4">
-                Complete onboarding to get your personalized habit stack
+            <View className="bg-surface_container_lowest rounded-xl p-8 items-start w-full">
+              <Text className="font-manrope text-headline-lg text-on_surface mb-2">
+                No Habits Yet
+              </Text>
+              <Text className="font-public text-on_surface_variant text-center mb-6 leading-6 self-stretch">
+                Finish onboarding to receive your personalized habit stack.
               </Text>
               <TouchableOpacity
-                className="bg-purple-600 px-6 py-3 rounded-lg"
+                activeOpacity={0.92}
+                className="rounded-full self-stretch overflow-hidden"
                 onPress={() => router.push('/(onboarding)/chat' as never)}
               >
-                <Text className="text-white font-semibold">Start Onboarding</Text>
+                <LinearGradient
+                  colors={['#000000', '#131b2e']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={{ paddingVertical: 16, alignItems: 'center' }}
+                >
+                  <Text className="text-white font-public-sb text-base">Start Onboarding</Text>
+                </LinearGradient>
               </TouchableOpacity>
             </View>
           ) : (
             todaysHabits.map((habit) => (
               <TouchableOpacity
                 key={habit.id}
-                className={`rounded-lg p-5 mb-4 border-l-4 ${getStatusColor(habit.status)}`}
+                className={`rounded-xl p-5 mb-5 ${habitCardTone(habit.status)}`}
                 onPress={() => handleHabitTap(habit)}
                 onLongPress={() => handleLongPress(habit)}
-                activeOpacity={0.7}
+                activeOpacity={0.75}
               >
-                {/* Habit Header */}
-                <View className="flex-row items-center justify-between mb-3">
-                  <View className="flex-row items-center flex-1">
-                    <Text className="text-3xl mr-3">{getStatusIcon(habit.status)}</Text>
-                    <View className="flex-1">
-                      <Text
-                        className={`text-lg font-bold ${
-                          habit.status === 'completed'
-                            ? 'text-gray-500 line-through'
-                            : 'text-gray-900'
-                        }`}
-                      >
-                        {habit.name}
+                <View className="flex-row items-start justify-between mb-3">
+                  <View className="flex-1 pr-3">
+                    <Text
+                      className={`font-manrope-md text-lg ${
+                        habit.status === 'completed'
+                          ? 'text-on_surface_variant line-through'
+                          : 'text-on_surface'
+                      }`}
+                    >
+                      {habit.name}
+                    </Text>
+                    <Text className="text-xs font-public text-on_surface_variant mt-1">
+                      {statusLabel(habit.status)}
+                    </Text>
+                    {habit.status === 'completed' && habit.checked_in_at && (
+                      <Text className="text-xs font-public text-on_surface_variant mt-2">
+                        Recorded{' '}
+                        {new Date(habit.checked_in_at).toLocaleTimeString('en-US', {
+                          hour: 'numeric',
+                          minute: '2-digit',
+                        })}
                       </Text>
-                      {habit.status === 'completed' && habit.checked_in_at && (
-                        <Text className="text-xs text-gray-500 mt-1">
-                          Completed at{' '}
-                          {new Date(habit.checked_in_at).toLocaleTimeString('en-US', {
-                            hour: 'numeric',
-                            minute: '2-digit',
-                          })}
-                        </Text>
-                      )}
-                    </View>
+                    )}
                   </View>
-                  {habit.streak > 0 && (
-                    <View className="ml-2">
-                      <Text className="text-xs text-gray-500">Streak</Text>
-                      <Text className="text-lg font-bold text-orange-600">🔥 {habit.streak}</Text>
-                    </View>
-                  )}
                 </View>
 
-                {/* Tiny Version */}
                 {habit.status !== 'completed' && (
-                  <Text className="text-sm text-gray-700 mb-2">{habit.tiny_version}</Text>
+                  <Text className="text-sm font-public text-on_surface leading-6 mb-2">
+                    {habit.tiny_version}
+                  </Text>
                 )}
 
-                {/* Anchor */}
                 {habit.status !== 'completed' && (
-                  <Text className="text-xs text-gray-600 mb-2">⚓ {habit.anchor}</Text>
+                  <Text className="text-xs font-public text-on_surface_variant mb-2 leading-5">
+                    Anchor: {habit.anchor}
+                  </Text>
                 )}
 
-                {/* Celebration */}
                 {habit.status === 'completed' && (
-                  <View className="bg-yellow-50 rounded p-3 mt-2">
-                    <Text className="text-sm text-gray-800">
-                      <Text className="font-semibold">🎉 Don&apos;t forget:</Text>{' '}
+                  <View className="bg-surface_container_low rounded-lg p-3 mt-2">
+                    <Text className="text-sm font-public text-on_surface leading-5">
+                      <Text className="font-public-sb">Reminder: </Text>
                       {habit.celebration}
                     </Text>
                   </View>
                 )}
 
-                {/* Obstacle indicator */}
                 {habit.last_obstacle && (
                   <View className="mt-2">
-                    <Text className="text-xs text-red-600">
+                    <Text className="text-xs font-public text-on_primary_container leading-5">
                       Yesterday&apos;s obstacle: {habit.last_obstacle.replace('_', ' ')}
                     </Text>
                   </View>
                 )}
 
-                {/* Don't Miss Twice Warning */}
-                {habit.status !== 'completed' && habit.streak === 0 && habit.last_obstacle && (
-                  <View className="mt-2 bg-orange-50 border-l-4 border-orange-500 rounded p-3">
-                    <Text className="text-sm font-bold text-orange-900 mb-1">
-                      ⚠️ Don&apos;t Miss Twice!
-                    </Text>
-                    <Text className="text-xs text-orange-800">
-                      You missed yesterday. One skip is fine—but two in a row starts a pattern.
-                      Let&apos;s get back on track today!
+                {habit.status !== 'completed' && habit.last_obstacle && (
+                  <View className="mt-3 bg-surface_container_low rounded-lg p-4">
+                    <Text className="text-sm font-manrope-md text-on_surface mb-1">Re-entry</Text>
+                    <Text className="text-xs font-public text-on_surface_variant leading-5">
+                      Yesterday was a miss — that is data, not a verdict. The tiny version still
+                      counts today.
                     </Text>
                   </View>
                 )}
 
-                {/* Reminder time */}
                 {habit.status === 'not_done' && habit.reminder_enabled && (
-                  <Text className="text-xs text-gray-500 mt-2">
-                    ⏰ Reminder: {formatTime(habit.reminder_time)}
+                  <Text className="text-xs font-public text-on_surface_variant mt-2">
+                    Reminder: {formatTime(habit.reminder_time)}
                   </Text>
                 )}
 
-                {/* Help text */}
                 {habit.status === 'not_done' && (
-                  <Text className="text-xs text-gray-400 mt-3">
-                    Tap to complete • Long press if you can&apos;t do it today
+                  <Text className="text-sm font-public text-on_surface_variant mt-4 leading-5">
+                    Tap to record · Long-press to log an obstacle (helps weekly adjustments)
                   </Text>
                 )}
               </TouchableOpacity>
             ))
           )}
 
-          {/* Footer Tips */}
           {totalCount > 0 && (
-            <View className="bg-blue-50 rounded-lg p-4 mt-4">
-              <Text className="text-sm font-semibold text-blue-900 mb-2">💡 Daily Tip</Text>
-              <Text className="text-sm text-gray-800">
-                Don&apos;t miss twice! One skip is fine—life happens. It&apos;s two in a row that
-                starts a pattern. Focus on consistency over perfection.
+            <View className="bg-surface_container_low rounded-xl p-5 mt-2">
+              <Text className="text-sm font-manrope-md text-on_surface mb-2">Observation</Text>
+              <Text className="text-sm font-public text-on_surface_variant leading-6">
+                One quiet day does not define your pattern. Consistency trends matter more than any
+                single miss.
               </Text>
             </View>
           )}
         </View>
       </ScrollView>
 
-      {/* Obstacle Bottom Sheet */}
       <ObstacleBottomSheet
         visible={showObstacleSheet}
         onClose={() => {

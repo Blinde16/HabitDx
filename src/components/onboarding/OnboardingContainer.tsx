@@ -27,56 +27,57 @@ export const OnboardingContainer: React.FC<OnboardingContainerProps> = ({
     <ScrollView
       contentContainerStyle={{
         flexGrow: 1,
-        paddingHorizontal: 24,
-        paddingTop: 28,
-        paddingBottom: 72,
+        paddingHorizontal: 28,
+        paddingTop: 32,
+        paddingBottom: 80,
       }}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
     >
       <ProgressIndicator current={currentScreen} total={totalScreens} />
 
-      <View className="mb-6">
-        <View className="self-start bg-blue-600 rounded-full px-4 py-2 mb-3">
-          <Text className="text-xs font-semibold uppercase tracking-[1px] text-white">
+      <View className="mb-8 self-start w-full">
+        <View className="self-start bg-primary_container rounded-full px-4 py-2 mb-4">
+          <Text className="text-xs font-public-sb uppercase tracking-[2px] text-white/90">
             {promptLabel}
           </Text>
         </View>
 
-        <View className="bg-slate-900 rounded-[28px] rounded-tl-md px-5 py-5 shadow-sm">
-          <Text className="text-[28px] font-bold text-white leading-9 mb-2">{title}</Text>
-          {subtitle && <Text className="text-base text-slate-200 leading-6">{subtitle}</Text>}
+        <View className="bg-primary_container rounded-3xl rounded-tl-md px-6 py-6">
+          <Text className="text-[26px] font-manrope text-white leading-8 mb-2">{title}</Text>
+          {subtitle ? (
+            <Text className="text-base font-public text-white/85 leading-6">{subtitle}</Text>
+          ) : null}
         </View>
       </View>
 
-      <View className="bg-blue-50 border border-blue-100 rounded-3xl px-5 py-4 mb-6">
-        <Text className="text-xs font-semibold uppercase tracking-[1px] text-blue-700 mb-2">
+      <View className="bg-surface_container_low rounded-3xl px-5 py-5 mb-6">
+        <Text className="text-xs font-public-sb uppercase tracking-[1px] text-on_surface_variant mb-2">
           {responseLabel}
         </Text>
-        <Text className="text-sm text-slate-600 leading-6">
-          Tap to choose, edit as you go, and keep your answers honest. We use this to shape
-          habits around your real life, not an ideal one.
+        <Text className="text-sm font-public text-on_surface leading-6">
+          Choose what fits, edit freely, stay honest. We shape habits around your real constraints,
+          not an ideal calendar.
         </Text>
       </View>
 
-      {tip && (
-        <View className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3 mb-6">
-          <Text className="text-sm text-amber-900 leading-6">{tip}</Text>
+      {tip ? (
+        <View className="bg-surface_container_highest rounded-2xl px-4 py-4 mb-6">
+          <Text className="text-sm font-public text-on_surface leading-6">{tip}</Text>
         </View>
-      )}
+      ) : null}
 
       {children}
     </ScrollView>
   );
 
-  // KeyboardAvoidingView clips content on web — just use a plain View
   if (Platform.OS === 'web') {
-    return <View style={{ flex: 1, backgroundColor: '#fff' }}>{content}</View>;
+    return <View style={{ flex: 1, backgroundColor: '#f7f9fb' }}>{content}</View>;
   }
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-white"
+      className="flex-1 bg-surface"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       {content}

@@ -1,6 +1,6 @@
 /**
  * Notification Service
- * 
+ *
  * Handles notification scheduling and management for habits
  */
 
@@ -54,9 +54,9 @@ export class NotificationService {
         await this.scheduleHabitReminder(habit as Habit);
       }
 
-      logInfo('All habit reminders scheduled', { 
-        userId, 
-        count: habits.length 
+      logInfo('All habit reminders scheduled', {
+        userId,
+        count: habits.length,
       });
     } catch (error) {
       logError(error as Error, { context: 'notifications.scheduleAll', userId });
@@ -81,22 +81,22 @@ export class NotificationService {
 
       // Parse reminder time (format: "HH:MM")
       const [hours, minutes] = habit.reminder_time.split(':').map(Number);
-      
+
       // Generate motivational messages
       const messages = [
-        `Time to ${habit.tiny_version}! Just 2 minutes.`,
-        `Remember: ${habit.anchor} → ${habit.tiny_version}`,
-        `${habit.celebration} awaits! Complete your habit now.`,
-        `Keep your streak alive! ${habit.tiny_version}`,
-        `Small win incoming: ${habit.tiny_version}`,
+        `Time for your tiny step: ${habit.tiny_version}`,
+        `After ${habit.anchor}: ${habit.tiny_version}`,
+        `Reminder: ${habit.tiny_version}`,
+        `Consistency check-in: ${habit.tiny_version}`,
+        `Two minutes or less: ${habit.tiny_version}`,
       ];
-      
+
       const randomMessage = messages[Math.floor(Math.random() * messages.length)];
 
       // Schedule notification
       const notificationId = await Notifications.scheduleNotificationAsync({
         content: {
-          title: `Time for ${habit.name} ✨`,
+          title: `Time for ${habit.name}`,
           body: randomMessage,
           data: {
             habitId: habit.id,
@@ -117,9 +117,9 @@ export class NotificationService {
       // Store notification ID in database
       await supabase
         .from('habits')
-        .update({ 
+        .update({
           notification_id: notificationId,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('id', habit.id);
 
@@ -154,19 +154,19 @@ export class NotificationService {
 
       if (habit?.notification_id) {
         await Notifications.cancelScheduledNotificationAsync(habit.notification_id);
-        
+
         // Clear notification ID from database
         await supabase
           .from('habits')
-          .update({ 
+          .update({
             notification_id: null,
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
           })
           .eq('id', habitId);
 
-        logInfo('Habit reminder cancelled', { 
+        logInfo('Habit reminder cancelled', {
           habitId,
-          notificationId: habit.notification_id 
+          notificationId: habit.notification_id,
         });
       }
     } catch (error) {

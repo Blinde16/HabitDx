@@ -7,11 +7,13 @@ import {
   ActivityIndicator,
   Share,
   Alert,
+  StyleSheet,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '../../stores/authStore';
 import FailureProfileService from '../../lib/failureProfileService';
-import type { HabitFailureProfile, PersonalityInsights } from '../../types/failure-profile';
+import type { HabitFailureProfile } from '../../types/failure-profile';
 import { logInfo, logError } from '../../lib/logger';
 
 export default function FailureProfileScreen() {
@@ -24,6 +26,7 @@ export default function FailureProfileScreen() {
 
   useEffect(() => {
     loadProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadProfile = async () => {
@@ -33,13 +36,11 @@ export default function FailureProfileScreen() {
       setLoading(true);
       setError(null);
 
-      // Try to get existing profile first
       const existingProfile = await FailureProfileService.getActiveProfile(user.id);
 
       if (existingProfile) {
         setProfile(existingProfile);
       } else {
-        // No profile exists, generate one
         await generateProfile();
       }
     } catch (err) {
@@ -79,7 +80,7 @@ export default function FailureProfileScreen() {
   const handleRegenerate = () => {
     Alert.alert(
       'Regenerate Profile?',
-      'This will create a new analysis based on your current data. Your old profile will be archived.',
+      'This will create a new analysis based on your current data. Your previous profile will be archived.',
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -91,7 +92,7 @@ export default function FailureProfileScreen() {
               setGenerating(true);
               const result = await FailureProfileService.regenerateProfile(user.id);
               setProfile(result.profile);
-              Alert.alert('Success', 'Your profile has been regenerated!');
+              Alert.alert('Profile Updated', 'Your diagnostic profile has been regenerated.');
             } catch (err) {
               const errorMessage = err instanceof Error ? err.message : 'Failed to regenerate';
               Alert.alert('Error', errorMessage);
@@ -111,43 +112,44 @@ export default function FailureProfileScreen() {
       const shareUrl = FailureProfileService.getShareUrl(profile.share_token);
 
       await Share.share({
-        message: `Check out my Habit Failure Profile! ${shareUrl}`,
-        url: shareUrl, // iOS only
-        title: 'My Habit Failure Profile',
+        message: `HabitDx habit profile (diagnostic readout): ${shareUrl}`,
+        url: shareUrl,
+        title: 'Habit profile',
       });
 
       logInfo('User shared profile', { userId: user?.id, shareToken: profile.share_token });
     } catch (err) {
-      console.error('Error sharing:', err);
+      logError(err instanceof Error ? err : new Error(String(err)), {
+        context: 'failureProfile.share',
+      });
     }
   };
 
   const handleContinue = () => {
-    // Navigate to habit stack screen
     router.push('/(onboarding)/habits');
   };
 
   if (loading) {
     return (
-      <View className="flex-1 bg-gray-50 items-center justify-center">
-        <ActivityIndicator size="large" color="#8B5CF6" />
-        <Text className="mt-4 text-gray-600">Loading your profile...</Text>
+      <View className="flex-1 bg-surface items-center justify-center">
+        <ActivityIndicator size="large" color="#191c1e" />
+        <Text className="mt-4 font-public text-on_surface_variant">Loading profile…</Text>
       </View>
     );
   }
 
   if (generating) {
     return (
-      <View className="flex-1 bg-gray-50 items-center justify-center px-6">
-        <ActivityIndicator size="large" color="#8B5CF6" />
-        <Text className="mt-4 text-xl font-semibold text-gray-900">
-          Analyzing Your Patterns...
+      <View className="flex-1 bg-surface items-center justify-center px-7">
+        <ActivityIndicator size="large" color="#191c1e" />
+        <Text className="mt-4 text-xl font-manrope text-on_surface text-center">
+          Synthesizing Patterns
         </Text>
-        <Text className="mt-2 text-gray-600 text-center">
-          Our AI is reviewing your data and identifying insights. This usually takes 3-5 seconds.
+        <Text className="mt-2 font-public text-on_surface_variant text-center leading-6">
+          Reviewing your inputs—this usually takes a few seconds.
         </Text>
-        <Text className="mt-4 text-sm text-gray-500 text-center">
-          💡 Tip: The insights you're about to see are personalized to YOU—not generic advice.
+        <Text className="mt-6 text-sm font-public text-on_surface_variant text-center leading-5">
+          What follows is tailored to your history and constraints—not generic advice.
         </Text>
       </View>
     );
@@ -155,15 +157,26 @@ export default function FailureProfileScreen() {
 
   if (error) {
     return (
-      <View className="flex-1 bg-gray-50 items-center justify-center px-6">
-        <Text className="text-6xl mb-4">⚠️</Text>
-        <Text className="text-xl font-semibold text-gray-900 mb-2">Oops!</Text>
-        <Text className="text-gray-600 text-center mb-6">{error}</Text>
+      <View className="flex-1 bg-surface items-center justify-center px-7">
+        <Text className="text-xl font-manrope text-on_surface mb-2 text-center">
+          Something Went Wrong
+        </Text>
+        <Text className="font-public text-on_surface_variant text-center mb-8 leading-6">
+          {error}
+        </Text>
         <TouchableOpacity
-          className="bg-purple-600 px-6 py-3 rounded-lg"
+          activeOpacity={0.92}
           onPress={loadProfile}
+          className="rounded-full overflow-hidden"
         >
-          <Text className="text-white font-semibold">Try Again</Text>
+          <LinearGradient
+            colors={['#000000', '#131b2e']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradBtn}
+          >
+            <Text className="text-white font-public-sb">Try Again</Text>
+          </LinearGradient>
         </TouchableOpacity>
       </View>
     );
@@ -171,15 +184,23 @@ export default function FailureProfileScreen() {
 
   if (!profile) {
     return (
-      <View className="flex-1 bg-gray-50 items-center justify-center px-6">
-        <Text className="text-xl font-semibold text-gray-900 mb-4">
-          No Profile Found
+      <View className="flex-1 bg-surface items-center justify-center px-7">
+        <Text className="text-xl font-manrope text-on_surface mb-6 text-center">
+          No Profile Yet
         </Text>
         <TouchableOpacity
-          className="bg-purple-600 px-6 py-3 rounded-lg"
+          activeOpacity={0.92}
           onPress={generateProfile}
+          className="rounded-full overflow-hidden"
         >
-          <Text className="text-white font-semibold">Generate Profile</Text>
+          <LinearGradient
+            colors={['#000000', '#131b2e']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradBtn}
+          >
+            <Text className="text-white font-public-sb">Generate Profile</Text>
+          </LinearGradient>
         </TouchableOpacity>
       </View>
     );
@@ -190,105 +211,103 @@ export default function FailureProfileScreen() {
   );
 
   return (
-    <ScrollView className="flex-1 bg-gray-50">
-      <View className="px-6 py-8">
-        {/* Header */}
-        <View className="mb-6">
-          <Text className="text-3xl font-bold text-gray-900 mb-2">
-            🎯 Your Habit Failure Profile
-          </Text>
-          <Text className="text-gray-600">
-            Based on your personal history and constraints
+    <ScrollView className="flex-1 bg-surface">
+      <View className="px-7 py-10">
+        <View className="mb-8 self-start">
+          <Text className="font-manrope text-display-lg text-on_surface mb-2">Habit Profile</Text>
+          <Text className="font-public text-on_surface_variant leading-6">
+            Based on your history and stated constraints
           </Text>
         </View>
 
-        {/* Failure Patterns */}
-        <View className="bg-white rounded-lg p-6 mb-4 shadow-sm">
-          <Text className="text-xl font-bold text-gray-900 mb-4">
-            Patterns We Noticed
-          </Text>
+        <View className="bg-surface_container_lowest rounded-xl p-6 mb-5">
+          <Text className="font-manrope-md text-lg text-on_surface mb-4">Patterns We Noticed</Text>
           {profile.failure_patterns.map((pattern, index) => (
-            <View key={index} className="flex-row mb-3">
-              <Text className="text-purple-600 mr-2">•</Text>
-              <Text className="flex-1 text-gray-800">{pattern}</Text>
+            <View key={index} className="flex-row mb-4">
+              <Text className="text-tertiary_fixed_dim mr-3 font-public-sb">·</Text>
+              <Text className="flex-1 font-public text-on_surface leading-6">{pattern}</Text>
             </View>
           ))}
         </View>
 
-        {/* Root Causes */}
-        <View className="bg-white rounded-lg p-6 mb-4 shadow-sm">
-          <Text className="text-xl font-bold text-gray-900 mb-4">Root Causes</Text>
+        <View className="bg-surface_container_lowest rounded-xl p-6 mb-5">
+          <Text className="font-manrope-md text-lg text-on_surface mb-4">Underlying Drivers</Text>
           {profile.root_causes.map((cause, index) => (
-            <View key={index} className="flex-row mb-3">
-              <Text className="text-gray-500 mr-3 font-semibold">{index + 1}.</Text>
-              <Text className="flex-1 text-gray-800">{cause}</Text>
+            <View key={index} className="flex-row mb-4">
+              <Text className="text-on_surface_variant mr-3 font-public-sb w-6">{index + 1}.</Text>
+              <Text className="flex-1 font-public text-on_surface leading-6">{cause}</Text>
             </View>
           ))}
         </View>
 
-        {/* Personality Insights */}
-        <View className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg p-6 mb-4 border-2 border-purple-200">
-          <Text className="text-xl font-bold text-purple-900 mb-4">
-            Your Superpower
-          </Text>
-          <Text className="text-lg font-semibold text-purple-700 mb-2">
+        <View className="bg-growth_muted rounded-xl p-6 mb-5">
+          <Text className="font-manrope-md text-lg text-on_surface mb-3">Working Style</Text>
+          <Text className="text-lg font-public-sb text-on_surface mb-3">
             {personalityInsights.archetype}
           </Text>
-          <Text className="text-gray-800 mb-3">
-            <Text className="font-semibold">Strength:</Text> {personalityInsights.strength}
+          <Text className="font-public text-on_surface leading-6 mb-3">
+            <Text className="font-public-sb">Strength: </Text>
+            {personalityInsights.strength}
           </Text>
-          <Text className="text-gray-800">
-            <Text className="font-semibold">Challenge:</Text> {personalityInsights.weakness}
+          <Text className="font-public text-on_surface leading-6">
+            <Text className="font-public-sb">Tension: </Text>
+            {personalityInsights.weakness}
           </Text>
         </View>
 
-        {/* Recommendations */}
-        <View className="bg-white rounded-lg p-6 mb-6 shadow-sm">
-          <Text className="text-xl font-bold text-gray-900 mb-4">
-            What You Need
-          </Text>
+        <View className="bg-surface_container_lowest rounded-xl p-6 mb-8">
+          <Text className="font-manrope-md text-lg text-on_surface mb-4">What Would Help</Text>
           {profile.recommendations.map((rec, index) => (
-            <View key={index} className="flex-row mb-3">
-              <Text className="text-green-600 mr-3 font-semibold">{index + 1}.</Text>
-              <Text className="flex-1 text-gray-800">{rec}</Text>
+            <View key={index} className="flex-row mb-4">
+              <Text className="text-tertiary_fixed_dim mr-3 font-public-sb w-6">{index + 1}.</Text>
+              <Text className="flex-1 font-public text-on_surface leading-6">{rec}</Text>
             </View>
           ))}
         </View>
 
-        {/* Actions */}
-        <View className="space-y-3">
+        <View className="mb-4">
           <TouchableOpacity
-            className="bg-purple-600 py-4 rounded-lg items-center"
+            activeOpacity={0.92}
             onPress={handleContinue}
+            className="rounded-full overflow-hidden mb-3"
           >
-            <Text className="text-white font-bold text-lg">
-              Continue to Your Habits
-            </Text>
+            <LinearGradient
+              colors={['#000000', '#131b2e']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.gradBtnWide}
+            >
+              <Text className="text-white font-public-sb text-lg">Continue To Habits</Text>
+            </LinearGradient>
           </TouchableOpacity>
 
           <TouchableOpacity
-            className="bg-blue-500 py-4 rounded-lg items-center"
+            activeOpacity={0.92}
             onPress={handleShare}
+            className="rounded-full overflow-hidden mb-3"
           >
-            <Text className="text-white font-semibold">Share Profile</Text>
+            <LinearGradient
+              colors={['#e0e3e5', '#d1d5d9']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.gradBtnWide}
+            >
+              <Text className="text-on_surface font-public-sb">Share Readout</Text>
+            </LinearGradient>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            className="border border-gray-300 py-3 rounded-lg items-center"
-            onPress={handleRegenerate}
-          >
-            <Text className="text-gray-700 font-semibold">Regenerate Profile</Text>
+          <TouchableOpacity className="py-4 items-center" onPress={handleRegenerate}>
+            <Text className="text-on_surface_variant font-public-sb">Regenerate Profile</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Footer Info */}
-        <View className="mt-6 p-4 bg-gray-100 rounded-lg">
-          <Text className="text-xs text-gray-600 text-center">
-            Profile generated: {new Date(profile.created_at).toLocaleDateString()}
+        <View className="mt-4 bg-surface_container_low rounded-xl p-4">
+          <Text className="text-xs font-public text-on_surface_variant text-center">
+            Generated {new Date(profile.created_at).toLocaleDateString()}
           </Text>
           {profile.view_count > 0 && (
-            <Text className="text-xs text-gray-600 text-center mt-1">
-              Shared {profile.view_count} times
+            <Text className="text-xs font-public text-on_surface_variant text-center mt-2">
+              Opened {profile.view_count} times
             </Text>
           )}
         </View>
@@ -296,3 +315,15 @@ export default function FailureProfileScreen() {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  gradBtn: {
+    paddingVertical: 14,
+    paddingHorizontal: 28,
+    alignItems: 'center',
+  },
+  gradBtnWide: {
+    paddingVertical: 16,
+    alignItems: 'center',
+  },
+});

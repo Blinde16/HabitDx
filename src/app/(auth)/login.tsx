@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -11,6 +10,9 @@ import {
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '../../stores/authStore';
 import { AuthInput, AuthButton, SocialButton, ErrorMessage } from '../../components/auth';
+import { logError } from '../../lib/logger';
+import { authScreenStyles as s } from '../../styles/authScreenStyles';
+import { HabitDxLogo } from '../../components/brand';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -62,22 +64,33 @@ export default function LoginScreen() {
     try {
       await signInWithGoogle();
     } catch (err) {
-      console.error('Google sign in error:', err);
+      logError(err instanceof Error ? err : new Error(String(err)), {
+        context: 'auth.googleSignIn',
+      });
     }
   };
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={s.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-        <View style={styles.header}>
-          <Text style={styles.title}>Welcome Back</Text>
-          <Text style={styles.subtitle}>Sign in to continue to HabitDx</Text>
+      <ScrollView contentContainerStyle={s.scrollContent} keyboardShouldPersistTaps="handled">
+        <View style={s.header}>
+          <HabitDxLogo width={220} style={{ marginBottom: 20 }} />
+          <Text style={s.title}>Welcome Back</Text>
+          <Text style={s.subtitle}>Sign in to continue to HabitDx</Text>
+          <Text style={s.valueTagline}>
+            Understand why your habits fail. Build ones that stick.
+          </Text>
+          <View style={s.valueBullets}>
+            <Text style={s.valueBullet}>• Diagnostic habit analysis</Text>
+            <Text style={s.valueBullet}>• Personalized tiny habits</Text>
+            <Text style={s.valueBullet}>• Weekly pattern adjustments</Text>
+          </View>
         </View>
 
-        <View style={styles.form}>
+        <View style={s.form}>
           <ErrorMessage message={error} />
 
           <AuthInput
@@ -108,25 +121,21 @@ export default function LoginScreen() {
 
           <TouchableOpacity
             onPress={() => router.push('/(auth)/forgot-password')}
-            style={styles.forgotPassword}
+            style={s.forgotPassword}
           >
-            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+            <Text style={s.forgotPasswordText}>Forgot Password?</Text>
           </TouchableOpacity>
 
           <AuthButton title="Sign In" onPress={handleSignIn} loading={loading} variant="primary" />
 
-          <View style={styles.divider}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>OR</Text>
-            <View style={styles.dividerLine} />
-          </View>
+          <Text style={s.orLabel}>OR</Text>
 
           <SocialButton provider="google" onPress={handleGoogleSignIn} loading={loading} />
 
-          <View style={styles.signupPrompt}>
-            <Text style={styles.signupPromptText}>Don&apos;t have an account? </Text>
+          <View style={s.linkRow}>
+            <Text style={s.linkMuted}>Don&apos;t have an account? </Text>
             <TouchableOpacity onPress={() => router.push('/(auth)/signup')}>
-              <Text style={styles.signupLink}>Sign Up</Text>
+              <Text style={s.linkAccent}>Sign Up</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -134,70 +143,3 @@ export default function LoginScreen() {
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 32,
-  },
-  header: {
-    marginBottom: 32,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#111',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#6b7280',
-  },
-  form: {
-    width: '100%',
-  },
-  forgotPassword: {
-    alignSelf: 'flex-end',
-    marginBottom: 16,
-  },
-  forgotPasswordText: {
-    color: '#3b82f6',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 24,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#e5e7eb',
-  },
-  dividerText: {
-    marginHorizontal: 16,
-    color: '#6b7280',
-    fontSize: 14,
-  },
-  signupPrompt: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 24,
-  },
-  signupPromptText: {
-    color: '#6b7280',
-    fontSize: 14,
-  },
-  signupLink: {
-    color: '#3b82f6',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-});

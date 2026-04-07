@@ -1,11 +1,13 @@
-import { supabase } from './supabase';
+import { getAccessTokenForEdgeFunctions, supabase } from './supabase';
 import type { OnboardingData } from '../stores/onboardingStore';
 
 export type ChatTurn = { role: 'user' | 'assistant'; content: string };
 
 export async function sendOnboardingCoachMessage(messages: ChatTurn[]): Promise<string> {
+  const accessToken = await getAccessTokenForEdgeFunctions();
   const { data, error } = await supabase.functions.invoke('onboarding-chat', {
     body: { action: 'message', messages },
+    headers: { Authorization: `Bearer ${accessToken}` },
   });
 
   if (error) {
@@ -29,8 +31,10 @@ export async function sendOnboardingCoachMessage(messages: ChatTurn[]): Promise<
 }
 
 export async function finalizeOnboardingFromTranscript(messages: ChatTurn[]): Promise<Record<string, unknown>> {
+  const accessToken = await getAccessTokenForEdgeFunctions();
   const { data, error } = await supabase.functions.invoke('onboarding-chat', {
     body: { action: 'finalize', messages },
+    headers: { Authorization: `Bearer ${accessToken}` },
   });
 
   if (error) {

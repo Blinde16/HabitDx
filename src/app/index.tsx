@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { Redirect, useRouter, useRootNavigationState } from 'expo-router';
+import { HabitDxLogo } from '../components/brand';
 import { useAuthStore } from '../stores/authStore';
 import { supabase } from '../lib/supabase';
 
@@ -25,7 +26,7 @@ export default function IndexScreen() {
 
     const routeUser = async () => {
       try {
-        const { data } = await supabase
+        const { data: stackRow } = await supabase
           .from('habit_stacks')
           .select('id')
           .eq('user_id', user.id)
@@ -34,17 +35,46 @@ export default function IndexScreen() {
 
         if (cancelled) return;
 
+        let destination:
+          | '/(tabs)/home'
+          | '/(onboarding)/chat'
+          | '/(onboarding)/failure-profile'
+          | '/(onboarding)/habits';
+
+        if (stackRow) {
+          destination = '/(tabs)/home';
+        } else {
+          const { data: profileRow } = await supabase
+            .from('user_profiles')
+            .select('onboarding_completed')
+            .eq('id', user.id)
+            .maybeSingle();
+
+          if (cancelled) return;
+
+          if (!profileRow?.onboarding_completed) {
+            destination = '/(onboarding)/chat';
+          } else {
+            const { data: fpRow } = await supabase
+              .from('habit_failure_profiles')
+              .select('id')
+              .eq('user_id', user.id)
+              .eq('is_active', true)
+              .maybeSingle();
+
+            if (cancelled) return;
+
+            destination = fpRow ? '/(onboarding)/habits' : '/(onboarding)/failure-profile';
+          }
+        }
+
         setTimeout(() => {
           if (cancelled) {
             routeInFlightRef.current = false;
             return;
           }
           try {
-            if (data) {
-              router.replace('/(tabs)/home');
-            } else {
-              router.replace('/(onboarding)/chat' as never);
-            }
+            router.replace(destination as never);
           } finally {
             routeInFlightRef.current = false;
           }
@@ -63,8 +93,9 @@ export default function IndexScreen() {
 
   if (!initialized || loading) {
     return (
-      <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator size="large" color="#8B5CF6" />
+      <View className="flex-1 items-center justify-center bg-surface px-7">
+        <HabitDxLogo variant="mark" width={128} style={{ alignSelf: 'center', marginBottom: 20 }} />
+        <ActivityIndicator size="large" color="#191c1e" />
       </View>
     );
   }
@@ -74,8 +105,9 @@ export default function IndexScreen() {
   }
 
   return (
-    <View className="flex-1 items-center justify-center bg-white">
-      <ActivityIndicator size="large" color="#8B5CF6" />
+    <View className="flex-1 items-center justify-center bg-surface px-7">
+      <HabitDxLogo variant="mark" width={128} style={{ alignSelf: 'center', marginBottom: 20 }} />
+      <ActivityIndicator size="large" color="#191c1e" />
     </View>
   );
 }

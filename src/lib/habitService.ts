@@ -4,7 +4,7 @@
  * Handles API calls for habit generation, management, and logging
  */
 
-import { supabase } from './supabase';
+import { getAccessTokenForEdgeFunctions, supabase } from './supabase';
 import { logAI, logError, logInfo, logHabit } from './logger';
 import type { Habit, HabitStack, GenerateHabitsResult } from '../types/habit';
 
@@ -16,16 +16,12 @@ export class HabitService {
     try {
       logInfo('Generating habit stack', { userId, event: 'habits.generate.start' });
 
-      // Ensure we have a fresh session token before calling the edge function
-      const { error: refreshError } = await supabase.auth.refreshSession();
-      if (refreshError) {
-        throw new Error(`Session expired. Please sign in again.`);
-      }
-
+      const accessToken = await getAccessTokenForEdgeFunctions();
       const startTime = Date.now();
 
       const { data, error } = await supabase.functions.invoke('generate-habits', {
         body: {},
+        headers: { Authorization: `Bearer ${accessToken}` },
       });
 
       if (error) {
@@ -74,16 +70,13 @@ export class HabitService {
         .select('*')
         .eq('user_id', userId)
         .eq('is_active', true)
-        .single();
+        .maybeSingle();
 
       if (error) {
-        if (error.code === 'PGRST116') {
-          return null;
-        }
         throw error;
       }
 
-      return data as HabitStack;
+      return (data ?? null) as HabitStack | null;
     } catch (error) {
       logError(error as Error, { context: 'habits.getActiveStack', userId });
       throw error;
@@ -219,7 +212,7 @@ export class HabitService {
     obstacleNote?: string
   ): Promise<void> {
     try {
-      const today = new Date().toISOString().split('T')[0];
+      const today = localDateStringForToday();
 
       const { error } = await supabase.from('habit_logs').upsert({
         habit_id: habitId,
@@ -237,6 +230,55 @@ export class HabitService {
     } catch (error) {
       logHabit.checkInError(userId, habitId, error as Error);
       throw error;
+    }
+  }
+
+  /**
+   * Delete a check-in row for a habit on a specific date (used for undo).
+   */
+  static async deleteCheckInForDate(
+    habitId: string,
+    userId: string,
+    logDate: string
+  ): Promise<void> {
+    try {
+      const { error } = await supabase
+        .from('habit_logs')
+        .delete()
+        .eq('habit_id', habitId)
+        .eq('user_id', userId)
+        .eq('log_date', logDate);
+
+      if (error) {
+        throw error;
+      }
+
+      logInfo('Habit check-in deleted', { userId, habitId, logDate, event: 'habit.checkin.delete' });
+    } catch (error) {
+      logHabit.checkInError(userId, habitId, error as Error);
+      throw error;
+    }
+  }
+
+  /**
+   * Count all completed check-ins for a user (across habits).
+   */
+  static async getTotalCompletedCheckIns(userId: string): Promise<number> {
+    try {
+      const { count, error } = await supabase
+        .from('habit_logs')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', userId)
+        .eq('completed', true);
+
+      if (error) {
+        throw error;
+      }
+
+      return count ?? 0;
+    } catch (error) {
+      logError(error as Error, { context: 'habits.getTotalCompletedCheckIns', userId });
+      return 0;
     }
   }
 
@@ -287,6 +329,14 @@ export class HabitService {
       return 0;
     }
   }
+}
+
+function localDateStringForToday(): string {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 }
 
 export default HabitService;

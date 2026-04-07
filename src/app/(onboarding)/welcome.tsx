@@ -29,11 +29,13 @@ export default function WelcomeScreen() {
   };
 
   return (
-    <View className="flex-1 bg-[#F5F8FF] items-center justify-center px-8">
-      <ActivityIndicator size="large" color="#2563EB" />
-      <Text className="text-slate-600 mt-4 text-center">Opening onboarding…</Text>
+    <View className="flex-1 bg-surface items-center justify-center px-8">
+      <ActivityIndicator size="large" color="#191c1e" />
+      <Text className="font-public text-on_surface_variant mt-4 text-center">
+        Opening onboarding…
+      </Text>
       <TouchableOpacity onPress={handleSkip} className="mt-8 p-3">
-        <Text className="text-base text-gray-500">Skip for now</Text>
+        <Text className="text-base font-public text-on_surface_variant">Skip for now</Text>
       </TouchableOpacity>
     </View>
   );

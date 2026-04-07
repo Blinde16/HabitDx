@@ -39,3 +39,22 @@ enable_signup = true
 enable_signup = true
 double_confirm_changes = true
 enable_confirmations = false
+
+# Edge Functions: gateway JWT verification only supports legacy HS256. Projects using
+# JWT Signing Keys (asymmetric) get 401 "Invalid JWT" before the function runs.
+# Auth is enforced in each function via verifyJwtAndGetUserId → auth.getClaims().
+# @see https://supabase.com/docs/guides/functions/auth
+[functions.generate-habits]
+verify_jwt = false
+
+[functions.analyze-failure]
+verify_jwt = false
+
+[functions.onboarding-chat]
+verify_jwt = false
+
+[functions.weekly-iteration]
+verify_jwt = false
+
+[functions.delete-account]
+verify_jwt = false

@@ -2,15 +2,18 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   TouchableOpacity,
+  StyleSheet,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '../../stores/authStore';
 import { AuthInput, AuthButton, ErrorMessage } from '../../components/auth';
+import { authScreenStyles as s } from '../../styles/authScreenStyles';
+import { fontFamily } from '../../lib/fonts';
+import { HabitDxLogo } from '../../components/brand';
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();
@@ -50,9 +53,9 @@ export default function ForgotPasswordScreen() {
 
   if (emailSent) {
     return (
-      <View style={styles.container}>
+      <View style={s.container}>
         <View style={styles.successContainer}>
-          <Text style={styles.successIcon}>✉️</Text>
+          <HabitDxLogo width={200} style={{ marginBottom: 24 }} />
           <Text style={styles.successTitle}>Check Your Email</Text>
           <Text style={styles.successMessage}>
             We&apos;ve sent a password reset link to {email}
@@ -84,18 +87,19 @@ export default function ForgotPasswordScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={s.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-        <View style={styles.header}>
-          <Text style={styles.title}>Forgot Password?</Text>
-          <Text style={styles.subtitle}>
+      <ScrollView contentContainerStyle={s.scrollContent} keyboardShouldPersistTaps="handled">
+        <View style={s.header}>
+          <HabitDxLogo width={200} style={{ marginBottom: 20 }} />
+          <Text style={s.title}>Forgot Password?</Text>
+          <Text style={s.subtitle}>
             Enter your email address and we&apos;ll send you a link to reset your password
           </Text>
         </View>
 
-        <View style={styles.form}>
+        <View style={s.form}>
           <ErrorMessage message={error} />
 
           <AuthInput
@@ -119,7 +123,7 @@ export default function ForgotPasswordScreen() {
           />
 
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Text style={styles.backText}>← Back to Login</Text>
+            <Text style={styles.backText}>Back to Login</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -128,78 +132,49 @@ export default function ForgotPasswordScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  successContainer: {
     flex: 1,
-    backgroundColor: '#fff',
-  },
-  scrollContent: {
-    flexGrow: 1,
     justifyContent: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 32,
+    alignSelf: 'stretch',
+    paddingHorizontal: 28,
   },
-  header: {
-    marginBottom: 32,
+  successTitle: {
+    fontSize: 28,
+    fontFamily: fontFamily.manrope,
+    color: '#191c1e',
+    marginBottom: 16,
+    textAlign: 'left',
   },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#111',
-    marginBottom: 8,
-  },
-  subtitle: {
+  successMessage: {
     fontSize: 16,
-    color: '#6b7280',
+    fontFamily: fontFamily.publicSans,
+    color: '#191c1e',
+    marginBottom: 8,
     lineHeight: 24,
   },
-  form: {
-    width: '100%',
+  successSubtext: {
+    fontSize: 14,
+    fontFamily: fontFamily.publicSans,
+    color: '#5c6370',
+    marginBottom: 32,
+    lineHeight: 22,
+  },
+  resendButton: {
+    marginTop: 16,
+    alignSelf: 'flex-start',
+  },
+  resendText: {
+    color: '#131b2e',
+    fontSize: 14,
+    fontFamily: fontFamily.publicSansSemibold,
   },
   backButton: {
     marginTop: 16,
     alignSelf: 'center',
   },
   backText: {
-    color: '#3b82f6',
+    color: '#5c6370',
     fontSize: 14,
-    fontWeight: '600',
-  },
-  successContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-  },
-  successIcon: {
-    fontSize: 64,
-    marginBottom: 24,
-  },
-  successTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#111',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  successMessage: {
-    fontSize: 16,
-    color: '#374151',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  successSubtext: {
-    fontSize: 14,
-    color: '#6b7280',
-    textAlign: 'center',
-    marginBottom: 32,
-    lineHeight: 20,
-  },
-  resendButton: {
-    marginTop: 16,
-  },
-  resendText: {
-    color: '#3b82f6',
-    fontSize: 14,
-    fontWeight: '600',
+    fontFamily: fontFamily.publicSansMedium,
   },
 });

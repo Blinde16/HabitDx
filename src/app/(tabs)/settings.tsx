@@ -8,6 +8,41 @@ import { logError } from '../../lib/logger';
 import appConfig from '../../lib/appConfig';
 import { openExternalUrl, openSupportEmail } from '../../lib/externalLinks';
 import { isExpoWeb } from '../../lib/runtime';
+import { HabitDxLogo } from '../../components/brand';
+
+function SettingsRow({
+  title,
+  subtitle,
+  onPress,
+  showChevron,
+}: {
+  title: string;
+  subtitle?: string;
+  onPress: () => void;
+  showChevron?: boolean;
+}) {
+  return (
+    <TouchableOpacity
+      className="py-5 active:opacity-80"
+      onPress={onPress}
+      accessibilityRole="button"
+    >
+      <View className="flex-row items-center justify-between">
+        <View className="flex-1 pr-4">
+          <Text className="text-base font-public-sb text-on_surface">{title}</Text>
+          {subtitle ? (
+            <Text className="text-sm font-public text-on_surface_variant mt-1 leading-5">
+              {subtitle}
+            </Text>
+          ) : null}
+        </View>
+        {showChevron !== false && (
+          <Text className="text-lg font-public text-on_surface_variant">›</Text>
+        )}
+      </View>
+    </TouchableOpacity>
+  );
+}
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -23,23 +58,21 @@ export default function SettingsScreen() {
       await updateNotificationSettings(value);
 
       if (value && user) {
-        // Reschedule all notifications
         await NotificationService.scheduleAllHabitReminders(user.id);
       }
     } catch (error) {
       logError(error as Error, { context: 'settings.toggleNotifications' });
-      Alert.alert('Error', 'Failed to update notification settings');
-      setNotifEnabled(!value); // Revert on error
+      Alert.alert('Error', 'Could not update notification settings');
+      setNotifEnabled(!value);
     }
   };
 
   const handleTestNotification = async () => {
     try {
       await NotificationService.sendTestNotification();
-      Alert.alert('Test Sent', 'Check your notifications!');
+      Alert.alert('Test Sent', 'Check your notifications.');
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Failed to send test notification';
+      const message = error instanceof Error ? error.message : 'Failed to send test notification';
       Alert.alert('Test notification', message);
     }
   };
@@ -86,7 +119,9 @@ export default function SettingsScreen() {
             } catch (error) {
               logError(error as Error, { context: 'settings.deleteAccount' });
               const message =
-                error instanceof Error ? error.message : 'Could not delete your account. Try again or contact support.';
+                error instanceof Error
+                  ? error.message
+                  : 'Could not delete your account. Try again or contact support.';
               Alert.alert('Could Not Delete Account', message);
             } finally {
               setDeletingAccount(false);
@@ -97,7 +132,11 @@ export default function SettingsScreen() {
     );
   };
 
-  const handleOpenLink = async (url: string | undefined, fallbackTitle: string, fallbackBody: string) => {
+  const handleOpenLink = async (
+    url: string | undefined,
+    fallbackTitle: string,
+    fallbackBody: string
+  ) => {
     if (!url) {
       Alert.alert(fallbackTitle, fallbackBody);
       return;
@@ -122,248 +161,182 @@ export default function SettingsScreen() {
   };
 
   return (
-    <ScrollView className="flex-1 bg-white">
-      <View className="px-6 py-8">
-        {/* Header */}
-        <Text className="text-2xl font-bold text-gray-900 mb-6">Settings</Text>
+    <ScrollView className="flex-1 bg-surface">
+      <View className="px-7 py-10 max-w-3xl self-center w-full">
+        <HabitDxLogo variant="wordmark" width={200} style={{ marginBottom: 24 }} />
+        <Text className="font-manrope text-display-lg text-on_surface mb-8 self-start">
+          Settings
+        </Text>
 
-        {/* Profile Section */}
-        <View className="bg-gray-50 rounded-lg p-4 mb-6">
-          <Text className="text-sm text-gray-500 mb-1">Signed in as</Text>
-          <Text className="text-base font-semibold text-gray-900">{user?.email || 'Unknown'}</Text>
+        <View className="bg-surface_container_low rounded-xl p-5 mb-8">
+          <Text className="text-xs font-public-sb text-on_surface_variant uppercase tracking-wide mb-1">
+            Signed in as
+          </Text>
+          <Text className="text-base font-public text-on_surface">{user?.email || 'Unknown'}</Text>
         </View>
 
-        {/* Habits Section */}
-        <View className="mb-8">
-          <Text className="text-lg font-semibold text-gray-900 mb-4">My Habits</Text>
-
-          <View className="bg-white border border-gray-200 rounded-lg">
-            <TouchableOpacity
-              className="flex-row items-center justify-between p-4 border-b border-gray-200"
-              onPress={() => router.push('/(onboarding)/failure-profile')}
-            >
-              <View className="flex-1">
-                <Text className="text-base font-medium text-gray-900">View Failure Profile</Text>
-                <Text className="text-sm text-gray-600 mt-1">
-                  See your AI-generated habit analysis
-                </Text>
-              </View>
-              <Text className="text-2xl text-gray-400">→</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              className="flex-row items-center justify-between p-4"
-              onPress={() => router.push('/(onboarding)/habits')}
-            >
-              <View className="flex-1">
-                <Text className="text-base font-medium text-gray-900">Manage Habits</Text>
-                <Text className="text-sm text-gray-600 mt-1">
-                  View or regenerate your habit stack
-                </Text>
-              </View>
-              <Text className="text-2xl text-gray-400">→</Text>
-            </TouchableOpacity>
-          </View>
+        <Text className="font-manrope-md text-lg text-on_surface mb-3">Habits</Text>
+        <View className="bg-surface_container_lowest rounded-xl px-5 mb-10">
+          <SettingsRow
+            title="Habit Profile"
+            subtitle="Your diagnostic habit analysis"
+            onPress={() => router.push('/(onboarding)/failure-profile')}
+          />
+          <SettingsRow
+            title="Manage Habits"
+            subtitle="View or regenerate your habit stack"
+            onPress={() => router.push('/(onboarding)/habits')}
+          />
         </View>
 
-        {/* Notifications — not available in browser (beta is web-first); native apps get full support */}
-        <View className="mb-8">
-          <Text className="text-lg font-semibold text-gray-900 mb-4">Notifications</Text>
-
-          <View className="bg-white border border-gray-200 rounded-lg">
-            {isExpoWeb ? (
-              <View className="p-4">
-                <Text className="text-base font-medium text-gray-900">Reminders (mobile only)</Text>
-                <Text className="text-sm text-gray-600 mt-2 leading-5">
-                  Habit reminders and test notifications are not available in the browser. You can
-                  fully test the rest of the beta here; install the iOS or Android build when you
-                  want to try push reminders.
-                </Text>
-              </View>
-            ) : (
-              <>
-                <View className="flex-row items-center justify-between p-4 border-b border-gray-200">
-                  <View className="flex-1">
-                    <Text className="text-base font-medium text-gray-900">Enable Notifications</Text>
-                    <Text className="text-sm text-gray-600 mt-1">Get reminders for your habits</Text>
-                  </View>
-                  <Switch
-                    value={notifEnabled}
-                    onValueChange={handleNotificationToggle}
-                    trackColor={{ false: '#D1D5DB', true: '#4A90E2' }}
-                    thumbColor="#FFFFFF"
-                  />
-                </View>
-
-                <TouchableOpacity
-                  className="flex-row items-center justify-between p-4"
-                  onPress={handleTestNotification}
-                >
-                  <View className="flex-1">
-                    <Text className="text-base font-medium text-gray-900">Test Notification</Text>
-                    <Text className="text-sm text-gray-600 mt-1">Send a test notification now</Text>
-                  </View>
-                  <Text className="text-2xl">→</Text>
-                </TouchableOpacity>
-              </>
-            )}
-          </View>
-        </View>
-
-        {/* Beta Feedback */}
-        <View className="mb-8">
-          <Text className="text-lg font-semibold text-gray-900 mb-4">Beta Feedback</Text>
-
-          <View className="bg-white border border-gray-200 rounded-lg">
-            <TouchableOpacity
-              className="flex-row items-center justify-between p-4 border-b border-gray-200"
-              onPress={() =>
-                handleOpenLink(
-                  appConfig.betaFeedbackUrl,
-                  'Feedback Form Not Configured',
-                  'Add EXPO_PUBLIC_BETA_FEEDBACK_URL to send testers to your feedback form.'
-                )
-              }
-            >
-              <View className="flex-1">
-                <Text className="text-base font-medium text-gray-900">Share Beta Feedback</Text>
-                <Text className="text-sm text-gray-600 mt-1">
-                  Capture onboarding friction, bugs, and ideas
-                </Text>
-              </View>
-              <Text className="text-2xl text-gray-400">→</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              className="flex-row items-center justify-between p-4 border-b border-gray-200"
-              onPress={() =>
-                handleOpenLink(
-                  appConfig.betaCommunityUrl,
-                  'Community Link Not Configured',
-                  'Add EXPO_PUBLIC_BETA_COMMUNITY_URL to open your Discord or Slack invite.'
-                )
-              }
-            >
-              <View className="flex-1">
-                <Text className="text-base font-medium text-gray-900">Join Tester Community</Text>
-                <Text className="text-sm text-gray-600 mt-1">
-                  Keep beta testers in one shared support channel
-                </Text>
-              </View>
-              <Text className="text-2xl text-gray-400">→</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              className="flex-row items-center justify-between p-4"
-              onPress={() =>
-                handleOpenLink(
-                  appConfig.betaExitSurveyUrl,
-                  'Exit Survey Not Configured',
-                  'Add EXPO_PUBLIC_BETA_EXIT_SURVEY_URL to collect churn and drop-off reasons.'
-                )
-              }
-            >
-              <View className="flex-1">
-                <Text className="text-base font-medium text-gray-900">Take Exit Survey</Text>
-                <Text className="text-sm text-gray-600 mt-1">
-                  Learn why users stop returning before launch
-                </Text>
-              </View>
-              <Text className="text-2xl text-gray-400">→</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* About Section */}
-        <View className="mb-8">
-          <Text className="text-lg font-semibold text-gray-900 mb-4">About</Text>
-
-          <View className="bg-white border border-gray-200 rounded-lg">
-            {/* Version */}
-            <View className="p-4 border-b border-gray-200">
-              <Text className="text-sm text-gray-500">Version</Text>
-              <Text className="text-base text-gray-900 mt-1">1.0.0</Text>
-            </View>
-
-            {/* Privacy Policy */}
-            <TouchableOpacity
-              className="flex-row items-center justify-between p-4 border-b border-gray-200"
-              onPress={() =>
-                handleOpenLink(
-                  appConfig.privacyPolicyUrl,
-                  'Privacy Policy Not Configured',
-                  'Add EXPO_PUBLIC_PRIVACY_POLICY_URL after you publish the policy.'
-                )
-              }
-            >
-              <Text className="text-base text-gray-900">Privacy Policy</Text>
-              <Text className="text-2xl text-gray-400">→</Text>
-            </TouchableOpacity>
-
-            {/* Terms of Service */}
-            <TouchableOpacity
-              className="flex-row items-center justify-between p-4"
-              onPress={() =>
-                handleOpenLink(
-                  appConfig.termsUrl,
-                  'Terms Not Configured',
-                  'Add EXPO_PUBLIC_TERMS_URL after you publish the terms.'
-                )
-              }
-            >
-              <Text className="text-base text-gray-900">Terms of Service</Text>
-              <Text className="text-2xl text-gray-400">→</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Support */}
-        <View className="mb-8">
-          <Text className="text-lg font-semibold text-gray-900 mb-4">Support</Text>
-
-          <View className="bg-white border border-gray-200 rounded-lg">
-            <TouchableOpacity
-              className="flex-row items-center justify-between p-4"
-              onPress={handleContactSupport}
-            >
-              <View className="flex-1">
-                <Text className="text-base font-medium text-gray-900">Email Support</Text>
-                <Text className="text-sm text-gray-600 mt-1">
-                  {appConfig.supportEmail || 'Configure EXPO_PUBLIC_SUPPORT_EMAIL'}
-                </Text>
-              </View>
-              <Text className="text-2xl text-gray-400">→</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Danger Zone */}
-        <View className="mb-8">
-          <Text className="text-lg font-semibold text-gray-900 mb-4">Account</Text>
-
-          <View className="bg-white border border-gray-200 rounded-lg">
-            {/* Sign Out */}
-            <TouchableOpacity className="p-4 border-b border-gray-200" onPress={handleSignOut}>
-              <Text className="text-base font-medium text-blue-600">Sign Out</Text>
-            </TouchableOpacity>
-
-            {/* Delete Account */}
-            <TouchableOpacity
-              className="p-4"
-              onPress={handleDeleteAccount}
-              disabled={deletingAccount}
-            >
-              <Text className="text-base font-medium text-red-600">
-                {deletingAccount ? 'Deleting…' : 'Delete Account'}
+        <Text className="font-manrope-md text-lg text-on_surface mb-3">Notifications</Text>
+        <View className="bg-surface_container_lowest rounded-xl px-5 mb-10">
+          {isExpoWeb ? (
+            <View className="py-5">
+              <Text className="text-base font-public-sb text-on_surface">
+                Reminders (mobile only)
               </Text>
-            </TouchableOpacity>
-          </View>
+              <Text className="text-sm font-public text-on_surface_variant mt-2 leading-5">
+                Habit reminders are not available in the browser. Install the iOS or Android build
+                to try push reminders.
+              </Text>
+            </View>
+          ) : (
+            <>
+              <View className="flex-row items-center justify-between py-5">
+                <View className="flex-1 pr-4">
+                  <Text className="text-base font-public-sb text-on_surface">
+                    Enable Notifications
+                  </Text>
+                  <Text className="text-sm font-public text-on_surface_variant mt-1">
+                    Reminders for your habits
+                  </Text>
+                </View>
+                <Switch
+                  value={notifEnabled}
+                  onValueChange={handleNotificationToggle}
+                  trackColor={{ false: '#d9e0e3', true: '#62c49d' }}
+                  thumbColor="#FFFFFF"
+                />
+              </View>
+              <SettingsRow
+                title="Test Notification"
+                subtitle="Send a test notification now"
+                onPress={handleTestNotification}
+              />
+            </>
+          )}
         </View>
 
-        {/* Footer */}
-        <View className="items-center py-4">
-          <Text className="text-xs text-gray-500">Made with ❤️ for habit builders</Text>
-          <Text className="text-xs text-gray-400 mt-2">© 2026 HabitDx</Text>
+        <Text className="font-manrope-md text-lg text-on_surface mb-3">Beta Feedback</Text>
+        <View className="bg-surface_container_lowest rounded-xl px-5 mb-10">
+          <SettingsRow
+            title="Share Beta Feedback"
+            subtitle="Onboarding friction, bugs, and ideas"
+            onPress={() =>
+              handleOpenLink(
+                appConfig.betaFeedbackUrl,
+                'Feedback Form Not Configured',
+                'Add EXPO_PUBLIC_BETA_FEEDBACK_URL to send testers to your feedback form.'
+              )
+            }
+          />
+          <SettingsRow
+            title="Tester Community"
+            subtitle="Shared support channel"
+            onPress={() =>
+              handleOpenLink(
+                appConfig.betaCommunityUrl,
+                'Community Link Not Configured',
+                'Add EXPO_PUBLIC_BETA_COMMUNITY_URL to open your Discord or Slack invite.'
+              )
+            }
+          />
+          <SettingsRow
+            title="Exit Survey"
+            subtitle="Why users stop returning before launch"
+            onPress={() =>
+              handleOpenLink(
+                appConfig.betaExitSurveyUrl,
+                'Exit Survey Not Configured',
+                'Add EXPO_PUBLIC_BETA_EXIT_SURVEY_URL to collect churn and drop-off reasons.'
+              )
+            }
+          />
+        </View>
+
+        <Text className="font-manrope-md text-lg text-on_surface mb-3">About</Text>
+        <View className="bg-surface_container_lowest rounded-xl px-5 mb-10">
+          <View className="py-5">
+            <Text className="text-xs font-public-sb text-on_surface_variant uppercase tracking-wide mb-1">
+              Version
+            </Text>
+            <Text className="text-base font-public text-on_surface">1.0.0</Text>
+          </View>
+
+          {appConfig.privacyPolicyUrl && (
+            <>
+              <SettingsRow
+                title="Privacy Policy"
+                onPress={() =>
+                  handleOpenLink(
+                    appConfig.privacyPolicyUrl,
+                    'Privacy Policy Not Configured',
+                    'Add EXPO_PUBLIC_PRIVACY_POLICY_URL after you publish the policy.'
+                  )
+                }
+              />
+            </>
+          )}
+
+          {appConfig.termsUrl && (
+            <>
+              <SettingsRow
+                title="Terms of Service"
+                onPress={() =>
+                  handleOpenLink(
+                    appConfig.termsUrl,
+                    'Terms Not Configured',
+                    'Add EXPO_PUBLIC_TERMS_URL after you publish the terms.'
+                  )
+                }
+              />
+            </>
+          )}
+        </View>
+
+        {appConfig.supportEmail && (
+          <>
+            <Text className="font-manrope-md text-lg text-on_surface mb-3">Support</Text>
+            <View className="bg-surface_container_lowest rounded-xl px-5 mb-10">
+              <SettingsRow
+                title="Email Support"
+                subtitle="Contact us"
+                onPress={handleContactSupport}
+              />
+            </View>
+          </>
+        )}
+
+        <Text className="font-manrope-md text-lg text-on_surface mb-3">Account</Text>
+        <View className="bg-surface_container_lowest rounded-xl px-5 mb-8">
+          <TouchableOpacity className="py-5" onPress={handleSignOut}>
+            <Text className="text-base font-public-sb text-primary_container">Sign Out</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="py-5"
+            onPress={handleDeleteAccount}
+            disabled={deletingAccount}
+          >
+            <Text className="text-base font-public-sb text-on_error_container">
+              {deletingAccount ? 'Deleting…' : 'Delete Account'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View className="items-center py-6">
+          <Text className="text-xs font-public text-on_surface_variant">HabitDx</Text>
+          <Text className="text-xs font-public text-on_surface_variant mt-2">© 2026</Text>
         </View>
       </View>
     </ScrollView>

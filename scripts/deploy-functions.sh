@@ -56,7 +56,7 @@ echo "📤 Deploying weekly-iteration function..."
 supabase functions deploy weekly-iteration --no-verify-jwt
 
 echo "📤 Deploying delete-account function..."
-supabase functions deploy delete-account
+supabase functions deploy delete-account --no-verify-jwt
 
 echo "🔐 Setting OPENAI_API_KEY secret..."
 supabase secrets set OPENAI_API_KEY="$OPENAI_API_KEY"
