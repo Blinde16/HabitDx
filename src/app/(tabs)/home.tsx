@@ -16,7 +16,8 @@ import { useCheckinStore } from '../../stores/checkinStore';
 import { getAppDate, useDevDateStore } from '../../lib/devDate';
 import type { HabitWithStatus } from '../../stores/checkinStore';
 import { HabitDxLogo } from '../../components/brand';
-import { ObstacleBottomSheet, SuccessAnimation } from '../../components/checkin';
+import { ObstacleBottomSheet, SuccessAnimation, EditHabitBottomSheet } from '../../components/checkin';
+import type { HabitWordingUpdates } from '../../components/checkin';
 import NotificationService from '../../lib/notificationService';
 
 export default function HomeScreen() {
@@ -32,12 +33,14 @@ export default function HomeScreen() {
     undoCheckIn,
     setSelectedHabitForObstacle,
     getCompletionRate,
+    updateHabitWording,
   } = useCheckinStore();
 
   const { dateOverride: devDateOverride, devModeVisible, toggleDevMode, advanceDay, setDateOverride } =
     useDevDateStore();
   const [refreshing, setRefreshing] = useState(false);
   const [showObstacleSheet, setShowObstacleSheet] = useState(false);
+  const [editingHabit, setEditingHabit] = useState<HabitWithStatus | null>(null);
   const [successAnimation, setSuccessAnimation] = useState<{
     visible: boolean;
     habitName: string;
@@ -106,6 +109,10 @@ export default function HomeScreen() {
     if (habit.status === 'not_scheduled') return;
     setSelectedHabitForObstacle(habit.id);
     setShowObstacleSheet(true);
+  };
+
+  const handleEditSave = async (habitId: string, updates: HabitWordingUpdates) => {
+    await updateHabitWording(habitId, updates);
   };
 
   const statusLabel = (status: HabitWithStatus['status']): string => {
@@ -342,6 +349,13 @@ export default function HomeScreen() {
                       </Text>
                     )}
                   </View>
+                  <TouchableOpacity
+                    onPress={() => setEditingHabit(habit)}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    className="bg-surface_container_high rounded-full px-3 py-1.5"
+                  >
+                    <Text className="text-xs font-public-sb text-on_surface_variant">Edit</Text>
+                  </TouchableOpacity>
                 </View>
 
                 {habit.status !== 'completed' && (
@@ -422,6 +436,13 @@ export default function HomeScreen() {
           setShowObstacleSheet(false);
           setSelectedHabitForObstacle(null);
         }}
+      />
+
+      <EditHabitBottomSheet
+        visible={editingHabit !== null}
+        habit={editingHabit}
+        onSave={handleEditSave}
+        onClose={() => setEditingHabit(null)}
       />
     </>
   );

@@ -6,6 +6,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Com
 
 ## [Unreleased]
 
+### Added
+
+- **Home:** "Edit" pill on each habit card opens a bottom sheet where users can reword the habit name, tiny version, anchor, and celebration.
+
 ### Fixed
 
 - **Insights:** Weekly load now prefers the newest **pending** iteration (so the Suggested Adjustment card appears when a pending week exists alongside older resolved rows); if none are pending, the latest iteration is shown for the readout. Accept/decline no longer flip the whole screen to the loading spinner (separate `adjustmentSaving` state).

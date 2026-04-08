@@ -35,6 +35,7 @@ interface CheckinStore {
   undoCheckIn: (habitId: string, userId: string) => Promise<void>;
   logObstacle: (habitId: string, userId: string, obstacle: string, note?: string) => Promise<void>;
   setSelectedHabitForObstacle: (habitId: string | null) => void;
+  updateHabitWording: (habitId: string, updates: Partial<Pick<Habit, 'name' | 'tiny_version' | 'anchor' | 'celebration'>>) => Promise<void>;
   
   // Computed
   getCompletionRate: () => number;
@@ -224,6 +225,35 @@ export const useCheckinStore = create<CheckinStore>((set, get) => ({
 
   setSelectedHabitForObstacle: (habitId: string | null) => {
     set({ selectedHabitForObstacle: habitId });
+  },
+
+  updateHabitWording: async (habitId, updates) => {
+    const prev = get().todaysHabits.find((h) => h.id === habitId);
+    if (!prev) return;
+
+    // Optimistic update
+    set((state) => ({
+      todaysHabits: state.todaysHabits.map((h) =>
+        h.id === habitId ? { ...h, ...updates } : h
+      ),
+    }));
+
+    try {
+      await HabitService.updateHabit(habitId, {
+        ...updates,
+        updated_at: new Date().toISOString(),
+      });
+      logInfo('Habit wording updated', { habitId, event: 'habit.wording.updated' });
+    } catch (error) {
+      // Revert on failure
+      set((state) => ({
+        todaysHabits: state.todaysHabits.map((h) =>
+          h.id === habitId ? { ...h, name: prev.name, tiny_version: prev.tiny_version, anchor: prev.anchor, celebration: prev.celebration } : h
+        ),
+      }));
+      logError(error as Error, { context: 'habit.updateWording', habitId });
+      throw error;
+    }
   },
 
   getCompletionRate: () => {
