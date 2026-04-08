@@ -1,0 +1,48 @@
+# HabitDx — instructions for AI coding assistants
+
+Read [AGENTS.md](AGENTS.md) and [CONTRIBUTING.md](CONTRIBUTING.md) first. Rules in [`.cursor/rules/`](.cursor/rules/) apply when present.
+
+## Project goal
+
+**HabitDx** is an Expo (React Native) + **Expo Router** app backed by **Supabase** (Postgres, Auth, Edge Functions). Core loop: onboarding intake → AI **Habit Profile** → AI-generated **habit stack** → **daily check-ins** → **weekly iteration** insight. Preserve that architecture unless the user explicitly asks to change it.
+
+## Stack
+
+- **App:** Expo SDK ~50, TypeScript, Zustand stores, NativeWind/Tailwind-style usage where the codebase already does.
+- **Backend:** Supabase client in `src/lib/supabase.ts`; Edge Functions under `supabase/functions/`.
+- **Web:** Static export possible (`vercel.json` uses `expo export --platform web`); routing must stay compatible with SPA rewrites.
+
+## Coding expectations
+
+- **TypeScript:** match existing patterns; run `npm run lint` / `npm run type-check` when touching types.
+- **Scope:** smallest change that fixes the issue; no drive-by refactors or new docs unless requested.
+- **Conventional Commits** and **CHANGELOG.md** under `[Unreleased]` for user-visible changes (see CONTRIBUTING).
+- **Default git workflow:** branch → PR to `main`, not direct push to `main`, unless the user explicitly overrides.
+
+## Do not break
+
+- **Auth / navigation:** Expo Router groups `(auth)`, `(onboarding)`, `(tabs)` and root `index` / `profile` / `auth/callback` OAuth paths. Avoid duplicate `router.replace` races; prefer layout-level `<Redirect />` patterns already used in the repo.
+- **Supabase RLS:** client uses anon key only; privileged operations belong in Edge Functions or service role server-side—never expose service keys in the app.
+- **Secrets:** never commit `.env`, API keys, or real tokens. Use `.env.example` for placeholders only.
+
+## Auth
+
+- Session: `src/stores/authStore.ts` + `supabase.auth`; web uses `detectSessionInUrl` / implicit flow as configured in `src/lib/supabase.ts`.
+- OAuth redirect paths must match **Supabase URL allow list** and app routes (`/auth/callback`, etc.).
+- After auth changes, verify **web** and **iOS/Android** if the change touches platform branches.
+
+## Deployment
+
+- **Vercel:** build output `dist/`; env vars for `EXPO_PUBLIC_*` must be set in the Vercel project for production web.
+- **Supabase:** schema via `supabase/migrations/`; functions deployed separately (see `scripts/deploy-functions.*`).
+
+## Conservative changes
+
+- Prefer extending existing components, stores, and `src/lib/*` helpers over new parallel systems.
+- Edge Functions: keep shared JWT verification in `supabase/functions/_shared/`; respect `verify_jwt` settings in `supabase/config.toml`.
+- UI: follow **HabitDx** editorial / brand direction documented in `aiDocs/master-design.md` when touching visible surfaces.
+
+## When unsure
+
+- Check [aiDocs/mvp.md](aiDocs/mvp.md) for MVP scope and [aiDocs/prd.md](aiDocs/prd.md) for product intent.
+- Use [aiDocs/context.md](aiDocs/context.md) bookshelf for where docs live.

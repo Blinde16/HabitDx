@@ -1,5 +1,26 @@
 # HabitDx - Project Context
 
+## Bookshelf — doc map (start here)
+
+Quick orientation for a new teammate or AI session: what to open first and why.
+
+| Item | Path | Why it matters |
+| --- | --- | --- |
+| **PRD** | `aiDocs/prd.md` | Product vision, personas, priorities, falsifiability notes, long-term metrics. |
+| **MVP scope** | `aiDocs/mvp.md` | **Current delivery anchor** — in/out of scope, core flow, MVP success criteria (narrower than PRD). |
+| **Project context (this file)** | `aiDocs/context.md` | Stack, folder layout, conventions, env vars. |
+| **AI roadmaps & plans** | `ai/roadmaps/`, `ai/guides/` | Phase plans, implementation summaries, integration guides (Supabase, OAuth, notifications, etc.). |
+| **Changelog** | `CHANGELOG.md` | Living release notes; user-visible changes and notable fixes (cite in reviews). |
+| **Agent / git rules** | `AGENTS.md`, `.cursor/rules/`, `.cursorrules` | How assistants should work: PRs, commits, what not to do. |
+| **Contributing** | `CONTRIBUTING.md` | TypeScript, formatting, commit style, PR expectations. |
+| **Testing (CLI)** | `scripts/test-*.ts`, `npm run test:*` | Supabase auth, DB, habits, edge functions; uses structured logger. |
+| **Testing (QA notes)** | `aiDocs/testing/`, `TESTING_GUIDE.md` | Persona reviews, walkthrough findings, manual QA guidance. |
+| **Web deploy** | `vercel.json` | Expo web export command, `dist` output, SPA rewrites. |
+| **App entry & layouts** | `src/app/_layout.tsx`, `src/app/(auth)/`, `src/app/(onboarding)/`, `src/app/(tabs)/` | Expo Router structure, auth vs main app shells. |
+| **Auth & session** | `src/stores/authStore.ts`, `src/lib/supabase.ts`, `src/components/auth/` | Sign-in/up, OAuth callback handling, client config. |
+| **Backend & AI** | `supabase/migrations/`, `supabase/functions/` | Schema, Edge Functions (profile, habits, weekly iteration). |
+| **Design reference** | `aiDocs/master-design.md` | UI direction for auth, tabs, onboarding. |
+
 ## Overview
 
 **HabitDx** is an AI-powered habit diagnosis app for knowledge workers who've tried and failed at building habits. Unlike generic tracking apps that simply log whether you completed a task, HabitDx analyzes _why_ your habits fail and delivers personalized weekly adjustments based on your specific patterns.
