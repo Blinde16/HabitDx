@@ -1,0 +1,31 @@
+# Supabase project config
+# Project: wfslsrknguculwuplshq (habitdx)
+# To link and push migrations:
+#   npx supabase login
+#   npx supabase link --project-ref wfslsrknguculwuplshq
+#   npx supabase db push
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 15
+
+[auth]
+enabled = true
+site_url = "https://habitdx.vercel.app"
+additional_redirect_urls = ["https://habitdx.vercel.app/auth/callback"]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+refresh_token_reuse_interval = 10
+enable_signup = true
+enable_anonymous_sign_ins = false
+
+[auth.external.google]
+enabled = false
