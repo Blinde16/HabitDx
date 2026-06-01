@@ -22,13 +22,13 @@ export function getAIGateway() {
 
 // Model IDs for direct Anthropic SDK (local fallback)
 export const DIRECT_MODELS = {
-  plan: 'claude-sonnet-4-6-20251001',
+  plan: 'claude-sonnet-4-6',
   checkin: 'claude-haiku-4-5-20251001',
 } as const
 
 // Gateway model IDs (prefixed for routing)
 export const GATEWAY_MODELS = {
-  plan: 'anthropic/claude-sonnet-4-6-20251001',
+  plan: 'anthropic/claude-sonnet-4-6',
   checkin: 'anthropic/claude-haiku-4-5-20251001',
 } as const
 

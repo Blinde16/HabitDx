@@ -26,35 +26,53 @@ export default function OnboardingPage() {
     setInput('')
     setLoading(true)
 
-    const res = await fetch('/api/ai/onboarding', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: updated }),
-    })
+    try {
+      const res = await fetch('/api/ai/onboarding', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: updated }),
+      })
 
-    const data = await res.json()
+      if (!res.ok) throw new Error(`API error ${res.status}`)
+      const data = await res.json()
 
-    if (data.complete) {
-      // Plan generation starts — redirect to loading state
-      router.push('/onboarding/generating')
-      return
+      if (data.complete) {
+        router.push('/onboarding/generating')
+        return
+      }
+
+      setMessages(prev => [...prev, { role: 'assistant', content: data.message }])
+    } catch (err) {
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: 'Something went wrong. Please try again.',
+      }])
+      console.error('onboarding sendMessage error:', err)
+    } finally {
+      setLoading(false)
     }
-
-    setMessages(prev => [...prev, { role: 'assistant', content: data.message }])
-    setLoading(false)
   }
 
   async function startInterview() {
     setStarted(true)
     setLoading(true)
-    const res = await fetch('/api/ai/onboarding', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: [], start: true }),
-    })
-    const data = await res.json()
-    setMessages([{ role: 'assistant', content: data.message }])
-    setLoading(false)
+
+    try {
+      const res = await fetch('/api/ai/onboarding', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: [], start: true }),
+      })
+
+      if (!res.ok) throw new Error(`API error ${res.status}`)
+      const data = await res.json()
+      setMessages([{ role: 'assistant', content: data.message }])
+    } catch (err) {
+      setMessages([{ role: 'assistant', content: 'Failed to start the interview. Please refresh and try again.' }])
+      console.error('onboarding startInterview error:', err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (!started) {

@@ -32,6 +32,13 @@ export default function SignupPage() {
     router.push('/onboarding')
   }
 
+  async function handleGoogle() {
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    })
+  }
+
   return (
     <main className="min-h-screen bg-ink flex items-center justify-center px-6">
       <div className="w-full max-w-sm space-y-8">
@@ -39,6 +46,22 @@ export default function SignupPage() {
           <p className="font-mono text-xs text-muted tracking-widest uppercase">HabitDx</p>
           <h1 className="font-display text-3xl text-white">Start your interview.</h1>
           <p className="text-muted text-sm">8–12 minutes. No forms. Just a real conversation.</p>
+        </div>
+
+        <button
+          onClick={handleGoogle}
+          className="w-full border border-ink-soft text-muted py-3 rounded-lg hover:border-muted transition-colors text-sm"
+        >
+          Continue with Google
+        </button>
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-ink-soft" />
+          </div>
+          <div className="relative flex justify-center text-xs">
+            <span className="bg-ink px-3 text-muted">or</span>
+          </div>
         </div>
 
         <form onSubmit={handleSignup} className="space-y-4">
