@@ -9,10 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.81",
+    "@ai-sdk/gateway": "^3.0.121",
     "@anthropic-ai/sdk": "^0.100.1",
     "@stripe/stripe-js": "^9.7.0",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.106.2",
+    "ai": "^6.0.193",
     "next": "14.2.35",
     "react": "^18",
     "react-dom": "^18",

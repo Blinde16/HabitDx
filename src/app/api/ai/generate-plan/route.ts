@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import { getAnthropicClient, MODELS } from '@/lib/ai/client'
+import { generateText } from 'ai'
+import { getModel } from '@/lib/ai/client'
 import { PLAN_GENERATION_SYSTEM_PROMPT } from '@/lib/ai/prompts'
 import { createClient } from '@/lib/supabase/server'
 
@@ -10,24 +11,21 @@ export async function POST(request: Request) {
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { interview_data } = await request.json()
-  const anthropic = getAnthropicClient()
+  const model = getModel('plan')
   const supabase = await createClient()
 
-  const response = await anthropic.messages.create({
-    model: MODELS.plan,
-    max_tokens: 8000,
+  const { text } = await generateText({
+    model,
     system: PLAN_GENERATION_SYSTEM_PROMPT,
     messages: [{
       role: 'user',
       content: `Generate a complete 18-month plan based on this interview data:\n\n${JSON.stringify(interview_data, null, 2)}`,
     }],
+    maxOutputTokens: 8000,
   })
-
-  const text = response.content[0].type === 'text' ? response.content[0].text : ''
 
   let plan
   try {
-    // Strip any markdown code fences if present
     const cleaned = text.replace(/^```json\n?/, '').replace(/\n?```$/, '').trim()
     plan = JSON.parse(cleaned)
   } catch {
@@ -35,7 +33,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Plan generation failed' }, { status: 500 })
   }
 
-  // Write plan to database
   await supabase.from('profiles').update({
     shadow_vision: plan.shadow_vision,
     daily_template: plan.daily_template,
@@ -45,7 +42,6 @@ export async function POST(request: Request) {
     travel_plan: plan.travel_plan,
   }).eq('user_id', userId)
 
-  // Write monthly plans
   if (plan.monthly_plans?.length) {
     await supabase.from('monthly_plans').delete().eq('user_id', userId)
     await supabase.from('monthly_plans').insert(
@@ -64,15 +60,14 @@ export async function POST(request: Request) {
     )
   }
 
-  // Write milestones
   const allMilestones = [
-    ...(plan.milestones?.business || []).map((m: Record<string, unknown>) => ({ ...m, pillar: 'business', user_id: userId })),
-    ...(plan.milestones?.personal || []).map((m: Record<string, unknown>) => ({ ...m, pillar: 'personal', user_id: userId })),
+    ...(plan.milestones?.business || []).map((m: Record<string, unknown>) => ({ ...m, pillar: 'business' })),
+    ...(plan.milestones?.personal || []).map((m: Record<string, unknown>) => ({ ...m, pillar: 'personal' })),
   ]
   if (allMilestones.length) {
     await supabase.from('milestones').delete().eq('user_id', userId)
     await supabase.from('milestones').insert(allMilestones.map(m => ({
-      user_id: m.user_id as string,
+      user_id: userId,
       month_target: m.month as number,
       title: m.title as string,
       description: m.description as string,
@@ -81,7 +76,6 @@ export async function POST(request: Request) {
     })))
   }
 
-  // Mark onboarding complete
   await supabase.from('users').update({ onboarding_complete: true }).eq('id', userId)
 
   return NextResponse.json({ success: true })
